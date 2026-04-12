@@ -1,0 +1,443 @@
+@if (localDraft(); as d) {
+  <div class="page">
+    <header class="page__head">
+      <a [routerLink]="['/profiles', ids().profileId]" class="back">← Back to profile</a>
+      <div class="headrow">
+        @if (editing()) {
+          <h1>Edit jutsu</h1>
+          <button type="button" class="secondary" (click)="cancelEdit()">View sheet</button>
+        } @else {
+          <h1>{{ d.name }}</h1>
+          <button type="button" class="primary" (click)="enterEditMode()">Edit</button>
+        }
+      </div>
+      @if (saveMessage(); as msg) {
+        <p class="toast" [class.toast--warn]="msg === 'Fix validation issues before saving.'">{{ msg }}</p>
+      }
+    </header>
+
+    @if (!editing()) {
+      <section class="card jutsu-sheet">
+        <p class="sheet__meta">
+          {{ d.classification | titlecase }} · {{ d.rank }}-Rank · {{ formatArchetypes(d.archetypes) }}
+        </p>
+        @if (d.conceptNotes?.trim()) {
+          <div class="sheet__block">
+            <h2>Concept</h2>
+            <p class="sheet__text">{{ d.conceptNotes }}</p>
+          </div>
+        }
+        <div class="sheet__block">
+          <h2>Prerequisites & components</h2>
+          <dl class="sheet__dl">
+            <dt>Required feature</dt>
+            <dd>
+              @switch (d.prerequisites.requiredFeature) {
+                @case ('short_rest') {
+                  Short rest (+1 slot)
+                }
+                @case ('long_rest') {
+                  Long rest (+2 slots)
+                }
+                @default {
+                  None
+                }
+              }
+            </dd>
+            <dt>Keywords</dt>
+            <dd>{{ formatPrereqKeywords(d.prerequisites) }}</dd>
+            @if (d.prerequisites.natureReleases; as nrs) {
+              @if (nrs.length) {
+                <dt>Nature releases</dt>
+                <dd>{{ nrs.join(', ') }}</dd>
+              }
+            }
+            <dt>Range</dt>
+            <dd>{{ formatRange(d.prerequisites.range) }}</dd>
+            @if (d.classification === 'genjutsu') {
+              @if (d.prerequisites.unaware) {
+                <dt>Unaware</dt>
+                <dd>Yes (costs 1 slot)</dd>
+              }
+              @if (d.prerequisites.sensory; as sens) {
+                @if (sens.length) {
+                  <dt>Sensory</dt>
+                  <dd>{{ sens.join(', ') }}</dd>
+                }
+              }
+            }
+            @if (d.prerequisites.weaponType?.trim()) {
+              <dt>Weapon</dt>
+              <dd>{{ d.prerequisites.weaponType }}</dd>
+            }
+            @if (d.prerequisites.ninjaTool?.trim()) {
+              <dt>Ninja tool</dt>
+              <dd>{{ d.prerequisites.ninjaTool }}</dd>
+            }
+            <dt>Components</dt>
+            <dd>{{ formatComponents(d.prerequisites.components) || '—' }}</dd>
+          </dl>
+        </div>
+        <div class="sheet__block">
+          <h2>Effects</h2>
+          <p class="muted small">{{ d.effects.length }} / {{ maxSlots() }} slots</p>
+          <ul class="sheet__effects">
+            @for (e of d.effects; track e.id) {
+              <li>
+                <strong>{{ e.effectKey || '(unnamed)' }}</strong>
+                @if (e.effectKey === 'Damage' && effectDamageDice(e)) {
+                  <span class="muted"> — {{ effectDamageDice(e) }} damage</span>
+                }
+                @if (d.classification === 'genjutsu' && e.effectKey === 'Damage') {
+                  <span class="muted"> (Psychic)</span>
+                }
+                @if (e.notes?.trim()) {
+                  <div class="sheet__note">{{ e.notes }}</div>
+                }
+              </li>
+            }
+          </ul>
+        </div>
+        <div class="sheet__block sheet__block--highlight">
+          <h2>At the table</h2>
+          @if (d.finalize?.description?.trim()) {
+            <p class="sheet__description">{{ d.finalize!.description }}</p>
+          } @else {
+            <p class="muted">No printed description yet. Use Edit to add one.</p>
+          }
+          <dl class="sheet__dl sheet__dl--inline">
+            @if (d.finalize?.chakraCostLabel?.trim()) {
+              <dt>Chakra</dt>
+              <dd>{{ d.finalize!.chakraCostLabel }}</dd>
+            }
+            @if (d.finalize?.downtimeSolo != null) {
+              <dt>Downtime (solo)</dt>
+              <dd>{{ d.finalize!.downtimeSolo }}</dd>
+            }
+            @if (d.finalize?.downtimeMaster != null) {
+              <dt>Downtime (master)</dt>
+              <dd>{{ d.finalize!.downtimeMaster }}</dd>
+            }
+          </dl>
+        </div>
+      </section>
+    } @else {
+      @if (validationErrors(); as ve) {
+        @if (ve.length) {
+          <section class="card card--warn">
+            <h2>Validation</h2>
+            <p class="muted small">These issues must be resolved before you can save.</p>
+            <ul class="validation-list">
+              @for (err of ve; track err) {
+                <li>{{ err }}</li>
+              }
+            </ul>
+          </section>
+        }
+      }
+
+      <section class="card">
+        <details class="rule-details">
+          <summary>Rules summary (creating a jutsu)</summary>
+          @for (p of ruleSummaryFor(d.classification); track $index) {
+            <p class="muted small rule-details__p">{{ p }}</p>
+          }
+        </details>
+      </section>
+
+      <section class="card">
+        <h2>Identity</h2>
+        <label class="field">
+          <span>Name</span>
+          <input type="text" [(ngModel)]="d.name" (ngModelChange)="bumpDraft()" />
+        </label>
+        <div class="row2">
+          <label class="field">
+            <span>Classification</span>
+            <input type="text" [value]="d.classification | titlecase" disabled />
+          </label>
+          <label class="field">
+            <span>Rank</span>
+            <select [ngModel]="d.rank" (ngModelChange)="onRankChange($event)">
+              @for (r of ranks; track r) {
+                <option [ngValue]="r">{{ r }}-Rank</option>
+              }
+            </select>
+          </label>
+        </div>
+        <p class="muted small">E-Rank uses D-Rank damage die pools on Damage effects.</p>
+        <label class="field">
+          <span>Archetypes (pick up to two)</span>
+          <div class="chips">
+            @for (a of archetypes; track a) {
+              <label class="chip">
+                <input
+                  type="checkbox"
+                  [checked]="d.archetypes.includes(a)"
+                  (change)="toggleArchetype(a)"
+                />
+                {{ a | titlecase }}
+              </label>
+            }
+          </div>
+          @if (archetypeError(); as err) {
+            <p class="warn">{{ err }}</p>
+          }
+        </label>
+        <label class="field">
+          <span>Concept notes</span>
+          <textarea rows="3" [(ngModel)]="d.conceptNotes" (ngModelChange)="bumpDraft()" placeholder="What does this jutsu do at the table?"></textarea>
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>Prerequisites & components</h2>
+        <div class="row2">
+          <label class="field">
+            <span>Required feature</span>
+            <select
+              [(ngModel)]="d.prerequisites.requiredFeature"
+              (ngModelChange)="bumpDraft()"
+              [disabled]="d.rank === 'E'"
+            >
+              <option [ngValue]="'none'">None</option>
+              <option [ngValue]="'short_rest'">Required feature (short rest) · +1 slot</option>
+              <option [ngValue]="'long_rest'">Required feature (long rest) · +2 slots</option>
+            </select>
+          </label>
+          @if (d.rank === 'E') {
+            <p class="muted small">Required feature cannot be added to E-Rank jutsu per rules.</p>
+          }
+        </div>
+
+        <label class="field">
+          <span>Keywords</span>
+          <div class="chips">
+            <label class="chip">
+              <input type="checkbox" [checked]="!!d.prerequisites.hijutsu" (change)="d.prerequisites.hijutsu = !d.prerequisites.hijutsu; bumpDraft()" />
+              Hijutsu
+            </label>
+            <label class="chip">
+              <input type="checkbox" [checked]="!!d.prerequisites.medical" (change)="d.prerequisites.medical = !d.prerequisites.medical; bumpDraft()" />
+              Medical
+            </label>
+            <label class="chip">
+              <input type="checkbox" [checked]="!!d.prerequisites.fuinjutsu" (change)="d.prerequisites.fuinjutsu = !d.prerequisites.fuinjutsu; bumpDraft()" />
+              Fuinjutsu
+            </label>
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Nature releases (rulebook list)</span>
+          <p class="muted small">Only these five releases can be selected; CM becomes mandatory when any are checked.</p>
+          <div class="chips">
+            @for (nr of natureReleaseOptions; track nr.id) {
+              <label class="chip">
+                <input
+                  type="checkbox"
+                  [checked]="hasNatureRelease(nr.id)"
+                  (change)="toggleNatureRelease(nr.id)"
+                />
+                {{ nr.label }}
+              </label>
+            }
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Range</span>
+          <select [(ngModel)]="d.prerequisites.range" (ngModelChange)="bumpDraft()">
+            <option [ngValue]="'self'">Self</option>
+            <option [ngValue]="'touch'">Touch (5 ft)</option>
+            <option [ngValue]="'ranged'">Ranged</option>
+            @if (d.classification === 'genjutsu') {
+              <option [ngValue]="'inhaled'">Inhaled (Genjutsu)</option>
+            }
+            @if (d.classification === 'bukijutsu') {
+              <option [ngValue]="'weapon_range'">Weapon range (Bukijutsu)</option>
+            }
+          </select>
+        </label>
+
+        @if (d.classification === 'genjutsu') {
+          <label class="field">
+            <span class="inline">
+              <input type="checkbox" [(ngModel)]="d.prerequisites.unaware" (ngModelChange)="bumpDraft()" />
+              Unaware (costs 1 effect slot)
+            </span>
+          </label>
+
+          <div class="subcard">
+            <h3>Genjutsu save tiers</h3>
+            <p class="muted small">
+              If the jutsu requires a save, Critical Success / Success / Failure are mandatory. Optional Critical Failure adjusts slots (+1 if omitted). Missing Critical Success costs 1 slot.
+            </p>
+            @if (d.prerequisites.genjutsuTiers; as g) {
+              <div class="chips">
+                <label class="chip">
+                  <input type="checkbox" [(ngModel)]="g.criticalSuccess" (ngModelChange)="bumpDraft()" />
+                  Critical success
+                </label>
+                <label class="chip">
+                  <input type="checkbox" [(ngModel)]="g.success" (ngModelChange)="bumpDraft()" />
+                  Success
+                </label>
+                <label class="chip">
+                  <input type="checkbox" [(ngModel)]="g.failure" (ngModelChange)="bumpDraft()" />
+                  Failure
+                </label>
+                <label class="chip">
+                  <input type="checkbox" [(ngModel)]="g.criticalFailure" (ngModelChange)="bumpDraft()" />
+                  Critical failure
+                </label>
+              </div>
+            }
+          </div>
+
+          <label class="field">
+            <span>Sensory keywords</span>
+            <p class="muted small">Visual, Tactile, Auditory, Inhaled — many Genjutsu effects key off these.</p>
+            <div class="chips">
+              @for (s of genjutsuSensoryOptions; track s.id) {
+                <label class="chip">
+                  <input type="checkbox" [checked]="hasSensory(s.id)" (change)="toggleSensory(s.id)" />
+                  {{ s.label }}
+                </label>
+              }
+            </div>
+          </label>
+        }
+
+        <div class="row2">
+          <label class="field">
+            <span>Weapon type (if Weapon component)</span>
+            <select [(ngModel)]="d.prerequisites.weaponType" (ngModelChange)="bumpDraft()">
+              <option [ngValue]="''">— Not set —</option>
+              @for (w of weaponTypeOptions; track w) {
+                <option [ngValue]="w">{{ w }}</option>
+              }
+            </select>
+          </label>
+          <label class="field">
+            <span>Ninja tool (if NT)</span>
+            <select [(ngModel)]="d.prerequisites.ninjaTool" (ngModelChange)="bumpDraft()">
+              <option [ngValue]="''">— Not set —</option>
+              @for (nt of ninjaToolOptions; track nt) {
+                <option [ngValue]="nt">{{ nt }}</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Components</span>
+          <div class="chips">
+            @for (c of componentOptionsFor(d.classification); track c.code) {
+              <label class="chip">
+                <input type="checkbox" [checked]="hasComponent(c.code)" (change)="toggleComponent(c.code)" />
+                {{ c.label }}
+              </label>
+            }
+          </div>
+          <p class="muted small">
+            Defaults follow common mandatory pairs (e.g. Ninjutsu starts with HS + CM); adjust to match your table’s final ruling.
+          </p>
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>Effects</h2>
+        <p class="muted">
+          Each chosen effect typically spends one slot. Current budget:
+          <strong>{{ d.effects.length }} / {{ maxSlots() }}</strong>
+          slots used. Effect names are limited to the rulebook list for your classification and archetypes.
+        </p>
+        <div class="effects">
+          @for (e of d.effects; track e.id) {
+            <div class="effect">
+              <label class="field tight">
+                <span>Effect</span>
+                <select [ngModel]="e.effectKey" (ngModelChange)="onEffectKeyChange(e, $event)">
+                  <option [ngValue]="''">— Select —</option>
+                  @for (key of allowedEffects(); track key) {
+                    <option [ngValue]="key">{{ key }}</option>
+                  }
+                </select>
+              </label>
+              @if (e.effectKey === 'Damage') {
+                <label class="field tight">
+                  <span>Damage die (rulebook pool for {{ d.rank }}-Rank {{ d.classification | titlecase }})</span>
+                  @if (d.classification === 'genjutsu') {
+                    <span class="muted small">Genjutsu Damage is Psychic.</span>
+                  }
+                  <select
+                    [ngModel]="effectDamageDice(e)"
+                    (ngModelChange)="setEffectDamageDice(e, $event)"
+                  >
+                    <option [ngValue]="''">— Select pool —</option>
+                    @for (die of damageDiceChoices(); track die) {
+                      <option [ngValue]="die">{{ die }}</option>
+                    }
+                  </select>
+                </label>
+              }
+              <label class="field tight">
+                <span>Notes</span>
+                <textarea rows="2" [(ngModel)]="e.notes" (ngModelChange)="bumpDraft()" placeholder="Save DC, shape, riders…"></textarea>
+              </label>
+              <button type="button" class="ghost danger" (click)="removeEffect(e.id)">Remove</button>
+            </div>
+          }
+        </div>
+        <button type="button" class="secondary" (click)="addEffect()">Add effect</button>
+      </section>
+
+      <section class="card">
+        <h2>Finalize</h2>
+        <p class="muted small">
+          Chakra label and downtime follow the rank table (E through S). You can fill them manually or apply the table values.
+        </p>
+        <p>
+          <button type="button" class="secondary" (click)="applyRankFinalizeTable()">
+            Apply rank table (chakra + downtime)
+          </button>
+        </p>
+        <label class="field">
+          <span>Printed description</span>
+          <textarea rows="5" [(ngModel)]="d.finalize!.description" (ngModelChange)="bumpDraft()" placeholder="Final text you want at the table."></textarea>
+        </label>
+        <label class="field">
+          <span>Chakra cost label</span>
+          <input
+            type="text"
+            [(ngModel)]="d.finalize!.chakraCostLabel"
+            (ngModelChange)="bumpDraft()"
+            placeholder="e.g. Special (17 Chakra)"
+          />
+        </label>
+        <div class="row2">
+          <label class="field">
+            <span>Downtime (solo)</span>
+            <input type="number" [(ngModel)]="d.finalize!.downtimeSolo" (ngModelChange)="bumpDraft()" />
+          </label>
+          <label class="field">
+            <span>Downtime (master)</span>
+            <input type="number" [(ngModel)]="d.finalize!.downtimeMaster" (ngModelChange)="bumpDraft()" />
+          </label>
+        </div>
+      </section>
+
+      <footer class="save-bar">
+        <button type="button" class="primary save-bar__btn" (click)="persist()">Save jutsu</button>
+        <p class="muted small save-bar__hint">Saving returns you to the read-only sheet when validation passes.</p>
+        <button type="button" class="ghost save-bar__secondary" (click)="cancelEdit()">View sheet without saving</button>
+      </footer>
+    }
+  </div>
+} @else {
+  <div class="page">
+    <p class="muted">Jutsu not found.</p>
+    <a routerLink="/profiles" class="back">← Profiles</a>
+  </div>
+}

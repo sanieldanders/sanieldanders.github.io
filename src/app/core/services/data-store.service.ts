@@ -1,0 +1,232 @@
+import { Injectable, computed, signal } from '@angular/core';
+import {
+  createDefaultCharacterSheet,
+  normalizeCharacter,
+  type CharacterWithSheet
+} from '../character/character-sheet.defaults';
+import type { AppData, Character, JutsuDraft, Profile } from '../models/app-data.model';
+
+const LOCAL_KEY = 'jutsu-companion-data';
+
+function newId(): string {
+  return crypto.randomUUID();
+}
+
+function emptyData(): AppData {
+  return { profiles: [], characters: [] };
+}
+
+@Injectable({ providedIn: 'root' })
+export class DataStoreService {
+  private readonly data = signal<AppData>(emptyData());
+  private ready = signal(false);
+
+  readonly profiles = computed(() => this.data().profiles);
+  readonly characters = computed(() => this.data().characters);
+  readonly isReady = computed(() => this.ready());
+
+  async init(): Promise<void> {
+    let loaded: AppData = emptyData();
+    const bridge = window.jutsuElectron;
+    if (bridge?.load) {
+      try {
+        const raw = await bridge.load();
+        loaded = this.normalize(raw);
+      } catch {
+        loaded = emptyData();
+      }
+    } else {
+      try {
+        const raw = localStorage.getItem(LOCAL_KEY);
+        loaded = raw ? this.normalize(JSON.parse(raw)) : emptyData();
+      } catch {
+        loaded = emptyData();
+      }
+    }
+    this.data.set(loaded);
+    this.ready.set(true);
+  }
+
+  private normalize(raw: unknown): AppData {
+    if (!raw || typeof raw !== 'object') {
+      return emptyData();
+    }
+    const o = raw as { profiles?: unknown; characters?: unknown };
+    const p = o.profiles;
+    if (!Array.isArray(p)) {
+      return emptyData();
+    }
+    const c = o.characters;
+    const characters = Array.isArray(c) ? c.filter((x): x is Character => this.isCharacter(x)) : [];
+    return {
+      profiles: p.filter((x): x is Profile => this.isProfile(x)),
+      characters
+    };
+  }
+
+  private isProfile(value: unknown): value is Profile {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+    const o = value as Profile;
+    return typeof o.id === 'string' && typeof o.name === 'string' && Array.isArray(o.jutsus);
+  }
+
+  private isCharacter(value: unknown): value is Character {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+    const o = value as Character;
+    return typeof o.id === 'string' && typeof o.name === 'string' && typeof o.createdAt === 'string';
+  }
+
+  private persist(): void {
+    const snapshot = this.data();
+    const bridge = window.jutsuElectron;
+    if (bridge?.save) {
+      void bridge.save(snapshot);
+    } else {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(snapshot));
+    }
+  }
+
+  private touch(): void {
+    this.persist();
+  }
+
+  addProfile(name: string, notes?: string): Profile {
+    const profile: Profile = {
+      id: newId(),
+      name: name.trim(),
+      notes,
+      jutsus: []
+    };
+    this.data.update((d) => ({ ...d, profiles: [...d.profiles, profile] }));
+    this.touch();
+    return profile;
+  }
+
+  updateProfile(profileId: string, patch: Partial<Pick<Profile, 'name' | 'notes'>>): void {
+    this.data.update((d) => ({
+      ...d,
+      profiles: d.profiles.map((p) =>
+        p.id === profileId ? { ...p, ...patch, name: patch.name?.trim() ?? p.name } : p
+      )
+    }));
+    this.touch();
+  }
+
+  deleteProfile(profileId: string): void {
+    this.data.update((d) => ({
+      ...d,
+      profiles: d.profiles.filter((p) => p.id !== profileId)
+    }));
+    this.touch();
+  }
+
+  getProfile(profileId: string): Profile | undefined {
+    return this.data().profiles.find((p) => p.id === profileId);
+  }
+
+  getCharacter(characterId: string): CharacterWithSheet | undefined {
+    const raw = this.data().characters.find((c) => c.id === characterId);
+    return raw ? normalizeCharacter(raw) : undefined;
+  }
+
+  addCharacter(name: string): CharacterWithSheet {
+    const character: Character = {
+      id: newId(),
+      name: name.trim(),
+      createdAt: new Date().toISOString(),
+      sheet: createDefaultCharacterSheet()
+    };
+    this.data.update((d) => ({ ...d, characters: [...d.characters, character] }));
+    this.touch();
+    return normalizeCharacter(character);
+  }
+
+  updateCharacter(characterId: string, next: Character): void {
+    this.data.update((d) => ({
+      ...d,
+      characters: d.characters.map((c) => (c.id === characterId ? { ...next, sheet: next.sheet } : c))
+    }));
+    this.touch();
+  }
+
+  deleteCharacter(characterId: string): void {
+    this.data.update((d) => ({
+      ...d,
+      characters: d.characters.filter((c) => c.id !== characterId)
+    }));
+    this.touch();
+  }
+
+  upsertJutsu(profileId: string, draft: JutsuDraft): void {
+    this.data.update((d) => ({
+      ...d,
+      profiles: d.profiles.map((p) => {
+        if (p.id !== profileId) {
+          return p;
+        }
+        const idx = p.jutsus.findIndex((j) => j.id === draft.id);
+        const next = [...p.jutsus];
+        if (idx >= 0) {
+          next[idx] = draft;
+        } else {
+          next.push(draft);
+        }
+        return { ...p, jutsus: next };
+      })
+    }));
+    this.touch();
+  }
+
+  deleteJutsu(profileId: string, jutsuId: string): void {
+    this.data.update((d) => ({
+      ...d,
+      profiles: d.profiles.map((p) =>
+        p.id === profileId ? { ...p, jutsus: p.jutsus.filter((j) => j.id !== jutsuId) } : p
+      )
+    }));
+    this.touch();
+  }
+
+  newDraft(profileId: string, classification: JutsuDraft['classification']): JutsuDraft {
+    const draft: JutsuDraft = {
+      id: newId(),
+      name: 'Untitled jutsu',
+      classification,
+      rank: 'D',
+      archetypes: ['offensive'],
+      prerequisites: {
+        requiredFeature: 'none',
+        components: defaultComponents(classification),
+        range: 'touch',
+        genjutsuTiers: {
+          criticalSuccess: true,
+          success: true,
+          failure: true,
+          criticalFailure: false
+        }
+      },
+      effects: [],
+      finalize: {},
+      updatedAt: new Date().toISOString()
+    };
+    this.upsertJutsu(profileId, draft);
+    return draft;
+  }
+}
+
+function defaultComponents(classification: JutsuDraft['classification']): string[] {
+  if (classification === 'ninjutsu') {
+    return ['HS', 'CM'];
+  }
+  if (classification === 'genjutsu') {
+    return ['HS', 'CM'];
+  }
+  if (classification === 'taijutsu') {
+    return ['M'];
+  }
+  return ['M', 'W'];
+}

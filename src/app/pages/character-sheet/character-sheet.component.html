@@ -1,0 +1,372 @@
+@if (draft(); as ch) {
+  <div class="cs-page">
+    <nav class="cs-nav">
+      <a routerLink="/characters" class="cs-nav__link">← Characters</a>
+      <span class="cs-nav__hint">Edits save automatically.</span>
+    </nav>
+
+    <div class="cs-paper">
+      <div class="cs-ornament cs-ornament--tl" aria-hidden="true"></div>
+      <div class="cs-ornament cs-ornament--tr" aria-hidden="true"></div>
+      <div class="cs-ornament cs-ornament--bl" aria-hidden="true"></div>
+      <div class="cs-ornament cs-ornament--br" aria-hidden="true"></div>
+
+      <div class="cs-grid">
+        <aside class="cs-rail">
+          <div class="cs-banner">
+            <span class="cs-banner__label">Proficiency bonus</span>
+            <input
+              class="cs-input cs-input--center"
+              type="text"
+              [ngModel]="ch.sheet.rail.proficiencyBonus"
+              (ngModelChange)="onRailField('proficiencyBonus', $event)"
+            />
+          </div>
+          <div class="cs-passive-row">
+            <div class="cs-passive">
+              <span class="cs-passive__label">Passive perception</span>
+              <input
+                class="cs-input"
+                type="text"
+                [ngModel]="ch.sheet.rail.passivePerception"
+                (ngModelChange)="onRailField('passivePerception', $event)"
+              />
+            </div>
+            <div class="cs-passive">
+              <span class="cs-passive__label">Passive insight</span>
+              <input
+                class="cs-input"
+                type="text"
+                [ngModel]="ch.sheet.rail.passiveInsight"
+                (ngModelChange)="onRailField('passiveInsight', $event)"
+              />
+            </div>
+          </div>
+          <div class="cs-banner cs-banner--large">
+            <span class="cs-banner__label">Will of Fire</span>
+            <textarea
+              class="cs-textarea cs-textarea--rail"
+              rows="5"
+              [ngModel]="ch.sheet.rail.willOfFire"
+              (ngModelChange)="onRailField('willOfFire', $event)"
+            ></textarea>
+          </div>
+        </aside>
+
+        <header class="cs-head">
+          <div class="cs-head__row">
+            <label class="cs-field cs-field--grow">
+              <span class="cs-field__lbl">Character name</span>
+              <input
+                class="cs-input cs-input--title"
+                type="text"
+                [ngModel]="ch.name"
+                (ngModelChange)="onName($event)"
+              />
+            </label>
+            <label class="cs-field">
+              <span class="cs-field__lbl">Clan</span>
+              <input
+                class="cs-input"
+                type="text"
+                [ngModel]="ch.sheet.identity.clan"
+                (ngModelChange)="onIdentityField('clan', $event)"
+              />
+            </label>
+            <label class="cs-field">
+              <span class="cs-field__lbl">Player name</span>
+              <input
+                class="cs-input"
+                type="text"
+                [ngModel]="ch.sheet.identity.playerName"
+                (ngModelChange)="onIdentityField('playerName', $event)"
+              />
+            </label>
+          </div>
+          <div class="cs-head__row">
+            <label class="cs-field cs-field--grow">
+              <span class="cs-field__lbl">Class &amp; level</span>
+              <input
+                class="cs-input"
+                type="text"
+                [ngModel]="ch.sheet.identity.classLevel"
+                (ngModelChange)="onIdentityField('classLevel', $event)"
+              />
+            </label>
+            <label class="cs-field">
+              <span class="cs-field__lbl">Experience points</span>
+              <input
+                class="cs-input"
+                type="text"
+                [ngModel]="ch.sheet.identity.experiencePoints"
+                (ngModelChange)="onIdentityField('experiencePoints', $event)"
+              />
+            </label>
+          </div>
+        </header>
+
+        <section class="cs-abilities" aria-label="Ability scores and skills">
+          @for (a of abilityLayout; track a.abbr) {
+            <div class="cs-ability">
+              <div class="cs-ability__side">
+                <span class="cs-ability__abbr">{{ a.abbr }}</span>
+                <span class="cs-ability__name">{{ a.label }}</span>
+                <input
+                  class="cs-input cs-input--score"
+                  type="text"
+                  [ngModel]="ch.sheet.abilities[a.abbr].score"
+                  (ngModelChange)="onAbilityScore(a.abbr, $event)"
+                />
+                <input
+                  class="cs-input cs-input--mod"
+                  type="text"
+                  [ngModel]="ch.sheet.abilities[a.abbr].mod"
+                  (ngModelChange)="onAbilityMod(a.abbr, $event)"
+                />
+              </div>
+              <ul class="cs-skill-list">
+                @for (sk of a.skills; track sk) {
+                  <li class="cs-skill">
+                    <button
+                      type="button"
+                      class="cs-skill__dot"
+                      [class.cs-skill__dot--black]="ch.sheet.abilities[a.abbr].skills[sk].dot === 'black'"
+                      [class.cs-skill__dot--red]="ch.sheet.abilities[a.abbr].skills[sk].dot === 'red'"
+                      [attr.aria-label]="dotLabel(ch.sheet.abilities[a.abbr].skills[sk].dot) + ' for ' + sk"
+                      (click)="cycleSkillDot(a.abbr, sk)"
+                    ></button>
+                    <span class="cs-skill__name">{{ sk }}</span>
+                    <input
+                      class="cs-input cs-input--skillmod"
+                      type="text"
+                      [ngModel]="ch.sheet.abilities[a.abbr].skills[sk].mod"
+                      (ngModelChange)="onSkillMod(a.abbr, sk, $event)"
+                    />
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </section>
+
+        <section class="cs-combat" aria-label="Combat and chakra">
+          <div class="cs-vitals-row">
+            <div class="cs-ac">
+              <span class="cs-ac__lbl">Armor class</span>
+              <input
+                class="cs-input cs-input--shield"
+                type="text"
+                [ngModel]="ch.sheet.combat.armorClass"
+                (ngModelChange)="onCombatField('armorClass', $event)"
+              />
+            </div>
+            <div class="cs-statbox">
+              <span class="cs-statbox__lbl">Initiative</span>
+              <input
+                class="cs-input cs-input--stat"
+                type="text"
+                [ngModel]="ch.sheet.combat.initiative"
+                (ngModelChange)="onCombatField('initiative', $event)"
+              />
+            </div>
+            <div class="cs-statbox">
+              <span class="cs-statbox__lbl">Speed</span>
+              <input
+                class="cs-input cs-input--stat"
+                type="text"
+                [ngModel]="ch.sheet.combat.speed"
+                (ngModelChange)="onCombatField('speed', $event)"
+              />
+            </div>
+          </div>
+
+          <div class="cs-split-pair">
+            <div class="cs-split">
+              <span class="cs-split__lbl">Hit point maximum</span>
+              <input
+                class="cs-input cs-input--inline"
+                type="text"
+                [ngModel]="ch.sheet.combat.hitPointMax"
+                (ngModelChange)="onCombatField('hitPointMax', $event)"
+              />
+            </div>
+            <div class="cs-split">
+              <span class="cs-split__lbl">Chakra point maximum</span>
+              <input
+                class="cs-input cs-input--inline"
+                type="text"
+                [ngModel]="ch.sheet.combat.chakraPointMax"
+                (ngModelChange)="onCombatField('chakraPointMax', $event)"
+              />
+            </div>
+          </div>
+          <div class="cs-bigbox">
+            <span class="cs-bigbox__lbl">Current hit points</span>
+            <textarea
+              class="cs-textarea"
+              rows="2"
+              [ngModel]="ch.sheet.combat.currentHitPoints"
+              (ngModelChange)="onCombatField('currentHitPoints', $event)"
+            ></textarea>
+          </div>
+          <div class="cs-bigbox">
+            <span class="cs-bigbox__lbl">Current chakra</span>
+            <textarea
+              class="cs-textarea"
+              rows="2"
+              [ngModel]="ch.sheet.combat.currentChakra"
+              (ngModelChange)="onCombatField('currentChakra', $event)"
+            ></textarea>
+          </div>
+
+          <div class="cs-dice-row">
+            <div class="cs-dice">
+              <span class="cs-dice__lbl">Hit die</span>
+              <div class="cs-dice__inner">
+                <span class="cs-dice__sub">Total</span>
+                <input
+                  class="cs-input cs-input--dice"
+                  type="text"
+                  [ngModel]="ch.sheet.combat.hitDieTotal"
+                  (ngModelChange)="onCombatField('hitDieTotal', $event)"
+                />
+                <span class="cs-dice__sub">Die</span>
+                <input
+                  class="cs-input cs-input--dice"
+                  type="text"
+                  [ngModel]="ch.sheet.combat.hitDieType"
+                  (ngModelChange)="onCombatField('hitDieType', $event)"
+                />
+              </div>
+            </div>
+            <div class="cs-dice">
+              <span class="cs-dice__lbl">Chakra die</span>
+              <div class="cs-dice__inner">
+                <span class="cs-dice__sub">Total</span>
+                <input
+                  class="cs-input cs-input--dice"
+                  type="text"
+                  [ngModel]="ch.sheet.combat.chakraDieTotal"
+                  (ngModelChange)="onCombatField('chakraDieTotal', $event)"
+                />
+                <span class="cs-dice__sub">Die</span>
+                <input
+                  class="cs-input cs-input--dice"
+                  type="text"
+                  [ngModel]="ch.sheet.combat.chakraDieType"
+                  (ngModelChange)="onCombatField('chakraDieType', $event)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="cs-attacks">
+            <h3 class="cs-attacks__title">Attacks &amp; jutsu</h3>
+            <table class="cs-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Atk bonus</th>
+                  <th>Damage / type</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (i of attackRowIndexes; track i) {
+                  <tr>
+                    <td>
+                      <input
+                        class="cs-input cs-input--table"
+                        type="text"
+                        [ngModel]="ch.sheet.attacks[i].name"
+                        (ngModelChange)="onAttackField(i, 'name', $event)"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        class="cs-input cs-input--table cs-input--table-narrow"
+                        type="text"
+                        [ngModel]="ch.sheet.attacks[i].atkBonus"
+                        (ngModelChange)="onAttackField(i, 'atkBonus', $event)"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        class="cs-input cs-input--table"
+                        type="text"
+                        [ngModel]="ch.sheet.attacks[i].damageType"
+                        (ngModelChange)="onAttackField(i, 'damageType', $event)"
+                      />
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="cs-rside">
+          <div class="cs-trait">
+            <span class="cs-trait__lbl">Personality traits</span>
+            <textarea
+              class="cs-textarea cs-textarea--trait"
+              rows="3"
+              [ngModel]="ch.sheet.traits.personality"
+              (ngModelChange)="onTraitField('personality', $event)"
+            ></textarea>
+          </div>
+          <div class="cs-trait">
+            <span class="cs-trait__lbl">Ideals</span>
+            <textarea
+              class="cs-textarea cs-textarea--trait"
+              rows="3"
+              [ngModel]="ch.sheet.traits.ideals"
+              (ngModelChange)="onTraitField('ideals', $event)"
+            ></textarea>
+          </div>
+          <div class="cs-trait">
+            <span class="cs-trait__lbl">Bonds</span>
+            <textarea
+              class="cs-textarea cs-textarea--trait"
+              rows="3"
+              [ngModel]="ch.sheet.traits.bonds"
+              (ngModelChange)="onTraitField('bonds', $event)"
+            ></textarea>
+          </div>
+          <div class="cs-trait">
+            <span class="cs-trait__lbl">Flaws</span>
+            <textarea
+              class="cs-textarea cs-textarea--trait"
+              rows="3"
+              [ngModel]="ch.sheet.traits.flaws"
+              (ngModelChange)="onTraitField('flaws', $event)"
+            ></textarea>
+          </div>
+          <div class="cs-features">
+            <span class="cs-features__lbl">Features &amp; traits &amp; proficiencies</span>
+            <textarea
+              class="cs-textarea cs-textarea--features"
+              rows="12"
+              [ngModel]="ch.sheet.traits.features"
+              (ngModelChange)="onTraitField('features', $event)"
+            ></textarea>
+          </div>
+        </aside>
+
+        <section class="cs-equip" aria-label="Equipment">
+          <h3 class="cs-equip__title">Equipment</h3>
+          <textarea
+            class="cs-textarea cs-textarea--equip"
+            rows="6"
+            [ngModel]="ch.sheet.equipment"
+            (ngModelChange)="onEquipment($event)"
+          ></textarea>
+        </section>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="cs-page cs-page--empty">
+    <p class="muted">Character not found.</p>
+    <a routerLink="/characters" class="cs-nav__link">← Characters</a>
+  </div>
+}

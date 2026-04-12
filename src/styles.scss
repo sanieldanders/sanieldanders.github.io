@@ -1,0 +1,96 @@
+:root {
+  --bg: #0c1017;
+  --panel: #121826;
+  --panel-2: #0f1520;
+  --border: #243047;
+  --text: #e8edf7;
+  --muted: #9aa6bf;
+  --accent: #5bc0de;
+  --accent-2: #7aa8ff;
+  --danger: #e57373;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Ubuntu,
+    Cantarell,
+    'Noto Sans',
+    sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 0.55rem 0.65rem;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button.primary {
+  border-color: #2f6b82;
+  background: linear-gradient(180deg, #1f5368, #17394a);
+  color: #e9f7ff;
+}
+
+button.secondary {
+  border-color: #35456a;
+  background: #1a2234;
+}
+
+button.ghost {
+  background: transparent;
+}
+
+button.danger {
+  border-color: #6b2f2f;
+  color: #ffc9c9;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}

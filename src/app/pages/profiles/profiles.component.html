@@ -1,0 +1,43 @@
+<div class="page">
+  <header class="page__head">
+    <a routerLink="/home" class="back">← Home</a>
+    <h1>Profiles</h1>
+    <p class="muted">Each profile keeps its own library of custom jutsu. Data is saved on this device.</p>
+  </header>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else {
+    <section class="card">
+      <h2>New profile</h2>
+      <div class="row">
+        <input
+          type="text"
+          [(ngModel)]="newName"
+          placeholder="Character or player name"
+          (keyup.enter)="create()"
+        />
+        <button type="button" class="primary" (click)="create()" [disabled]="!newName.trim()">Create</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Your profiles</h2>
+      @if (profiles().length === 0) {
+        <p class="muted">No profiles yet. Create one to start saving jutsu.</p>
+      } @else {
+        <ul class="list">
+          @for (p of profiles(); track p.id) {
+            <li>
+              <a [routerLink]="['/profiles', p.id]" class="list__link">
+                <span class="list__title">{{ p.name }}</span>
+                <span class="muted">{{ p.jutsus.length }} jutsu</span>
+              </a>
+              <button type="button" class="ghost danger" (click)="remove(p.id, $event)">Delete</button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</div>

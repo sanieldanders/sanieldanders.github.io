@@ -1,0 +1,16 @@
+<div class="shell">
+  <header class="shell__bar">
+    <a routerLink="/home" class="brand">ND&amp;D Companion</a>
+    <nav class="shell__nav">
+      <a routerLink="/home" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+      <a routerLink="/characters" routerLinkActive="is-active">Characters</a>
+      <a routerLink="/profiles" routerLinkActive="is-active">Jutsu</a>
+    </nav>
+    @if (!window.jutsuElectron) {
+      <span class="pill">Browser preview · use Electron for file save</span>
+    }
+  </header>
+  <main class="shell__main">
+    <router-outlet />
+  </main>
+</div>

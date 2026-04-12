@@ -1,0 +1,39 @@
+<div class="page">
+  <header class="page__head">
+    <a routerLink="/" class="back">← Home</a>
+    <h1>Characters</h1>
+    <p class="muted">Start with a name; the full sheet opens next. More fields will plug in here later.</p>
+  </header>
+
+  <section class="card">
+    <h2>New character</h2>
+    <div class="row">
+      <input
+        type="text"
+        [ngModel]="newName()"
+        (ngModelChange)="newName.set($event)"
+        placeholder="Character name"
+        (keyup.enter)="create()"
+      />
+      <button type="button" class="primary" (click)="create()" [disabled]="!newName().trim()">Create &amp; open sheet</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Your characters</h2>
+    @if (characters().length === 0) {
+      <p class="muted">No characters yet.</p>
+    } @else {
+      <ul class="list">
+        @for (c of characters(); track c.id) {
+          <li>
+            <a [routerLink]="['/characters', c.id]" class="list__link">
+              <span class="list__title">{{ c.name }}</span>
+            </a>
+            <button type="button" class="ghost danger" (click)="remove(c.id, $event)">Delete</button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>

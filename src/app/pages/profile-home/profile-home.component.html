@@ -1,0 +1,50 @@
+<div class="page">
+  @if (profile(); as p) {
+    <header class="page__head">
+      <a routerLink="/profiles" class="back">← Profiles</a>
+      <h1>{{ p.name }}</h1>
+      <p class="muted">Manage this profile’s saved jutsu.</p>
+    </header>
+
+    <section class="card">
+      <h2>Profile name</h2>
+      <div class="row">
+        <input type="text" [(ngModel)]="editName" />
+        <button type="button" class="primary" (click)="saveProfileName()" [disabled]="!editName.trim()">Save</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Create a jutsu</h2>
+      <p class="muted">Pick a rules track. You can refine rank, prerequisites, and effects in the editor.</p>
+      <div class="grid">
+        <button type="button" class="tile" (click)="startNew('ninjutsu')">Ninjutsu</button>
+        <button type="button" class="tile" (click)="startNew('genjutsu')">Genjutsu</button>
+        <button type="button" class="tile" (click)="startNew('taijutsu')">Taijutsu</button>
+        <button type="button" class="tile" (click)="startNew('bukijutsu')">Bukijutsu</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Saved jutsu</h2>
+      @if (p.jutsus.length === 0) {
+        <p class="muted">Nothing saved yet.</p>
+      } @else {
+        <ul class="list">
+          @for (j of p.jutsus; track j.id) {
+            <li>
+              <a [routerLink]="['/profiles', p.id, 'jutsu', j.id]" class="list__link">
+                <span class="list__title">{{ j.name }}</span>
+                <span class="muted">{{ j.classification | titlecase }} · Rank {{ j.rank }} · {{ j.effects.length }} effects</span>
+              </a>
+              <button type="button" class="ghost danger" (click)="removeJutsu(j.id, $event)">Delete</button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  } @else {
+    <p class="muted">Profile not found.</p>
+    <a routerLink="/profiles" class="back">← Back</a>
+  }
+</div>
