@@ -5,17 +5,67 @@
 
   <header class="enc-head">
     <h1>Character encyclopedia</h1>
-    <p class="muted">NPC profiles for your table. Portraits live in <code>public/npcs/</code>.</p>
+    <p class="muted">NPC profiles for your table. Portraits live in <code>public/npcs/</code>. Select a name to open the full profile.</p>
   </header>
 
-  <div class="enc-list">
-    @for (npc of entries; track npc.id) {
+  <div class="enc-toolbar">
+    <label class="enc-search" for="enc-search-input">
+      <span class="enc-search__label">Search</span>
+      <input
+        id="enc-search-input"
+        class="enc-search__input"
+        type="search"
+        autocomplete="off"
+        placeholder="Name, rank, village, description…"
+        [value]="searchQuery()"
+        (input)="onSearchInput($event)"
+      />
+    </label>
+    @if (searchQuery().trim()) {
+      <p class="enc-toolbar__meta">{{ filteredEntries().length }} match(es)</p>
+    }
+  </div>
+
+  @if (filteredEntries().length === 0) {
+    <p class="enc-empty">No entries match your search.</p>
+  } @else {
+    <ul class="enc-grid" role="list">
+      @for (npc of filteredEntries(); track npc.id) {
+        <li class="enc-grid__cell">
+          <button type="button" class="enc-grid__btn" (click)="openNpc(npc)">
+            <span class="enc-grid__name">{{ npc.name }}</span>
+            <span class="enc-grid__rank">{{ npc.occupationRank }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>
+
+@if (selectedNpc(); as npc) {
+  <div
+    class="enc-modal-backdrop"
+    role="presentation"
+    aria-hidden="true"
+    (click)="closeModal()"
+  ></div>
+  <div
+    class="enc-modal"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="'enc-modal-title-' + npc.id"
+  >
+    <div class="enc-modal__chrome">
+      <h2 class="enc-modal__title" [id]="'enc-modal-title-' + npc.id">{{ npc.name }}</h2>
+      <button #closeBtn type="button" class="enc-modal__close" (click)="closeModal()">Close</button>
+    </div>
+
+    <div class="enc-modal__scroll">
       <article class="enc-card">
         <div class="enc-card__portrait">
           <img [src]="npc.portraitUrl" [alt]="'Portrait of ' + npc.name" loading="lazy" />
         </div>
         <div class="enc-card__body">
-          <h2 class="enc-card__name">{{ npc.name }}</h2>
           <dl class="enc-facts">
             <div class="enc-facts__row">
               <dt>Age</dt>
@@ -40,6 +90,6 @@
           </section>
         </div>
       </article>
-    }
+    </div>
   </div>
-</div>
+}

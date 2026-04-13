@@ -15,5 +15,18 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
       'A defining detail is her bo staff, which she carries with relaxed familiarity. It is not decorative, it is a natural part of how she moves and fights.',
       'In combat Enya is a skilled, composed battlefield controller rather than a reckless frontliner. She is fast, precise, and measured, and she uses her staff and Wind Release with the kind of discipline that makes her feel extremely competent without showboating.'
     ].join('\n\n')
+  },
+  {
+    id: 'shikamaru-nara',
+    portraitUrl: './npcs/Nara,Shikamaru.png',
+    name: 'Shikamaru Nara',
+    age: '62',
+    birthday: 'September 22nd',
+    occupationRank: 'Hokage',
+    affiliations: 'Konoha',
+    description: [
+      'Shikamaru is the current Hokage and the highest active authority in Konoha. He is the one who receives major reports, delegates investigations upward through the chain of command, and decides how much freedom lower-ranked shinobi are actually allowed to have.',
+      'Shikamaru is an older man who clearly looks his age, with a lean, intelligent face lined by years of pressure and decision-making. He has dark hair streaked with gray, worn in the classic Nara style pulled back into a high spiked ponytail, though thinner and more weathered now. He wears a short pointed beard threaded with gray, and his expression is often tired but intensely observant.'
+    ].join('\n\n')
   }
 ];
