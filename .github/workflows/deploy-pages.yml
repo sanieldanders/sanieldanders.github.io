@@ -1,8 +1,16 @@
+# Publishes the Angular production build to GitHub Pages (static artifact).
+#
+# Repository Settings → Pages → Build and deployment → Source must be
+# "GitHub Actions". If Source is set to "Deploy from a branch" on main with
+# / (root), the site will 404 because this repo has no index.html at the root
+# (only under dist/ after CI builds).
+
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,13 +34,30 @@ jobs:
         run: |
           npm ci
           npm run build
-      - name: Prepare static site for GitHub Pages
+      - name: Resolve Pages output directory
+        id: pages_out
+        shell: bash
         run: |
-          cp dist/jutsu-companion/browser/index.html dist/jutsu-companion/browser/404.html
-          : > dist/jutsu-companion/browser/.nojekyll
+          if [[ -f dist/jutsu-companion/browser/index.html ]]; then
+            echo "dir=dist/jutsu-companion/browser" >> "$GITHUB_OUTPUT"
+          elif [[ -f dist/jutsu-companion/index.html ]]; then
+            echo "dir=dist/jutsu-companion" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Build output missing index.html (expected under dist/jutsu-companion/browser for this Angular version)."
+            find dist -maxdepth 5 -type f -name index.html 2>/dev/null || true
+            ls -la dist 2>/dev/null || true
+            exit 1
+          fi
+      - name: Prepare SPA fallback for GitHub Pages
+        shell: bash
+        run: |
+          OUT="${{ steps.pages_out.outputs.dir }}"
+          cp "$OUT/index.html" "$OUT/404.html"
+          : > "$OUT/.nojekyll"
+          ls -la "$OUT" | head -n 30
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/jutsu-companion/browser
+          path: ${{ steps.pages_out.outputs.dir }}
 
   deploy:
     needs: build
