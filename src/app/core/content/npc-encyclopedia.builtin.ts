@@ -39,5 +39,16 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
     affiliations: 'Konoha',
     description:
       'Sarada Uchiha is one of the most important figures in Konoha\'s current leadership, serving on the council and standing as the village\'s clearest symbol of continuity, strength, and future authority. She is calm, precise, and intensely composed, known for elite combat ability, battlefield awareness, and a reputation as a duelist and strategist rather than a loud public icon. In practice, she helps shape village policy at the highest level while carrying the weight of being the woman everyone assumes will one day become Hokage.'
+  },
+  {
+    id: 'shun-aburame',
+    portraitUrl: './npcs/Aburame,Shun.png',
+    name: 'Shun Aburame',
+    age: '44',
+    birthday: 'June 12th',
+    occupationRank: 'Head Academy Instructor',
+    affiliations: 'Konoha',
+    description:
+      'Shun Aburame is a quiet, observant academy instructor known for patience, discipline, and a teaching style that values steady competence over flashy talent. He comes across as hard to impress but fair, the kind of teacher who notices everything, speaks only when needed, and takes the responsibility of shaping future shinobi very seriously. To students, he feels like someone calm, exacting, and deeply committed to making them capable rather than comfortable.'
   }
 ];
