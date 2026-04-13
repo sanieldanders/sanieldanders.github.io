@@ -21,6 +21,42 @@ export interface AbilitySheet {
   skills: Record<string, SkillRow>;
 }
 
+/** Chakra nature release for the profile sheet affinity diagram. */
+export type ChakraNature = 'fire' | 'wind' | 'lightning' | 'earth' | 'water';
+
+export const CHAKRA_NATURE_META: readonly {
+  id: ChakraNature;
+  label: string;
+  kanji: string;
+  accent: string;
+}[] = [
+  { id: 'fire', label: 'Fire', kanji: '火', accent: '#c23a2e' },
+  { id: 'wind', label: 'Wind', kanji: '風', accent: '#2d8a4e' },
+  { id: 'lightning', label: 'Lightning', kanji: '雷', accent: '#c9a227' },
+  { id: 'earth', label: 'Earth', kanji: '土', accent: '#7a5230' },
+  { id: 'water', label: 'Water', kanji: '水', accent: '#2a6f9e' }
+] as const;
+
+/** Second page: appearance, backstory, village info, nature affinity, allies, notes. */
+export interface CharacterProfileSheetState {
+  physical: {
+    age: string;
+    height: string;
+    weight: string;
+    eyes: string;
+    skin: string;
+    hair: string;
+  };
+  appearance: string;
+  backstory: string;
+  villageRank: string;
+  natureSelected: Record<ChakraNature, boolean>;
+  alliesOrganizations: string;
+  additionalFeatures: string;
+  capsule: string;
+  quadrants: [string, string, string, string];
+}
+
 export interface CharacterSheetState {
   rail: {
     proficiencyBonus: string;
@@ -57,6 +93,8 @@ export interface CharacterSheetState {
     features: string;
   };
   equipment: string;
+  /** Extended profile / appearance page (merged from defaults when missing on disk). */
+  profileSheet: CharacterProfileSheetState;
 }
 
 /** ND&D player character + full sheet state. */

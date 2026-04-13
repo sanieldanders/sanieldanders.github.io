@@ -1,7 +1,9 @@
 import type {
   AbilityAbbr,
   Character,
+  CharacterProfileSheetState,
   CharacterSheetState,
+  ChakraNature,
   SkillDot,
   SkillRow
 } from '../models/app-data.model';
@@ -23,6 +25,37 @@ function defaultAbilityBlock(
     skillsMap[s] = emptySkillRow();
   }
   return { score: '', mod: '', skills: skillsMap };
+}
+
+function defaultNatureSelected(): CharacterProfileSheetState['natureSelected'] {
+  return {
+    fire: false,
+    wind: false,
+    lightning: false,
+    earth: false,
+    water: false
+  };
+}
+
+export function createDefaultProfileSheet(): CharacterProfileSheetState {
+  return {
+    physical: {
+      age: '',
+      height: '',
+      weight: '',
+      eyes: '',
+      skin: '',
+      hair: ''
+    },
+    appearance: '',
+    backstory: '',
+    villageRank: '',
+    natureSelected: defaultNatureSelected(),
+    alliesOrganizations: '',
+    additionalFeatures: '',
+    capsule: '',
+    quadrants: ['', '', '', '']
+  };
 }
 
 export function createDefaultCharacterSheet(): CharacterSheetState {
@@ -65,7 +98,8 @@ export function createDefaultCharacterSheet(): CharacterSheetState {
       flaws: '',
       features: ''
     },
-    equipment: ''
+    equipment: '',
+    profileSheet: createDefaultProfileSheet()
   };
 }
 
@@ -74,6 +108,75 @@ function coerceDot(v: unknown): SkillDot {
     return v;
   }
   return 'none';
+}
+
+const NATURE_KEYS: ChakraNature[] = ['fire', 'wind', 'lightning', 'earth', 'water'];
+
+function mergeNatureSelected(
+  base: CharacterProfileSheetState['natureSelected'],
+  saved: CharacterProfileSheetState['natureSelected'] | undefined
+): CharacterProfileSheetState['natureSelected'] {
+  const out = { ...base };
+  if (!saved) {
+    return out;
+  }
+  for (const k of NATURE_KEYS) {
+    if (typeof saved[k] === 'boolean') {
+      out[k] = saved[k];
+    }
+  }
+  return out;
+}
+
+function mergeQuadrants(
+  base: CharacterProfileSheetState['quadrants'],
+  saved: CharacterProfileSheetState['quadrants'] | undefined
+): CharacterProfileSheetState['quadrants'] {
+  if (!Array.isArray(saved) || saved.length !== 4) {
+    return base;
+  }
+  return saved.map((q, i) => (typeof q === 'string' ? q : base[i])) as CharacterProfileSheetState['quadrants'];
+}
+
+function mergePhysical(
+  base: CharacterProfileSheetState['physical'],
+  saved: CharacterProfileSheetState['physical'] | undefined
+): CharacterProfileSheetState['physical'] {
+  if (!saved) {
+    return base;
+  }
+  const pick = (k: keyof CharacterProfileSheetState['physical']): string =>
+    typeof saved[k] === 'string' ? saved[k] : base[k];
+  return {
+    age: pick('age'),
+    height: pick('height'),
+    weight: pick('weight'),
+    eyes: pick('eyes'),
+    skin: pick('skin'),
+    hair: pick('hair')
+  };
+}
+
+function mergeProfileSheet(
+  base: CharacterProfileSheetState,
+  saved: CharacterProfileSheetState | undefined
+): CharacterProfileSheetState {
+  if (!saved) {
+    return base;
+  }
+  return {
+    physical: mergePhysical(base.physical, saved.physical),
+    appearance: typeof saved.appearance === 'string' ? saved.appearance : base.appearance,
+    backstory: typeof saved.backstory === 'string' ? saved.backstory : base.backstory,
+    villageRank: typeof saved.villageRank === 'string' ? saved.villageRank : base.villageRank,
+    natureSelected: mergeNatureSelected(base.natureSelected, saved.natureSelected),
+    alliesOrganizations:
+      typeof saved.alliesOrganizations === 'string' ? saved.alliesOrganizations : base.alliesOrganizations,
+    additionalFeatures:
+      typeof saved.additionalFeatures === 'string' ? saved.additionalFeatures : base.additionalFeatures,
+    capsule: typeof saved.capsule === 'string' ? saved.capsule : base.capsule,
+    quadrants: mergeQuadrants(base.quadrants, saved.quadrants)
+  };
 }
 
 /** Deep-merge saved sheet with defaults so new fields appear safely. */
@@ -89,7 +192,8 @@ export function mergeCharacterSheet(saved: Character['sheet'] | undefined): Char
     combat: { ...base.combat, ...saved.combat },
     attacks: mergeAttacks(base.attacks, saved.attacks),
     traits: { ...base.traits, ...saved.traits },
-    equipment: saved.equipment ?? base.equipment
+    equipment: saved.equipment ?? base.equipment,
+    profileSheet: mergeProfileSheet(base.profileSheet, saved.profileSheet)
   };
 }
 

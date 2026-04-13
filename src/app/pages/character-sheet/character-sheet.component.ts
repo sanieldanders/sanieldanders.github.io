@@ -5,7 +5,14 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { ABILITY_LAYOUT } from '../../core/character/ability-layout';
 import { ensureCharacterSheet, type CharacterWithSheet } from '../../core/character/character-sheet.defaults';
-import type { AbilityAbbr, CharacterSheetState, SkillDot } from '../../core/models/app-data.model';
+import {
+  CHAKRA_NATURE_META,
+  type AbilityAbbr,
+  type CharacterProfileSheetState,
+  type CharacterSheetState,
+  type ChakraNature,
+  type SkillDot
+} from '../../core/models/app-data.model';
 import { DataStoreService } from '../../core/services/data-store.service';
 
 @Component({
@@ -20,6 +27,11 @@ export class CharacterSheetComponent {
 
   readonly abilityLayout = ABILITY_LAYOUT;
   readonly attackRowIndexes = [0, 1, 2, 3, 4, 5, 6, 7] as const;
+  readonly quadrantIndexes = [0, 1, 2, 3] as const;
+  readonly natureMeta = CHAKRA_NATURE_META;
+
+  /** Main ND&D page vs. profile / appearance sheet. */
+  readonly sheetTab = signal<'main' | 'profile'>('main');
 
   private readonly characterId = toSignal(
     this.route.paramMap.pipe(map((p) => p.get('characterId') ?? '')),
@@ -146,4 +158,48 @@ export class CharacterSheetComponent {
       ch.sheet.equipment = value;
     });
   }
+
+  setSheetTab(tab: 'main' | 'profile'): void {
+    this.sheetTab.set(tab);
+  }
+
+  onProfilePhysical<K extends keyof CharacterProfileSheetState['physical']>(key: K, value: string): void {
+    this.patch((ch) => {
+      ch.sheet.profileSheet.physical[key] = value;
+    });
+  }
+
+  onProfileText<K extends CharacterProfileTextKey>(key: K, value: string): void {
+    this.patch((ch) => {
+      ch.sheet.profileSheet[key] = value;
+    });
+  }
+
+  onProfileQuadrant(index: number, value: string): void {
+    this.patch((ch) => {
+      const next: CharacterProfileSheetState['quadrants'] = [...ch.sheet.profileSheet.quadrants] as [
+        string,
+        string,
+        string,
+        string
+      ];
+      next[index] = value;
+      ch.sheet.profileSheet.quadrants = next;
+    });
+  }
+
+  toggleNature(id: ChakraNature): void {
+    this.patch((ch) => {
+      const cur = ch.sheet.profileSheet.natureSelected[id];
+      ch.sheet.profileSheet.natureSelected[id] = !cur;
+    });
+  }
 }
+
+type CharacterProfileTextKey =
+  | 'appearance'
+  | 'backstory'
+  | 'villageRank'
+  | 'alliesOrganizations'
+  | 'additionalFeatures'
+  | 'capsule';

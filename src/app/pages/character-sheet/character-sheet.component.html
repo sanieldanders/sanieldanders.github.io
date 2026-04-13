@@ -5,6 +5,28 @@
       <span class="cs-nav__hint">Edits save automatically.</span>
     </nav>
 
+    <div class="cs-sheet-switch" role="tablist" aria-label="Character sheet pages">
+      <button
+        type="button"
+        class="cs-sheet-switch__btn"
+        role="tab"
+        [attr.aria-selected]="sheetTab() === 'main'"
+        (click)="setSheetTab('main')"
+      >
+        ND&amp;D sheet
+      </button>
+      <button
+        type="button"
+        class="cs-sheet-switch__btn"
+        role="tab"
+        [attr.aria-selected]="sheetTab() === 'profile'"
+        (click)="setSheetTab('profile')"
+      >
+        Profile sheet
+      </button>
+    </div>
+
+    @if (sheetTab() === 'main') {
     <div class="cs-paper">
       <div class="cs-ornament cs-ornament--tl" aria-hidden="true"></div>
       <div class="cs-ornament cs-ornament--tr" aria-hidden="true"></div>
@@ -363,6 +385,207 @@
         </section>
       </div>
     </div>
+    } @else {
+      <div class="ps-paper" aria-label="Character profile sheet">
+        <div class="ps-cloud" aria-hidden="true"></div>
+        <div class="ps-ornament ps-ornament--tl" aria-hidden="true"></div>
+        <div class="ps-ornament ps-ornament--tr" aria-hidden="true"></div>
+        <div class="ps-ornament ps-ornament--bl" aria-hidden="true"></div>
+        <div class="ps-ornament ps-ornament--br" aria-hidden="true"></div>
+
+        <header class="ps-head">
+          <div class="ps-head__left">
+            <div class="ps-logo" aria-hidden="true" title="Character emblem"></div>
+            <label class="ps-labeled-field ps-labeled-field--name">
+              <input
+                class="ps-input ps-input--name"
+                type="text"
+                [ngModel]="ch.name"
+                (ngModelChange)="onName($event)"
+                autocomplete="name"
+              />
+              <span class="ps-labeled-field__cap">Character name</span>
+            </label>
+          </div>
+          <div class="ps-head__stats">
+            <div class="ps-mini-row">
+              <label class="ps-stat-pair">
+                <input
+                  class="ps-input ps-input--line"
+                  type="text"
+                  [ngModel]="ch.sheet.profileSheet.physical.age"
+                  (ngModelChange)="onProfilePhysical('age', $event)"
+                />
+                <span>Age</span>
+              </label>
+              <label class="ps-stat-pair">
+                <input
+                  class="ps-input ps-input--line"
+                  type="text"
+                  [ngModel]="ch.sheet.profileSheet.physical.height"
+                  (ngModelChange)="onProfilePhysical('height', $event)"
+                />
+                <span>Height</span>
+              </label>
+              <label class="ps-stat-pair">
+                <input
+                  class="ps-input ps-input--line"
+                  type="text"
+                  [ngModel]="ch.sheet.profileSheet.physical.weight"
+                  (ngModelChange)="onProfilePhysical('weight', $event)"
+                />
+                <span>Weight</span>
+              </label>
+            </div>
+            <div class="ps-mini-row">
+              <label class="ps-stat-pair">
+                <input
+                  class="ps-input ps-input--line"
+                  type="text"
+                  [ngModel]="ch.sheet.profileSheet.physical.eyes"
+                  (ngModelChange)="onProfilePhysical('eyes', $event)"
+                />
+                <span>Eyes</span>
+              </label>
+              <label class="ps-stat-pair">
+                <input
+                  class="ps-input ps-input--line"
+                  type="text"
+                  [ngModel]="ch.sheet.profileSheet.physical.skin"
+                  (ngModelChange)="onProfilePhysical('skin', $event)"
+                />
+                <span>Skin</span>
+              </label>
+              <label class="ps-stat-pair">
+                <input
+                  class="ps-input ps-input--line"
+                  type="text"
+                  [ngModel]="ch.sheet.profileSheet.physical.hair"
+                  (ngModelChange)="onProfilePhysical('hair', $event)"
+                />
+                <span>Hair</span>
+              </label>
+            </div>
+          </div>
+        </header>
+
+        <div class="ps-body">
+          <div class="ps-col ps-col--left">
+            <div class="ps-panel ps-panel--appearance">
+              <textarea
+                class="ps-textarea"
+                rows="14"
+                [ngModel]="ch.sheet.profileSheet.appearance"
+                (ngModelChange)="onProfileText('appearance', $event)"
+                placeholder="Describe appearance, distinguishing marks, clothing…"
+              ></textarea>
+              <span class="ps-panel__cap">Character appearance</span>
+            </div>
+            <div class="ps-panel ps-panel--backstory">
+              <textarea
+                class="ps-textarea"
+                rows="12"
+                [ngModel]="ch.sheet.profileSheet.backstory"
+                (ngModelChange)="onProfileText('backstory', $event)"
+                placeholder="History, goals, relationships…"
+              ></textarea>
+              <span class="ps-panel__cap">Character backstory</span>
+            </div>
+          </div>
+
+          <div class="ps-col ps-col--right">
+            <div class="ps-panel ps-panel--allies">
+              <div class="ps-allies-top">
+                <label class="ps-rank">
+                  <span class="ps-rank__lbl">Village rank</span>
+                  <input
+                    class="ps-input ps-input--rank"
+                    type="text"
+                    [ngModel]="ch.sheet.profileSheet.villageRank"
+                    (ngModelChange)="onProfileText('villageRank', $event)"
+                  />
+                </label>
+                <div class="ps-nature" aria-label="Nature affinity">
+                  <svg class="ps-nature__svg" viewBox="0 0 120 120" aria-hidden="true">
+                    <defs>
+                      <marker id="ps-arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                        <polygon points="0 0, 5 2.5, 0 5" fill="rgba(18,16,14,0.45)" />
+                      </marker>
+                    </defs>
+                    <path
+                      d="M60 18 L98 44 L84 90 L36 90 L22 44 Z"
+                      fill="none"
+                      stroke="rgba(44,38,32,0.35)"
+                      stroke-width="1.2"
+                      stroke-dasharray="3 2"
+                    />
+                    <line x1="60" y1="18" x2="98" y2="44" stroke="rgba(44,38,32,0.35)" marker-end="url(#ps-arr)" />
+                    <line x1="98" y1="44" x2="84" y2="90" stroke="rgba(44,38,32,0.35)" marker-end="url(#ps-arr)" />
+                    <line x1="84" y1="90" x2="36" y2="90" stroke="rgba(44,38,32,0.35)" marker-end="url(#ps-arr)" />
+                    <line x1="36" y1="90" x2="22" y2="44" stroke="rgba(44,38,32,0.35)" marker-end="url(#ps-arr)" />
+                    <line x1="22" y1="44" x2="60" y2="18" stroke="rgba(44,38,32,0.35)" marker-end="url(#ps-arr)" />
+                  </svg>
+                  @for (n of natureMeta; track n.id) {
+                    <button
+                      type="button"
+                      class="ps-nature__node"
+                      [attr.data-nature]="n.id"
+                      [class.ps-nature__node--on]="ch.sheet.profileSheet.natureSelected[n.id]"
+                      [style.--accent]="n.accent"
+                      (click)="toggleNature(n.id)"
+                      [attr.aria-pressed]="ch.sheet.profileSheet.natureSelected[n.id]"
+                      [attr.aria-label]="n.label + ' affinity'"
+                    >
+                      <span class="ps-nature__kanji">{{ n.kanji }}</span>
+                      <span class="ps-nature__en">{{ n.label }}</span>
+                    </button>
+                  }
+                </div>
+              </div>
+              <textarea
+                class="ps-textarea ps-textarea--tight"
+                rows="5"
+                [ngModel]="ch.sheet.profileSheet.alliesOrganizations"
+                (ngModelChange)="onProfileText('alliesOrganizations', $event)"
+                placeholder="Village, teams, contacts…"
+              ></textarea>
+              <span class="ps-panel__cap">Allies &amp; organizations</span>
+            </div>
+
+            <div class="ps-panel ps-panel--traits">
+              <textarea
+                class="ps-textarea"
+                rows="8"
+                [ngModel]="ch.sheet.profileSheet.additionalFeatures"
+                (ngModelChange)="onProfileText('additionalFeatures', $event)"
+              ></textarea>
+              <span class="ps-panel__cap">Additional features &amp; traits</span>
+            </div>
+
+            <div class="ps-panel ps-panel--quad">
+              <input
+                class="ps-capsule"
+                type="text"
+                [ngModel]="ch.sheet.profileSheet.capsule"
+                (ngModelChange)="onProfileText('capsule', $event)"
+                placeholder=""
+                aria-label="Short label or epithet"
+              />
+              <div class="ps-quad">
+                @for (_ of quadrantIndexes; track i; let i = $index) {
+                  <textarea
+                    class="ps-textarea ps-textarea--quad"
+                    rows="4"
+                    [ngModel]="ch.sheet.profileSheet.quadrants[i]"
+                    (ngModelChange)="onProfileQuadrant(i, $event)"
+                  ></textarea>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
   </div>
 } @else {
   <div class="cs-page cs-page--empty">
