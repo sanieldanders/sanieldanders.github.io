@@ -27,5 +27,9 @@ export const routes: Routes = [
     path: 'profiles/:profileId/jutsu/:jutsuId',
     loadComponent: () => import('./pages/jutsu-editor/jutsu-editor.component').then((m) => m.JutsuEditorComponent)
   },
+  {
+    path: 'encyclopedia',
+    loadComponent: () => import('./pages/encyclopedia/encyclopedia.component').then((m) => m.EncyclopediaComponent)
+  },
   { path: '**', redirectTo: 'home' }
 ];

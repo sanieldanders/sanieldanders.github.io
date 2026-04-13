@@ -169,3 +169,16 @@ export interface Profile {
   notes?: string;
   jutsus: JutsuDraft[];
 }
+
+/** NPC profile for the Character Encyclopedia (read-only catalog; portraits from `public/npcs/`). */
+export interface NpcEncyclopediaEntry {
+  id: string;
+  /** Site-relative path, e.g. `./npcs/Portrait.png` (served from `public/npcs/`). */
+  portraitUrl: string;
+  name: string;
+  age: string;
+  birthday: string;
+  occupationRank: string;
+  affiliations: string;
+  description: string;
+}

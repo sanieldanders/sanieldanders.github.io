@@ -1,0 +1,45 @@
+<div class="enc-page">
+  <nav class="enc-nav">
+    <a routerLink="/home" class="enc-nav__link">← Home</a>
+  </nav>
+
+  <header class="enc-head">
+    <h1>Character encyclopedia</h1>
+    <p class="muted">NPC profiles for your table. Portraits live in <code>public/npcs/</code>.</p>
+  </header>
+
+  <div class="enc-list">
+    @for (npc of entries; track npc.id) {
+      <article class="enc-card">
+        <div class="enc-card__portrait">
+          <img [src]="npc.portraitUrl" [alt]="'Portrait of ' + npc.name" loading="lazy" />
+        </div>
+        <div class="enc-card__body">
+          <h2 class="enc-card__name">{{ npc.name }}</h2>
+          <dl class="enc-facts">
+            <div class="enc-facts__row">
+              <dt>Age</dt>
+              <dd>{{ npc.age }}</dd>
+            </div>
+            <div class="enc-facts__row">
+              <dt>Birthday</dt>
+              <dd>{{ npc.birthday }}</dd>
+            </div>
+            <div class="enc-facts__row">
+              <dt>Occupation / rank</dt>
+              <dd>{{ npc.occupationRank }}</dd>
+            </div>
+            <div class="enc-facts__row">
+              <dt>Affiliations</dt>
+              <dd>{{ npc.affiliations }}</dd>
+            </div>
+          </dl>
+          <section class="enc-desc" aria-label="Description">
+            <h3 class="enc-desc__title">Description</h3>
+            <div class="enc-desc__text">{{ npc.description }}</div>
+          </section>
+        </div>
+      </article>
+    }
+  </div>
+</div>

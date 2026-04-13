@@ -1,0 +1,135 @@
+.enc-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.25rem 1.25rem 3rem;
+}
+
+.enc-nav {
+  margin-bottom: 1rem;
+}
+
+.enc-nav__link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.enc-head {
+  margin-bottom: 1.75rem;
+
+  h1 {
+    margin: 0 0 0.4rem;
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  code {
+    font-size: 0.82em;
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+  }
+}
+
+.enc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.enc-card {
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.enc-card__portrait {
+  margin: 0;
+  background: rgba(0, 0, 0, 0.35);
+  border-bottom: 1px solid var(--border);
+
+  img {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    object-position: center top;
+  }
+}
+
+.enc-card__body {
+  padding: 1.25rem 1.35rem 1.5rem;
+}
+
+.enc-card__name {
+  margin: 0 0 1rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+
+.enc-facts {
+  margin: 0 0 1.25rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.enc-facts__row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+  font-size: 0.92rem;
+  line-height: 1.4;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}
+
+.enc-facts__row dt {
+  margin: 0;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+
+.enc-facts__row dd {
+  margin: 0;
+  color: var(--text);
+}
+
+.enc-desc__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.enc-desc__text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text);
+  white-space: pre-line;
+}
