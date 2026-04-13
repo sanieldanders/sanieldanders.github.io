@@ -50,5 +50,38 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
     affiliations: 'Konoha',
     description:
       'Shun Aburame is a quiet, observant academy instructor known for patience, discipline, and a teaching style that values steady competence over flashy talent. He comes across as hard to impress but fair, the kind of teacher who notices everything, speaks only when needed, and takes the responsibility of shaping future shinobi very seriously. To students, he feels like someone calm, exacting, and deeply committed to making them capable rather than comfortable.'
+  },
+  {
+    id: 'kaede-hyuga',
+    portraitUrl: './npcs/Hyuga,Kaede.png',
+    name: 'Kaede Hyuga',
+    age: '38',
+    birthday: 'April 14th',
+    occupationRank: 'Commander of the Police Shinobi Division',
+    affiliations: 'Konoha',
+    description:
+      'Kaede Hyuga is a disciplined, truth-driven investigator who balances sharp professionalism with a strong commitment to evidence over assumption. She is controlled, serious, and difficult to sway, the kind of leader who investigates before judging and who treats truth as more important than convenience. Within Konoha, she represents the line between ordinary law enforcement and the larger political and military structure above it.'
+  },
+  {
+    id: 'rei-hatake',
+    portraitUrl: './npcs/Hatake,Rei.png',
+    name: 'Rei Hatake',
+    age: '42',
+    birthday: 'November 22nd',
+    occupationRank: 'Senior ANBU Officer',
+    affiliations: 'Konoha',
+    description:
+      'Rei Hatake is a highly spoken of Shinobi. Silent, exacting, and efficient, his work ethic is second to none. He is the stark opposite of Lochlan, which makes him a good right hand for the ANBU leadership structure. He carries the kind of reputation that makes other shinobi measure a threat more seriously the moment his name comes up.'
+  },
+  {
+    id: 'yusuke-sarutobi',
+    portraitUrl: './npcs/Sarutobi,Yusuke.png',
+    name: 'Yusuke Sarutobi',
+    age: '48',
+    birthday: 'January 1st',
+    occupationRank: 'Commander of the Leaf Shinobi Forces',
+    affiliations: 'Konoha',
+    description:
+      'Yusuke Sarutobi is an old-guard military commander who represents discipline, structure, and uncompromising service to Konoha. He is the kind of leader who values clear orders, competence, and chain of command above sentiment, and his presence reinforces that the village\'s military operates with real hierarchy and expectation. He sits above major branches like the Police Shinobi Division and helps define the serious, grounded tone of Konoha\'s active command structure.'
   }
 ];
