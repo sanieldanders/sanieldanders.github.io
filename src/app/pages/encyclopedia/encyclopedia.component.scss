@@ -112,20 +112,27 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 0.75rem;
+  align-items: stretch;
 }
 
 .enc-grid__cell {
   margin: 0;
+  display: flex;
+  min-width: 0;
 }
 
 .enc-grid__btn {
+  --enc-tile-min-h: 9.25rem;
+
+  flex: 1;
   width: 100%;
+  min-height: var(--enc-tile-min-h);
   margin: 0;
   padding: 0.85rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.25rem;
+  gap: 0;
   text-align: left;
   cursor: pointer;
   font: inherit;
@@ -156,6 +163,7 @@
 }
 
 .enc-grid__name {
+  flex-shrink: 0;
   font-size: 1rem;
   font-weight: 700;
   color: var(--accent);
@@ -164,10 +172,14 @@
 }
 
 .enc-grid__rank {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  width: 100%;
   font-size: 0.78rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  line-height: 1.35;
   color: var(--muted);
 }
 
