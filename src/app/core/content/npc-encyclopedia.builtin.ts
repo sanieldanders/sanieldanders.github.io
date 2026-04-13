@@ -83,5 +83,38 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
     affiliations: 'Konoha',
     description:
       'Yusuke Sarutobi is an old-guard military commander who represents discipline, structure, and uncompromising service to Konoha. He is the kind of leader who values clear orders, competence, and chain of command above sentiment, and his presence reinforces that the village\'s military operates with real hierarchy and expectation. He sits above major branches like the Police Shinobi Division and helps define the serious, grounded tone of Konoha\'s active command structure.'
+  },
+  {
+    id: 'hanabi-hyuga',
+    portraitUrl: './npcs/Hyuga,Hanabi.png',
+    name: 'Hanabi Hyuga',
+    age: '55',
+    birthday: 'March 27th',
+    occupationRank: 'Hokage Council. Head of Hyuga Clan',
+    affiliations: 'Konoha',
+    description:
+      'Hanabi Hyuga is one of Konoha\'s most respected senior figures, serving both as head of the Hyuga clan and as a member of the village council. She is poised, confident, and quietly warm beneath her discipline, carrying herself with the precision and authority expected of a lifelong Hyuga master. In the village\'s leadership structure, she represents stability, tradition, and the enduring political weight of one of Konoha\'s most powerful clans.'
+  },
+  {
+    id: 'sai-yamanaka',
+    portraitUrl: './npcs/Yamanaka,Sai.png',
+    name: 'Sai Yamanaka',
+    age: '62',
+    birthday: 'November 25th',
+    occupationRank: 'Retired ANBU Chief, Senior Instructor',
+    affiliations: 'Konoha',
+    description:
+      'Sai is an older retired black-ops shinobi who now serves as a senior instructor, using decades of ANBU experience to train younger generations in discipline, observation, and emotional control. He is quiet, restrained, and difficult to read, with a calm teaching style built on sharp observation and precise correction rather than warmth or theatrics. Though no longer an active field operative, he still carries the eerie composure and quiet authority of someone shaped by covert work and long years of service.'
+  },
+  {
+    id: 'shikadai-nara',
+    portraitUrl: './npcs/Nara,Shikadai.png',
+    name: 'Shikadai Nara',
+    age: '40',
+    birthday: 'September 23rd',
+    occupationRank: 'Hokage Council. Head of Nara Clan',
+    affiliations: 'Konoha',
+    description:
+      'Shikadai Nara is a high-ranking strategist and council member who inherited both the intelligence and quiet presence of his father, Shikamaru, so strongly that the resemblance between them is immediately obvious. He is calm, perceptive, and effortlessly analytical, the kind of leader who never appears hurried but always seems to be several steps ahead of everyone else. In Konoha, he serves as both the head of the Nara clan and one of the village\'s key political minds, helping shape decisions at the highest level.'
   }
 ];

@@ -14,6 +14,25 @@ import { RouterLink } from '@angular/router';
 import { NPC_ENCYCLOPEDIA_BUILTIN } from '../../core/content/npc-encyclopedia.builtin';
 import type { NpcEncyclopediaEntry } from '../../core/models/app-data.model';
 
+/** Assumes Western order "Given Family" (e.g. Naruto Uzumaki); sorts by family name, then given name. */
+function compareNpcByLastName(a: NpcEncyclopediaEntry, b: NpcEncyclopediaEntry): number {
+  const parts = (full: string) => full.trim().split(/\s+/).filter(Boolean);
+  const familyName = (full: string) => {
+    const p = parts(full);
+    return p.length > 1 ? p[p.length - 1]! : p[0] ?? '';
+  };
+  const givenNames = (full: string) => {
+    const p = parts(full);
+    return p.length > 1 ? p.slice(0, -1).join(' ') : '';
+  };
+  const opts = { sensitivity: 'base' } as const;
+  const byFamily = familyName(a.name).localeCompare(familyName(b.name), undefined, opts);
+  if (byFamily !== 0) {
+    return byFamily;
+  }
+  return givenNames(a.name).localeCompare(givenNames(b.name), undefined, opts);
+}
+
 @Component({
   selector: 'app-encyclopedia',
   imports: [RouterLink],
@@ -24,9 +43,7 @@ export class EncyclopediaComponent {
   private readonly doc = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly entries = [...NPC_ENCYCLOPEDIA_BUILTIN].sort((a, b) =>
-    a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
-  );
+  readonly entries = [...NPC_ENCYCLOPEDIA_BUILTIN].sort(compareNpcByLastName);
 
   readonly searchQuery = signal('');
   readonly selectedNpc = signal<NpcEncyclopediaEntry | null>(null);
