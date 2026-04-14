@@ -246,5 +246,17 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
     affiliations: 'Konoha',
     description:
       'Lochlan Uzumaki is the charismatic and highly dangerous commander of Konoha\'s ANBU Black Ops, a man known for balancing easy charm with surgical lethality. He has a disarming social presence and an almost playful confidence, but beneath that is a shinobi shaped by covert work, precision, and the ability to make deadly decisions without hesitation. In Konoha, he represents the village\'s hidden edge: the smiling face that can still become the knife when it needs to.'
+  },
+  {
+    id: 'shikaichi-nara',
+    sectionId: 'player',
+    portraitUrl: './npcs/Nara,Shikaichi.png',
+    name: 'Shikaichi Nara',
+    age: '16',
+    birthday: 'July 17th',
+    occupationRank: 'Genin in Team One (Ichi)',
+    affiliations: 'Konoha',
+    description:
+      'Shikaichi Nara, nicknamed Ichi. He looks a lot like his grandmother Temari but with low tired eyes like Shikamaru. Always has a book in his hands (usually some kind of combat tactics book) and hates disruptive people who don\'t \"fall in line\". When stressed he will often just disappear and can be found on a rooftop or high place reading in the quiet. He hates to be disturbed while reading; it\'s very important to him to calm down and regroup.'
   }
 ];
