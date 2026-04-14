@@ -46,7 +46,8 @@ export class EncyclopediaComponent {
   readonly entries = [...NPC_ENCYCLOPEDIA_BUILTIN].sort(compareNpcByLastName);
 
   readonly searchQuery = signal('');
-  readonly selectedNpc = signal<NpcEncyclopediaEntry | null>(null);
+  /** When set, modal is open; character resolved from current filter via `modalNpc`. */
+  readonly selectedNpcId = signal<string | null>(null);
 
   private readonly closeBtn = viewChild<ElementRef<HTMLButtonElement>>('closeBtn');
 
@@ -70,9 +71,44 @@ export class EncyclopediaComponent {
     });
   });
 
+  readonly modalNpc = computed(() => {
+    const id = this.selectedNpcId();
+    if (!id) {
+      return null;
+    }
+    return this.filteredEntries().find((n) => n.id === id) ?? null;
+  });
+
+  /** Prev/next in the current filtered list (wraps). Null when only one or zero entries. */
+  readonly modalNav = computed(() => {
+    const list = this.filteredEntries();
+    const id = this.selectedNpcId();
+    if (!id || list.length <= 1) {
+      return null;
+    }
+    const idx = list.findIndex((n) => n.id === id);
+    if (idx < 0) {
+      return null;
+    }
+    const len = list.length;
+    return {
+      prev: list[(idx - 1 + len) % len]!,
+      next: list[(idx + 1) % len]!,
+      position: idx + 1,
+      total: len
+    };
+  });
+
   constructor() {
     effect(() => {
-      this.doc.body.style.overflow = this.selectedNpc() ? 'hidden' : '';
+      this.doc.body.style.overflow = this.modalNpc() ? 'hidden' : '';
+    });
+    effect(() => {
+      const id = this.selectedNpcId();
+      const npc = this.modalNpc();
+      if (id && !npc) {
+        this.selectedNpcId.set(null);
+      }
     });
     this.destroyRef.onDestroy(() => {
       this.doc.body.style.overflow = '';
@@ -85,18 +121,50 @@ export class EncyclopediaComponent {
   }
 
   openNpc(npc: NpcEncyclopediaEntry): void {
-    this.selectedNpc.set(npc);
+    this.selectedNpcId.set(npc.id);
     setTimeout(() => this.closeBtn()?.nativeElement?.focus(), 0);
   }
 
   closeModal(): void {
-    this.selectedNpc.set(null);
+    this.selectedNpcId.set(null);
+  }
+
+  goModalPrev(): void {
+    const nav = this.modalNav();
+    if (nav) {
+      this.selectedNpcId.set(nav.prev.id);
+    }
+  }
+
+  goModalNext(): void {
+    const nav = this.modalNav();
+    if (nav) {
+      this.selectedNpcId.set(nav.next.id);
+    }
   }
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
-    if (this.selectedNpc()) {
+    if (this.modalNpc()) {
       this.closeModal();
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onDocumentKeydown(event: KeyboardEvent): void {
+    if (!this.modalNpc()) {
+      return;
+    }
+    const t = event.target as HTMLElement | null;
+    if (t?.closest('input, textarea, select, [contenteditable="true"]')) {
+      return;
+    }
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      this.goModalPrev();
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      this.goModalNext();
     }
   }
 }

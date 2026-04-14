@@ -42,7 +42,7 @@
   }
 </div>
 
-@if (selectedNpc(); as npc) {
+@if (modalNpc(); as npc) {
   <div
     class="enc-modal-backdrop"
     role="presentation"
@@ -55,8 +55,31 @@
     aria-modal="true"
     [attr.aria-labelledby]="'enc-modal-title-' + npc.id"
   >
+    @if (modalNav(); as nav) {
+      <button
+        type="button"
+        class="enc-modal__nav enc-modal__nav--prev"
+        (click)="goModalPrev()"
+        [attr.aria-label]="'Previous character: ' + nav.prev.name"
+      >
+        <span class="enc-modal__nav-icon" aria-hidden="true">&#8249;</span>
+      </button>
+      <button
+        type="button"
+        class="enc-modal__nav enc-modal__nav--next"
+        (click)="goModalNext()"
+        [attr.aria-label]="'Next character: ' + nav.next.name"
+      >
+        <span class="enc-modal__nav-icon" aria-hidden="true">&#8250;</span>
+      </button>
+    }
     <div class="enc-modal__chrome">
-      <h2 class="enc-modal__title" [id]="'enc-modal-title-' + npc.id">{{ npc.name }}</h2>
+      <div class="enc-modal__title-row">
+        <h2 class="enc-modal__title" [id]="'enc-modal-title-' + npc.id">{{ npc.name }}</h2>
+        @if (modalNav(); as nav) {
+          <span class="enc-modal__counter" aria-hidden="true">{{ nav.position }} / {{ nav.total }}</span>
+        }
+      </div>
       <button #closeBtn type="button" class="enc-modal__close" (click)="closeModal()">Close</button>
     </div>
 

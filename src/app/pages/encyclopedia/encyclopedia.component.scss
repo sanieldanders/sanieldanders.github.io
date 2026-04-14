@@ -223,6 +223,14 @@
   background: var(--panel-2);
 }
 
+.enc-modal__title-row {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
 .enc-modal__title {
   margin: 0;
   font-size: 1.1rem;
@@ -233,6 +241,77 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.enc-modal__counter {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.enc-modal__nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 95;
+  pointer-events: auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: var(--panel);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+}
+
+.enc-modal__nav--prev {
+  left: max(0.5rem, env(safe-area-inset-left, 0px));
+}
+
+.enc-modal__nav--next {
+  right: max(0.5rem, env(safe-area-inset-right, 0px));
+}
+
+.enc-modal__nav-icon {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: -0.06em;
+  user-select: none;
+}
+
+@media (max-width: 520px) {
+  .enc-modal__nav {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+
+  .enc-modal__nav-icon {
+    font-size: 1.45rem;
+  }
 }
 
 .enc-modal__close {
