@@ -204,5 +204,27 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
     affiliations: 'Konoha',
     description:
       'Erin Sarutobi is a veteran clan leader whose authority comes from experience, composure, and a deeply rooted sense of duty. She is measured, deliberate, and difficult to rush, carrying herself with the confidence of someone who has spent years navigating both clan responsibility and village politics. As head of the Sarutobi clan and Enya\'s mother, she represents the weight of legacy, discipline, and quiet strength within Konoha\'s old guard.'
+  },
+  {
+    id: 'himawari-uzumaki',
+    portraitUrl: './npcs/Uzumaki,Himawari.png',
+    name: 'Himawari Uzumaki',
+    age: '39',
+    birthday: 'April 11th',
+    occupationRank: 'Guardian of the Leaf; international intermediary',
+    affiliations: 'Jinchuriki, Konoha',
+    description:
+      'Himawari Uzumaki is one of Konoha\'s most respected and quietly powerful figures, serving as both the Guardian of the Leaf and a key intermediary in the village\'s international relationships. She is calm, centered, and deeply controlled, carrying immense personal power with a softness and restraint that make her even more formidable. In practice, she represents stability, diplomacy, and overwhelming force held in reserve, the kind of person whose presence alone tells others the situation is serious.'
+  },
+  {
+    id: 'lochlan-uzumaki',
+    portraitUrl: './npcs/Uzumaki,Lochlan.png',
+    name: 'Lochlan Uzumaki',
+    age: '35',
+    birthday: 'June 6th',
+    occupationRank: 'Commander of ANBU Black Ops',
+    affiliations: 'Konoha',
+    description:
+      'Lochlan Uzumaki is the charismatic and highly dangerous commander of Konoha\'s ANBU Black Ops, a man known for balancing easy charm with surgical lethality. He has a disarming social presence and an almost playful confidence, but beneath that is a shinobi shaped by covert work, precision, and the ability to make deadly decisions without hesitation. In Konoha, he represents the village\'s hidden edge: the smiling face that can still become the knife when it needs to.'
   }
 ];
