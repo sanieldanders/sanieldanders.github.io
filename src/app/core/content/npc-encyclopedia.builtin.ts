@@ -171,5 +171,38 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
     affiliations: 'Konoha',
     description:
       'Tatsumi Yamanaka is a brilliant, flirtatious, and socially dangerous jonin who is widely regarded as one of the most beautiful women in Konoha and knows exactly how to use that to her advantage. She is confident, poised, and highly self-aware, using charm, allure, and emotional pressure as tactical tools while leading Team Eight with polish, discipline, and a fierce competitive edge. Beneath her playful and provocative surface, she is a deeply capable shinobi who excels at reading people, controlling social space, and making others underestimate her until it is far too late.'
+  },
+  {
+    id: 'daisuke-senju',
+    portraitUrl: './npcs/Senju,Daisuke.png',
+    name: 'Daisuke Senju',
+    age: '25',
+    birthday: 'January 24th',
+    occupationRank: 'Head of the Medical Corps; Chief Researcher; Special Jonin',
+    affiliations: 'Konoha; Shinobi World Medical Corps (SWMC)',
+    description:
+      'Daisuke Senju is a brilliant medical prodigy who leads Konoha\'s Medical Corps while also serving as its chief researcher, making him one of the village\'s most important minds in healing and medical innovation. He is intensely intelligent, perfectionistic, and chronically distracted, often moving so quickly through ideas that other people struggle to keep up with him. In practice, he represents the highest level of medical excellence in Konoha, even if his absent-minded, hyper-focused nature makes him feel more like a genius scholar than a traditional authority figure.'
+  },
+  {
+    id: 'renji-senju',
+    portraitUrl: './npcs/Senju,Renji.png',
+    name: 'Renji Senju',
+    age: '37',
+    birthday: 'December 15th',
+    occupationRank: 'Head of the Senju Clan; Elite Jonin',
+    affiliations: 'Konoha',
+    description:
+      'Renji Senju is the steady, quietly authoritative head of the Senju clan and the older brother of Daisuke Senju. He is calm, perceptive, and deeply reliable, the kind of man who carries responsibility without needing recognition for it, and who commands trust through steadiness rather than force of personality. In Konoha, he serves as both a respected field commander and a stabilizing clan patriarch, taking on the broader burdens of leadership that Daisuke would never want.'
+  },
+  {
+    id: 'erin-sarutobi',
+    portraitUrl: './npcs/Sarutobi,Erin.png',
+    name: 'Erin Sarutobi',
+    age: 'Early 43',
+    birthday: 'October 1st',
+    occupationRank: 'Head of the Sarutobi Clan',
+    affiliations: 'Konoha',
+    description:
+      'Erin Sarutobi is a veteran clan leader whose authority comes from experience, composure, and a deeply rooted sense of duty. She is measured, deliberate, and difficult to rush, carrying herself with the confidence of someone who has spent years navigating both clan responsibility and village politics. As head of the Sarutobi clan and Enya\'s mother, she represents the weight of legacy, discipline, and quiet strength within Konoha\'s old guard.'
   }
 ];
