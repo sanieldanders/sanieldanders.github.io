@@ -116,5 +116,38 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
     affiliations: 'Konoha',
     description:
       'Shikadai Nara is a high-ranking strategist and council member who inherited both the intelligence and quiet presence of his father, Shikamaru, so strongly that the resemblance between them is immediately obvious. He is calm, perceptive, and effortlessly analytical, the kind of leader who never appears hurried but always seems to be several steps ahead of everyone else. In Konoha, he serves as both the head of the Nara clan and one of the village\'s key political minds, helping shape decisions at the highest level.'
+  },
+  {
+    id: 'mikari-nara',
+    portraitUrl: './npcs/Nara,Mikari.png',
+    name: 'Mikari Nara',
+    age: '16',
+    birthday: 'October 30th',
+    occupationRank: 'Genin; member of Team Three',
+    affiliations: 'Konoha',
+    description:
+      'Mikari Nara is a bright, observant, and deceptively playful young shinobi who carries the intelligence of the Nara clan with much more visible youthful energy than her elders. She is relaxed, curious, and a little nosy, often seeming casual or half-distracted while actually paying close attention to everything around her. She comes across as clever, hard to underestimate for long, and the kind of genin who notices more than people expect and enjoys proving it.'
+  },
+  {
+    id: 'reina-nara',
+    portraitUrl: './npcs/Nara,Reina.png',
+    name: 'Reina Nara',
+    age: '26',
+    birthday: 'August 17th',
+    occupationRank: 'Jonin team leader of Team Two',
+    affiliations: 'Konoha',
+    description:
+      'Reina Nara is a calm, highly capable field tactician and respected jonin who carries the familiar stillness of the Nara clan, but with a sharper martial edge than most. She is composed, quietly demanding, and extremely observant, the kind of leader who expects others to think before they act and who commands respect without ever needing to raise her voice. Among her family and peers, she stands as a professional standard of discipline, restraint, and quiet competence.'
+  },
+  {
+    id: 'sayuri-nara',
+    portraitUrl: './npcs/Nara,Sayuri.png',
+    name: 'Sayuri Nara',
+    age: '46',
+    birthday: 'July 8th',
+    occupationRank: 'Tokubetsu Jonin',
+    affiliations: 'Konoha',
+    description:
+      'Sayuri Nara is a dry, perceptive, and quietly protective elder of the Nara family who notices problems early and rarely wastes words. She is practical, intelligent, and difficult to fool, with a calm presence that makes her feel more like a steady family anchor than a loud authority figure. She values competence, patience, and clear thinking, and tends to offer guidance through sharp observations rather than open reassurance.'
   }
 ];
