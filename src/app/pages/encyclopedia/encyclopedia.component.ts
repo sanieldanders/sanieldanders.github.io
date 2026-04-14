@@ -12,7 +12,16 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NPC_ENCYCLOPEDIA_BUILTIN } from '../../core/content/npc-encyclopedia.builtin';
-import type { NpcEncyclopediaEntry } from '../../core/models/app-data.model';
+import type {
+  NpcEncyclopediaEntry,
+  NpcEncyclopediaSectionId
+} from '../../core/models/app-data.model';
+
+function npcSearchHaystack(npc: NpcEncyclopediaEntry): string {
+  return [npc.name, npc.age, npc.birthday, npc.occupationRank, npc.affiliations, npc.description]
+    .join(' ')
+    .toLowerCase();
+}
 
 /** Assumes Western order "Given Family" (e.g. Naruto Uzumaki); sorts by family name, then given name. */
 function compareNpcByLastName(a: NpcEncyclopediaEntry, b: NpcEncyclopediaEntry): number {
@@ -51,37 +60,43 @@ export class EncyclopediaComponent {
 
   private readonly closeBtn = viewChild<ElementRef<HTMLButtonElement>>('closeBtn');
 
-  readonly filteredEntries = computed(() => {
+  private readonly filteredSection = (sectionId: NpcEncyclopediaSectionId) => {
     const q = this.searchQuery().trim().toLowerCase();
+    const base = this.entries.filter((e) => e.sectionId === sectionId);
     if (!q) {
-      return this.entries;
+      return base;
     }
-    return this.entries.filter((npc) => {
-      const hay = [
-        npc.name,
-        npc.age,
-        npc.birthday,
-        npc.occupationRank,
-        npc.affiliations,
-        npc.description
-      ]
-        .join(' ')
-        .toLowerCase();
-      return hay.includes(q);
-    });
-  });
+    return base.filter((npc) => npcSearchHaystack(npc).includes(q));
+  };
+
+  readonly filteredNonPlayer = computed(() => this.filteredSection('non-player'));
+
+  readonly filteredPlayerGenin = computed(() => this.filteredSection('player-genin'));
+
+  readonly totalSearchMatches = computed(
+    () => this.filteredNonPlayer().length + this.filteredPlayerGenin().length
+  );
 
   readonly modalNpc = computed(() => {
     const id = this.selectedNpcId();
     if (!id) {
       return null;
     }
-    return this.filteredEntries().find((n) => n.id === id) ?? null;
+    return (
+      this.filteredNonPlayer().find((n) => n.id === id) ??
+      this.filteredPlayerGenin().find((n) => n.id === id) ??
+      null
+    );
   });
 
-  /** Prev/next in the current filtered list (wraps). Null when only one or zero entries. */
+  /** Prev/next within the same section and current search (wraps). Null when only one or zero entries in that section. */
   readonly modalNav = computed(() => {
-    const list = this.filteredEntries();
+    const npc = this.modalNpc();
+    if (!npc) {
+      return null;
+    }
+    const list =
+      npc.sectionId === 'player-genin' ? this.filteredPlayerGenin() : this.filteredNonPlayer();
     const id = this.selectedNpcId();
     if (!id || list.length <= 1) {
       return null;

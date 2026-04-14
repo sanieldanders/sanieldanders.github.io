@@ -4,6 +4,7 @@ import type { NpcEncyclopediaEntry } from '../models/app-data.model';
 export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   {
     id: 'enya-sarutobi',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Sarutobi,Enya.png',
     name: 'Enya Sarutobi',
     age: '24',
@@ -18,6 +19,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'shikamaru-nara',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Nara,Shikamaru.png',
     name: 'Shikamaru Nara',
     age: '62',
@@ -31,6 +33,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'sarada-uchiha',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Uchiha,Sarada.png',
     name: 'Sarada Uchiha',
     age: '40',
@@ -42,6 +45,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'shun-aburame',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Aburame,Shun.png',
     name: 'Shun Aburame',
     age: '44',
@@ -53,6 +57,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'kaede-hyuga',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Hyuga,Kaede.png',
     name: 'Kaede Hyuga',
     age: '38',
@@ -64,6 +69,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'rei-hatake',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Hatake,Rei.png',
     name: 'Rei Hatake',
     age: '42',
@@ -75,6 +81,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'yusuke-sarutobi',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Sarutobi,Yusuke.png',
     name: 'Yusuke Sarutobi',
     age: '48',
@@ -86,6 +93,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'hanabi-hyuga',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Hyuga,Hanabi.png',
     name: 'Hanabi Hyuga',
     age: '55',
@@ -97,6 +105,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'sai-yamanaka',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Yamanaka,Sai.png',
     name: 'Sai Yamanaka',
     age: '62',
@@ -108,6 +117,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'shikadai-nara',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Nara,Shikadai.png',
     name: 'Shikadai Nara',
     age: '40',
@@ -119,6 +129,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'mikari-nara',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Nara,Mikari.png',
     name: 'Mikari Nara',
     age: '16',
@@ -130,6 +141,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'reina-nara',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Nara,Reina.png',
     name: 'Reina Nara',
     age: '26',
@@ -141,6 +153,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'sayuri-nara',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Nara,Sayuri.png',
     name: 'Sayuri Nara',
     age: '46',
@@ -152,6 +165,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'aiko-yamanaka',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Yamanaka,Aiko.png',
     name: 'Aiko Yamanaka',
     age: '49',
@@ -163,6 +177,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'tatsumi-yamanaka',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Yamanaka,Tatsumi.png',
     name: 'Tatsumi Yamanaka',
     age: '26',
@@ -174,6 +189,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'daisuke-senju',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Senju,Daisuke.png',
     name: 'Daisuke Senju',
     age: '25',
@@ -185,6 +201,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'renji-senju',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Senju,Renji.png',
     name: 'Renji Senju',
     age: '37',
@@ -196,6 +213,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'erin-sarutobi',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Sarutobi,Erin.png',
     name: 'Erin Sarutobi',
     age: 'Early 43',
@@ -207,6 +225,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'himawari-uzumaki',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Uzumaki,Himawari.png',
     name: 'Himawari Uzumaki',
     age: '39',
@@ -218,6 +237,7 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   },
   {
     id: 'lochlan-uzumaki',
+    sectionId: 'non-player',
     portraitUrl: './npcs/Uzumaki,Lochlan.png',
     name: 'Lochlan Uzumaki',
     age: '35',
