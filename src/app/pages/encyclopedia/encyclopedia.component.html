@@ -59,13 +59,13 @@
 
       <details class="enc-section" open>
         <summary class="enc-section__summary">
-          <span class="enc-section__title">Player Characters and Genin Teams</span>
+          <span class="enc-section__title">Player Characters</span>
           @if (searchQuery().trim()) {
-            <span class="enc-section__meta">{{ filteredPlayerGenin().length }} in section</span>
+            <span class="enc-section__meta">{{ filteredPlayerCharacters().length }} in section</span>
           }
         </summary>
         <div class="enc-section__body">
-          @if (filteredPlayerGenin().length === 0) {
+          @if (filteredPlayerCharacters().length === 0) {
             <p class="enc-section__empty">
               @if (searchQuery().trim()) {
                 No matching entries in this category.
@@ -75,7 +75,38 @@
             </p>
           } @else {
             <ul class="enc-grid" role="list">
-              @for (npc of filteredPlayerGenin(); track npc.id) {
+              @for (npc of filteredPlayerCharacters(); track npc.id) {
+                <li class="enc-grid__cell">
+                  <button type="button" class="enc-grid__btn" (click)="openNpc(npc)">
+                    <span class="enc-grid__name">{{ npc.name }}</span>
+                    <span class="enc-grid__rank">{{ npc.occupationRank }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </details>
+
+      <details class="enc-section" open>
+        <summary class="enc-section__summary">
+          <span class="enc-section__title">Genin Teams</span>
+          @if (searchQuery().trim()) {
+            <span class="enc-section__meta">{{ filteredGeninTeams().length }} in section</span>
+          }
+        </summary>
+        <div class="enc-section__body">
+          @if (filteredGeninTeams().length === 0) {
+            <p class="enc-section__empty">
+              @if (searchQuery().trim()) {
+                No matching entries in this category.
+              } @else {
+                No entries yet.
+              }
+            </p>
+          } @else {
+            <ul class="enc-grid" role="list">
+              @for (npc of filteredGeninTeams(); track npc.id) {
                 <li class="enc-grid__cell">
                   <button type="button" class="enc-grid__btn" (click)="openNpc(npc)">
                     <span class="enc-grid__name">{{ npc.name }}</span>

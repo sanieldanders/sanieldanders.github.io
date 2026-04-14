@@ -71,10 +71,15 @@ export class EncyclopediaComponent {
 
   readonly filteredNonPlayer = computed(() => this.filteredSection('non-player'));
 
-  readonly filteredPlayerGenin = computed(() => this.filteredSection('player-genin'));
+  readonly filteredPlayerCharacters = computed(() => this.filteredSection('player'));
+
+  readonly filteredGeninTeams = computed(() => this.filteredSection('genin-teams'));
 
   readonly totalSearchMatches = computed(
-    () => this.filteredNonPlayer().length + this.filteredPlayerGenin().length
+    () =>
+      this.filteredNonPlayer().length +
+      this.filteredPlayerCharacters().length +
+      this.filteredGeninTeams().length
   );
 
   readonly modalNpc = computed(() => {
@@ -84,10 +89,22 @@ export class EncyclopediaComponent {
     }
     return (
       this.filteredNonPlayer().find((n) => n.id === id) ??
-      this.filteredPlayerGenin().find((n) => n.id === id) ??
+      this.filteredPlayerCharacters().find((n) => n.id === id) ??
+      this.filteredGeninTeams().find((n) => n.id === id) ??
       null
     );
   });
+
+  private listForSection(sectionId: NpcEncyclopediaSectionId): NpcEncyclopediaEntry[] {
+    switch (sectionId) {
+      case 'non-player':
+        return this.filteredNonPlayer();
+      case 'player':
+        return this.filteredPlayerCharacters();
+      case 'genin-teams':
+        return this.filteredGeninTeams();
+    }
+  }
 
   /** Prev/next within the same section and current search (wraps). Null when only one or zero entries in that section. */
   readonly modalNav = computed(() => {
@@ -95,8 +112,7 @@ export class EncyclopediaComponent {
     if (!npc) {
       return null;
     }
-    const list =
-      npc.sectionId === 'player-genin' ? this.filteredPlayerGenin() : this.filteredNonPlayer();
+    const list = this.listForSection(npc.sectionId);
     const id = this.selectedNpcId();
     if (!id || list.length <= 1) {
       return null;

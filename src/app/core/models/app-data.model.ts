@@ -171,7 +171,7 @@ export interface Profile {
 }
 
 /** Collapsible encyclopedia section on the Character Encyclopedia page. */
-export type NpcEncyclopediaSectionId = 'non-player' | 'player-genin';
+export type NpcEncyclopediaSectionId = 'non-player' | 'player' | 'genin-teams';
 
 /** NPC profile for the Character Encyclopedia (read-only catalog; portraits from `public/npcs/`). */
 export interface NpcEncyclopediaEntry {
