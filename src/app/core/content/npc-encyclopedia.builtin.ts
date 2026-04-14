@@ -149,5 +149,27 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
     affiliations: 'Konoha',
     description:
       'Sayuri Nara is a dry, perceptive, and quietly protective elder of the Nara family who notices problems early and rarely wastes words. She is practical, intelligent, and difficult to fool, with a calm presence that makes her feel more like a steady family anchor than a loud authority figure. She values competence, patience, and clear thinking, and tends to offer guidance through sharp observations rather than open reassurance.'
+  },
+  {
+    id: 'aiko-yamanaka',
+    portraitUrl: './npcs/Yamanaka,Aiko.png',
+    name: 'Aiko Yamanaka',
+    age: '49',
+    birthday: 'February 19th',
+    occupationRank: 'Head of the Intelligence Division; Hokage Council',
+    affiliations: 'Konoha',
+    description:
+      'Aiko Yamanaka is one of Konoha\'s most important intelligence and political figures, serving simultaneously as head of the Intelligence Division, head of the Yamanaka clan, and a member of the village council. She is calm, perceptive, and extremely difficult to mislead, the kind of woman who provides context, hidden meaning, and strategic interpretation when the village faces situations others do not yet fully understand. In practice, she is the person who turns scattered reports, suspicious behavior, and fragmented evidence into usable truth, making her a central force behind how Konoha recognizes and responds to threats before they fully emerge.'
+  },
+  {
+    id: 'tatsumi-yamanaka',
+    portraitUrl: './npcs/Yamanaka,Tatsumi.png',
+    name: 'Tatsumi Yamanaka',
+    age: '26',
+    birthday: 'May 1st',
+    occupationRank: 'Jonin team leader of Team Eight',
+    affiliations: 'Konoha',
+    description:
+      'Tatsumi Yamanaka is a brilliant, flirtatious, and socially dangerous jonin who is widely regarded as one of the most beautiful women in Konoha and knows exactly how to use that to her advantage. She is confident, poised, and highly self-aware, using charm, allure, and emotional pressure as tactical tools while leading Team Eight with polish, discipline, and a fierce competitive edge. Beneath her playful and provocative surface, she is a deeply capable shinobi who excels at reading people, controlling social space, and making others underestimate her until it is far too late.'
   }
 ];
