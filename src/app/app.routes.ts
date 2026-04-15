@@ -35,5 +35,10 @@ export const routes: Routes = [
     path: 'encyclopedia',
     loadComponent: () => import('./pages/encyclopedia/encyclopedia.component').then((m) => m.EncyclopediaComponent)
   },
+  {
+    path: 'compendium',
+    loadComponent: () =>
+      import('./pages/jutsu-compendium/jutsu-compendium.component').then((m) => m.JutsuCompendiumComponent)
+  },
   { path: '**', redirectTo: 'home' }
 ];

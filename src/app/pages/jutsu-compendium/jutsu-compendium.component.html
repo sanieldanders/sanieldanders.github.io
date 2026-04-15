@@ -1,0 +1,140 @@
+<div class="jc-page">
+  <nav class="jc-nav">
+    <a routerLink="/home" class="jc-nav__link">← Home</a>
+  </nav>
+
+  <header class="jc-head">
+    <h1>Jutsu compendium</h1>
+    <p class="muted">Search official jutsu text: ninjutsu, genjutsu, taijutsu, bukijutsu, summons, and summoning rules.</p>
+  </header>
+
+  @if (loadError(); as err) {
+    <p class="jc-error" role="alert">{{ err }}</p>
+  }
+
+  <div class="jc-toolbar">
+    <label class="jc-search" for="jc-search-input">
+      <span class="jc-search__label">Search</span>
+      <input
+        id="jc-search-input"
+        class="jc-search__input"
+        type="search"
+        autocomplete="off"
+        placeholder="Name, rank, classification, keywords, rules text…"
+        [value]="searchQuery()"
+        (input)="onSearchInput($event)"
+      />
+    </label>
+    <label class="jc-filter">
+      <span class="jc-filter__label">Track</span>
+      <select class="jc-filter__select" [value]="majorFilter()" (change)="onMajorChange($event)">
+        <option value="">All</option>
+        <option value="NINJUTSU">Ninjutsu</option>
+        <option value="GENJUTSU">Genjutsu</option>
+        <option value="TAIJUTSU">Taijutsu</option>
+        <option value="BUKIJUTSU">Bukijutsu</option>
+      </select>
+    </label>
+    @if (entries().length) {
+      <p class="jc-toolbar__meta">{{ matchCount() }} shown</p>
+    }
+  </div>
+
+  @if (!loadError() && entries().length === 0) {
+    <p class="jc-empty">Loading compendium…</p>
+  } @else if (entries().length && matchCount() === 0) {
+    <p class="jc-empty">No entries match your search.</p>
+  } @else if (entries().length) {
+    <ul class="jc-list" role="list">
+      @for (e of filteredEntries(); track e.id) {
+        <li class="jc-list__row">
+          <button type="button" class="jc-list__btn" (click)="openEntry(e)">
+            <span class="jc-list__name">{{ e.name | titlecase }}</span>
+            <span class="jc-list__meta">
+              @if (e.kind === 'summonStat') {
+                <span>Summon stat block</span>
+              } @else if (e.kind === 'rules') {
+                <span>Rules reference</span>
+              } @else {
+                <span>{{ e.major | titlecase }}</span>
+                @if (e.rank) {
+                  <span> · {{ e.rank }}</span>
+                }
+                @if (e.classification) {
+                  <span> · {{ e.classification }}</span>
+                }
+              }
+            </span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>
+
+@if (selectedEntry(); as e) {
+  <div class="jc-modal-backdrop" role="presentation" aria-hidden="true" (click)="closeModal()"></div>
+  <div class="jc-modal" role="dialog" aria-modal="true" [attr.aria-labelledby]="'jc-modal-title-' + e.id">
+    @if (modalNav(); as nav) {
+      <button
+        type="button"
+        class="jc-modal__nav jc-modal__nav--prev"
+        (click)="goModalPrev()"
+        [attr.aria-label]="'Previous: ' + nav.prev.name"
+      >
+        <span class="jc-modal__nav-icon" aria-hidden="true">&#8249;</span>
+      </button>
+      <button
+        type="button"
+        class="jc-modal__nav jc-modal__nav--next"
+        (click)="goModalNext()"
+        [attr.aria-label]="'Next: ' + nav.next.name"
+      >
+        <span class="jc-modal__nav-icon" aria-hidden="true">&#8250;</span>
+      </button>
+    }
+    <div class="jc-modal__chrome">
+      <div class="jc-modal__title-row">
+        <h2 class="jc-modal__title" [id]="'jc-modal-title-' + e.id">{{ e.name | titlecase }}</h2>
+        @if (modalNav(); as nav) {
+          <span class="jc-modal__counter" aria-hidden="true">{{ nav.position }} / {{ nav.total }}</span>
+        }
+      </div>
+      <button #closeBtn type="button" class="jc-modal__close" (click)="closeModal()">Close</button>
+    </div>
+    <div class="jc-modal__scroll">
+      <dl class="jc-facts">
+        @if (e.kind !== 'jutsu') {
+          <div class="jc-facts__row">
+            <dt>Type</dt>
+            <dd>{{ e.kind === 'summonStat' ? 'Summon stat block' : 'Rules reference' }}</dd>
+          </div>
+        } @else {
+          <div class="jc-facts__row">
+            <dt>Track</dt>
+            <dd>{{ e.major | titlecase }}</dd>
+          </div>
+          @if (e.subsection) {
+            <div class="jc-facts__row">
+              <dt>Section</dt>
+              <dd>{{ e.subsection | titlecase }}</dd>
+            </div>
+          }
+          @if (e.classification) {
+            <div class="jc-facts__row">
+              <dt>Classification</dt>
+              <dd>{{ e.classification }}</dd>
+            </div>
+          }
+          @if (e.rank) {
+            <div class="jc-facts__row">
+              <dt>Rank</dt>
+              <dd>{{ e.rank }}</dd>
+            </div>
+          }
+        }
+      </dl>
+      <pre class="jc-body">{{ e.body }}</pre>
+    </div>
+  </div>
+}
