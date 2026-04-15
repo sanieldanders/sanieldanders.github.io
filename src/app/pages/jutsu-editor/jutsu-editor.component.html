@@ -1,7 +1,14 @@
 @if (localDraft(); as d) {
   <div class="page">
     <header class="page__head">
-      <a [routerLink]="['/profiles', ids().profileId]" class="back">← Back to profile</a>
+      <a
+        [routerLink]="
+          routeContext().kind === 'character'
+            ? ['/characters', routeContext().ownerId]
+            : ['/profiles', routeContext().ownerId]
+        "
+        class="back"
+        >← {{ routeContext().kind === 'character' ? 'Character sheet' : 'Profile' }}</a>
       <div class="headrow">
         @if (editing()) {
           <h1>Edit jutsu</h1>
@@ -438,6 +445,18 @@
 } @else {
   <div class="page">
     <p class="muted">Jutsu not found.</p>
-    <a routerLink="/profiles" class="back">← Profiles</a>
+    @if (routeContext().ownerId) {
+      <a
+        [routerLink]="
+          routeContext().kind === 'character'
+            ? ['/characters', routeContext().ownerId]
+            : ['/profiles', routeContext().ownerId]
+        "
+        class="back"
+        >← {{ routeContext().kind === 'character' ? 'Character sheet' : 'Profile' }}</a>
+    } @else {
+      <p><a routerLink="/characters" class="back">← Characters</a></p>
+      <p><a routerLink="/profiles" class="back">← Profiles</a></p>
+    }
   </div>
 }

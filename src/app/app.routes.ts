@@ -11,6 +11,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/characters/characters.component').then((m) => m.CharactersComponent)
   },
   {
+    path: 'characters/:characterId/jutsu/:jutsuId',
+    loadComponent: () => import('./pages/jutsu-editor/jutsu-editor.component').then((m) => m.JutsuEditorComponent)
+  },
+  {
     path: 'characters/:characterId',
     loadComponent: () =>
       import('./pages/character-sheet/character-sheet.component').then((m) => m.CharacterSheetComponent)

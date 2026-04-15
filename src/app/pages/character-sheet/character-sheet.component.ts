@@ -1,7 +1,8 @@
+import { TitleCasePipe } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { ABILITY_LAYOUT } from '../../core/character/ability-layout';
 import { ensureCharacterSheet, type CharacterWithSheet } from '../../core/character/character-sheet.defaults';
@@ -12,6 +13,7 @@ import {
   type CharacterProfileSheetState,
   type CharacterSheetState,
   type ChakraNature,
+  type JutsuClassification,
   type JutsuRank,
   type SkillDot
 } from '../../core/models/app-data.model';
@@ -19,12 +21,13 @@ import { DataStoreService } from '../../core/services/data-store.service';
 
 @Component({
   selector: 'app-character-sheet',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, TitleCasePipe],
   templateUrl: './character-sheet.component.html',
   styleUrl: './character-sheet.component.scss'
 })
 export class CharacterSheetComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly store = inject(DataStoreService);
 
   readonly abilityLayout = ABILITY_LAYOUT;
@@ -216,6 +219,28 @@ export class CharacterSheetComponent {
     this.patch((ch) => {
       const cur = ch.sheet.profileSheet.natureSelected[id];
       ch.sheet.profileSheet.natureSelected[id] = !cur;
+    });
+  }
+
+  startNewJutsu(kind: JutsuClassification): void {
+    const id = this.characterId();
+    if (!id) {
+      return;
+    }
+    const draft = this.store.newDraftForCharacter(id, kind);
+    void this.router.navigate(['/characters', id, 'jutsu', draft.id], { queryParams: { edit: '1' } });
+  }
+
+  removeCharacterJutsu(jutsuId: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const id = this.characterId();
+    if (!id || !confirm('Delete this jutsu?')) {
+      return;
+    }
+    this.store.deleteJutsuFromCharacter(id, jutsuId);
+    this.patch((ch) => {
+      ch.jutsus = (ch.jutsus ?? []).filter((j) => j.id !== jutsuId);
     });
   }
 }

@@ -5,6 +5,32 @@
       <span class="cs-nav__hint">Edits save automatically.</span>
     </nav>
 
+    <section class="cs-jutsu-hub" aria-label="Jutsu creator for this character">
+      <h2 class="cs-jutsu-hub__title">Jutsu creator</h2>
+      <p class="cs-jutsu-hub__desc">Homebrew jutsu are saved on this character (same editor as profiles).</p>
+      <div class="cs-jutsu-hub__tiles">
+        <button type="button" class="cs-jutsu-hub__tile" (click)="startNewJutsu('ninjutsu')">Ninjutsu</button>
+        <button type="button" class="cs-jutsu-hub__tile" (click)="startNewJutsu('genjutsu')">Genjutsu</button>
+        <button type="button" class="cs-jutsu-hub__tile" (click)="startNewJutsu('taijutsu')">Taijutsu</button>
+        <button type="button" class="cs-jutsu-hub__tile" (click)="startNewJutsu('bukijutsu')">Bukijutsu</button>
+      </div>
+      @if ((ch.jutsus ?? []).length > 0) {
+        <ul class="cs-jutsu-hub__list">
+          @for (j of ch.jutsus ?? []; track j.id) {
+            <li class="cs-jutsu-hub__row">
+              <a [routerLink]="['/characters', ch.id, 'jutsu', j.id]" class="cs-jutsu-hub__link">
+                <span class="cs-jutsu-hub__name">{{ j.name }}</span>
+                <span class="cs-jutsu-hub__meta">
+                  {{ j.classification | titlecase }} · {{ j.rank }}-Rank · {{ j.effects.length }} effects
+                </span>
+              </a>
+              <button type="button" class="cs-jutsu-hub__del" (click)="removeCharacterJutsu(j.id, $event)">Delete</button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
     <div class="cs-sheet-switch" role="tablist" aria-label="Character sheet pages">
       <button
         type="button"

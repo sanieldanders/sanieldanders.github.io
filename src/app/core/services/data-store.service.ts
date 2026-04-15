@@ -77,7 +77,13 @@ export class DataStoreService {
       return false;
     }
     const o = value as Character;
-    return typeof o.id === 'string' && typeof o.name === 'string' && typeof o.createdAt === 'string';
+    if (typeof o.id !== 'string' || typeof o.name !== 'string' || typeof o.createdAt !== 'string') {
+      return false;
+    }
+    if (o.jutsus !== undefined && !Array.isArray(o.jutsus)) {
+      return false;
+    }
+    return true;
   }
 
   private persist(): void {
@@ -130,7 +136,11 @@ export class DataStoreService {
 
   getCharacter(characterId: string): CharacterWithSheet | undefined {
     const raw = this.data().characters.find((c) => c.id === characterId);
-    return raw ? normalizeCharacter(raw) : undefined;
+    if (!raw) {
+      return undefined;
+    }
+    const withJutsus: Character = { ...raw, jutsus: raw.jutsus ?? [] };
+    return normalizeCharacter(withJutsus);
   }
 
   addCharacter(name: string): CharacterWithSheet {
@@ -138,7 +148,8 @@ export class DataStoreService {
       id: newId(),
       name: name.trim(),
       createdAt: new Date().toISOString(),
-      sheet: createDefaultCharacterSheet()
+      sheet: createDefaultCharacterSheet(),
+      jutsus: []
     };
     this.data.update((d) => ({ ...d, characters: [...d.characters, character] }));
     this.touch();
@@ -192,30 +203,71 @@ export class DataStoreService {
   }
 
   newDraft(profileId: string, classification: JutsuDraft['classification']): JutsuDraft {
-    const draft: JutsuDraft = {
-      id: newId(),
-      name: 'Untitled jutsu',
-      classification,
-      rank: 'D',
-      archetypes: ['offensive'],
-      prerequisites: {
-        requiredFeature: 'none',
-        components: defaultComponents(classification),
-        range: 'touch',
-        genjutsuTiers: {
-          criticalSuccess: true,
-          success: true,
-          failure: true,
-          criticalFailure: false
-        }
-      },
-      effects: [],
-      finalize: {},
-      updatedAt: new Date().toISOString()
-    };
+    const draft = buildNewDraft(classification);
     this.upsertJutsu(profileId, draft);
     return draft;
   }
+
+  upsertJutsuForCharacter(characterId: string, draft: JutsuDraft): void {
+    this.data.update((d) => ({
+      ...d,
+      characters: d.characters.map((c) => {
+        if (c.id !== characterId) {
+          return c;
+        }
+        const list = c.jutsus ?? [];
+        const idx = list.findIndex((j) => j.id === draft.id);
+        const next = [...list];
+        if (idx >= 0) {
+          next[idx] = draft;
+        } else {
+          next.push(draft);
+        }
+        return { ...c, jutsus: next };
+      })
+    }));
+    this.touch();
+  }
+
+  deleteJutsuFromCharacter(characterId: string, jutsuId: string): void {
+    this.data.update((d) => ({
+      ...d,
+      characters: d.characters.map((c) =>
+        c.id === characterId ? { ...c, jutsus: (c.jutsus ?? []).filter((j) => j.id !== jutsuId) } : c
+      )
+    }));
+    this.touch();
+  }
+
+  newDraftForCharacter(characterId: string, classification: JutsuDraft['classification']): JutsuDraft {
+    const draft = buildNewDraft(classification);
+    this.upsertJutsuForCharacter(characterId, draft);
+    return draft;
+  }
+}
+
+function buildNewDraft(classification: JutsuDraft['classification']): JutsuDraft {
+  return {
+    id: newId(),
+    name: 'Untitled jutsu',
+    classification,
+    rank: 'D',
+    archetypes: ['offensive'],
+    prerequisites: {
+      requiredFeature: 'none',
+      components: defaultComponents(classification),
+      range: 'touch',
+      genjutsuTiers: {
+        criticalSuccess: true,
+        success: true,
+        failure: true,
+        criticalFailure: false
+      }
+    },
+    effects: [],
+    finalize: {},
+    updatedAt: new Date().toISOString()
+  };
 }
 
 function defaultComponents(classification: JutsuDraft['classification']): string[] {

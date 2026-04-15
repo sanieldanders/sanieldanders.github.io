@@ -120,6 +120,8 @@ export interface Character {
   createdAt: string;
   /** Present on new saves; older data is patched when loaded. */
   sheet?: CharacterSheetState;
+  /** Homebrew jutsu tied to this character (same shape as profile jutsu). */
+  jutsus?: JutsuDraft[];
 }
 
 export type JutsuClassification = 'ninjutsu' | 'genjutsu' | 'taijutsu' | 'bukijutsu';

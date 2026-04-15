@@ -43,18 +43,30 @@ export class JutsuEditorComponent {
   readonly weaponTypeOptions = WEAPON_TYPE_OPTIONS;
   readonly ninjaToolOptions = NINJA_TOOL_OPTIONS;
 
-  readonly ids = toSignal(
+  /** Profile- or character-owned jutsu from route params. */
+  readonly routeContext = toSignal(
     this.route.paramMap.pipe(
-      map((p) => ({
-        profileId: p.get('profileId') ?? '',
-        jutsuId: p.get('jutsuId') ?? ''
-      }))
+      map((p) => {
+        const characterId = p.get('characterId') ?? '';
+        const profileId = p.get('profileId') ?? '';
+        const jutsuId = p.get('jutsuId') ?? '';
+        if (characterId) {
+          return { kind: 'character' as const, ownerId: characterId, jutsuId };
+        }
+        return { kind: 'profile' as const, ownerId: profileId, jutsuId };
+      })
     ),
     {
-      initialValue: {
-        profileId: this.route.snapshot.paramMap.get('profileId') ?? '',
-        jutsuId: this.route.snapshot.paramMap.get('jutsuId') ?? ''
-      }
+      initialValue: (() => {
+        const p = this.route.snapshot.paramMap;
+        const characterId = p.get('characterId') ?? '';
+        const profileId = p.get('profileId') ?? '';
+        const jutsuId = p.get('jutsuId') ?? '';
+        if (characterId) {
+          return { kind: 'character' as const, ownerId: characterId, jutsuId };
+        }
+        return { kind: 'profile' as const, ownerId: profileId, jutsuId };
+      })()
     }
   );
 
@@ -141,9 +153,16 @@ export class JutsuEditorComponent {
 
   /** Replace `localDraft` from the store for the current route ids. Returns false if missing. */
   private loadDraftFromStore(): boolean {
-    const { profileId, jutsuId } = this.ids();
-    const profile = this.store.getProfile(profileId);
-    const found = profile?.jutsus.find((j) => j.id === jutsuId);
+    const ctx = this.routeContext();
+    const { ownerId, jutsuId, kind } = ctx;
+    let found: JutsuDraft | undefined;
+    if (kind === 'profile') {
+      const profile = this.store.getProfile(ownerId);
+      found = profile?.jutsus.find((j) => j.id === jutsuId);
+    } else {
+      const ch = this.store.getCharacter(ownerId);
+      found = ch?.jutsus?.find((j) => j.id === jutsuId);
+    }
     if (!found) {
       this.localDraft.set(null);
       return false;
@@ -382,9 +401,9 @@ export class JutsuEditorComponent {
   }
 
   persist(): void {
-    const { profileId } = this.ids();
+    const ctx = this.routeContext();
     const d = this.localDraft();
-    if (!profileId || !d) {
+    if (!ctx.ownerId || !d) {
       return;
     }
     const errs = this.rules.validateDraft(d);
@@ -394,7 +413,11 @@ export class JutsuEditorComponent {
       return;
     }
     d.updatedAt = new Date().toISOString();
-    this.store.upsertJutsu(profileId, d);
+    if (ctx.kind === 'profile') {
+      this.store.upsertJutsu(ctx.ownerId, d);
+    } else {
+      this.store.upsertJutsuForCharacter(ctx.ownerId, d);
+    }
     this.saveMessage.set('Saved');
     void this.router.navigate([], {
       relativeTo: this.route,
