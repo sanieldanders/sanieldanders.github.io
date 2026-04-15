@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import type { JutsuArchetype, JutsuDraft, JutsuEffectSelection, JutsuRank } from '../../core/models/app-data.model';
+import { effectTooltip } from '../../core/rules/jutsu-effect-tooltips';
 import {
   allowedEffectKeys,
   COMPONENT_CODES,
@@ -113,6 +114,10 @@ export class JutsuEditorComponent {
 
   ruleSummaryFor(classification: JutsuDraft['classification']): string[] {
     return rulebookSummaryParagraphs(classification);
+  }
+
+  effectTooltipFor(classification: JutsuDraft['classification'], effectKey: string): string {
+    return effectTooltip(classification, effectKey);
   }
 
   enterEditMode(): void {

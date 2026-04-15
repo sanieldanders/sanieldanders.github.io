@@ -140,6 +140,10 @@
   color: var(--text);
 }
 
+.effect select[title] {
+  cursor: help;
+}
+
 .effects {
   display: flex;
   flex-direction: column;

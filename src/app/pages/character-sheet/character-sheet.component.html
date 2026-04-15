@@ -7,7 +7,7 @@
 
     <section class="cs-jutsu-hub" aria-label="Jutsu creator for this character">
       <h2 class="cs-jutsu-hub__title">Jutsu creator</h2>
-      <p class="cs-jutsu-hub__desc">Homebrew jutsu are saved on this character (same editor as profiles).</p>
+      <p class="cs-jutsu-hub__desc">Homebrew jutsu are saved on this character.</p>
       <div class="cs-jutsu-hub__tiles">
         <button type="button" class="cs-jutsu-hub__tile" (click)="startNewJutsu('ninjutsu')">Ninjutsu</button>
         <button type="button" class="cs-jutsu-hub__tile" (click)="startNewJutsu('genjutsu')">Genjutsu</button>
@@ -49,15 +49,6 @@
         (click)="setSheetTab('profile')"
       >
         Profile sheet
-      </button>
-      <button
-        type="button"
-        class="cs-sheet-switch__btn"
-        role="tab"
-        [attr.aria-selected]="sheetTab() === 'jutsu'"
-        (click)="setSheetTab('jutsu')"
-      >
-        Jutsu list
       </button>
     </div>
 
@@ -420,7 +411,7 @@
         </section>
       </div>
     </div>
-    } @else if (sheetTab() === 'profile') {
+    } @else {
       <div class="ps-paper" aria-label="Character profile sheet">
         <div class="ps-cloud" aria-hidden="true"></div>
         <div class="ps-ornament ps-ornament--tl" aria-hidden="true"></div>
@@ -618,116 +609,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    } @else {
-      <div class="jl-paper" aria-label="Jutsu list">
-        <div class="jl-wash" aria-hidden="true"></div>
-        <div class="jl-ornament jl-ornament--tl" aria-hidden="true"></div>
-        <div class="jl-ornament jl-ornament--tr" aria-hidden="true"></div>
-        <div class="jl-ornament jl-ornament--bl" aria-hidden="true"></div>
-        <div class="jl-ornament jl-ornament--br" aria-hidden="true"></div>
-
-        <header class="jl-head">
-          <div class="jl-title-wrap">
-            <div class="jl-title-banner">
-              <span class="jl-title-banner__text">Jutsu List</span>
-            </div>
-          </div>
-
-          <div class="jl-stats-frame" aria-label="Jutsu attack bonuses and save DCs">
-            <div class="jl-stat-col">
-              <span class="jl-stat-col__heading">Ninjutsu</span>
-              <label class="jl-mini-field">
-                <span class="jl-mini-field__lbl">Ninjutsu attack bonus</span>
-                <input
-                  class="jl-input"
-                  type="text"
-                  [ngModel]="ch.sheet.jutsuListSheet.ninjutsu.attackBonus"
-                  (ngModelChange)="onJutsuSummary('ninjutsu', 'attackBonus', $event)"
-                />
-              </label>
-              <label class="jl-mini-field">
-                <span class="jl-mini-field__lbl">Ninjutsu save DC</span>
-                <input
-                  class="jl-input"
-                  type="text"
-                  [ngModel]="ch.sheet.jutsuListSheet.ninjutsu.saveDc"
-                  (ngModelChange)="onJutsuSummary('ninjutsu', 'saveDc', $event)"
-                />
-              </label>
-            </div>
-            <div class="jl-stat-col">
-              <span class="jl-stat-col__heading">Taijutsu</span>
-              <label class="jl-mini-field">
-                <span class="jl-mini-field__lbl">Taijutsu attack bonus</span>
-                <input
-                  class="jl-input"
-                  type="text"
-                  [ngModel]="ch.sheet.jutsuListSheet.taijutsu.attackBonus"
-                  (ngModelChange)="onJutsuSummary('taijutsu', 'attackBonus', $event)"
-                />
-              </label>
-              <label class="jl-mini-field">
-                <span class="jl-mini-field__lbl">Taijutsu save DC</span>
-                <input
-                  class="jl-input"
-                  type="text"
-                  [ngModel]="ch.sheet.jutsuListSheet.taijutsu.saveDc"
-                  (ngModelChange)="onJutsuSummary('taijutsu', 'saveDc', $event)"
-                />
-              </label>
-            </div>
-            <div class="jl-stat-col">
-              <span class="jl-stat-col__heading">Genjutsu</span>
-              <label class="jl-mini-field">
-                <span class="jl-mini-field__lbl">Genjutsu attack bonus</span>
-                <input
-                  class="jl-input"
-                  type="text"
-                  [ngModel]="ch.sheet.jutsuListSheet.genjutsu.attackBonus"
-                  (ngModelChange)="onJutsuSummary('genjutsu', 'attackBonus', $event)"
-                />
-              </label>
-              <label class="jl-mini-field">
-                <span class="jl-mini-field__lbl">Genjutsu save DC</span>
-                <input
-                  class="jl-input"
-                  type="text"
-                  [ngModel]="ch.sheet.jutsuListSheet.genjutsu.saveDc"
-                  (ngModelChange)="onJutsuSummary('genjutsu', 'saveDc', $event)"
-                />
-              </label>
-            </div>
-          </div>
-        </header>
-
-        <div class="jl-body">
-          @for (col of jutsuColumnRanks; track $index) {
-            <div class="jl-col">
-              @for (rank of col; track rank) {
-                <section class="jl-rank-block" [attr.aria-label]="rank + '-rank jutsu'">
-                  <div class="jl-rank-bar">
-                    <span class="jl-rank-bar__knob" aria-hidden="true"></span>
-                    <span class="jl-rank-bar__bracket" aria-hidden="true"></span>
-                    <span class="jl-rank-bar__cap">{{ rank }}-Rank</span>
-                    <span class="jl-rank-bar__bracket jl-rank-bar__bracket--right" aria-hidden="true"></span>
-                  </div>
-                  <div class="jl-lines">
-                    @for (i of jutsuLineIndexes; track i) {
-                      <input
-                        class="jl-line-input"
-                        type="text"
-                        [ngModel]="ch.sheet.jutsuListSheet.ranks[rank][i]"
-                        (ngModelChange)="onJutsuRankLine(rank, i, $event)"
-                        [attr.aria-label]="'Jutsu line ' + (i + 1) + ' (' + rank + '-rank)'"
-                      />
-                    }
-                  </div>
-                </section>
-              }
-            </div>
-          }
         </div>
       </div>
     }

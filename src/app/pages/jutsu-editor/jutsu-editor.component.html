@@ -91,7 +91,9 @@
           <ul class="sheet__effects">
             @for (e of d.effects; track e.id) {
               <li>
-                <strong>{{ e.effectKey || '(unnamed)' }}</strong>
+                <strong [attr.title]="effectTooltipFor(d.classification, e.effectKey || '')">{{
+                  e.effectKey || '(unnamed)'
+                }}</strong>
                 @if (e.effectKey === 'Damage' && effectDamageDice(e)) {
                   <span class="muted"> — {{ effectDamageDice(e) }} damage</span>
                 }
@@ -365,10 +367,14 @@
             <div class="effect">
               <label class="field tight">
                 <span>Effect</span>
-                <select [ngModel]="e.effectKey" (ngModelChange)="onEffectKeyChange(e, $event)">
+                <select
+                  [ngModel]="e.effectKey"
+                  (ngModelChange)="onEffectKeyChange(e, $event)"
+                  [attr.title]="effectTooltipFor(d.classification, e.effectKey)"
+                >
                   <option [ngValue]="''">— Select —</option>
                   @for (key of allowedEffects(); track key) {
-                    <option [ngValue]="key">{{ key }}</option>
+                    <option [ngValue]="key" [attr.title]="effectTooltipFor(d.classification, key)">{{ key }}</option>
                   }
                 </select>
               </label>
