@@ -1,12 +1,15 @@
 import type {
   AbilityAbbr,
   Character,
+  CharacterJutsuListSheetState,
   CharacterProfileSheetState,
   CharacterSheetState,
   ChakraNature,
+  JutsuRank,
   SkillDot,
   SkillRow
 } from '../models/app-data.model';
+import { JUTSU_LIST_LINES_PER_RANK } from '../models/app-data.model';
 import { ABILITY_LAYOUT } from './ability-layout';
 
 /** Character with a guaranteed merged sheet (for editing UI). */
@@ -34,6 +37,25 @@ function defaultNatureSelected(): CharacterProfileSheetState['natureSelected'] {
     lightning: false,
     earth: false,
     water: false
+  };
+}
+
+const JUTSU_RANKS: JutsuRank[] = ['E', 'D', 'C', 'B', 'A', 'S'];
+
+function emptyJutsuRankLines(): string[] {
+  return Array.from({ length: JUTSU_LIST_LINES_PER_RANK }, () => '');
+}
+
+export function createDefaultJutsuListSheet(): CharacterJutsuListSheetState {
+  const ranks = {} as CharacterJutsuListSheetState['ranks'];
+  for (const r of JUTSU_RANKS) {
+    ranks[r] = emptyJutsuRankLines();
+  }
+  return {
+    ninjutsu: { attackBonus: '', saveDc: '' },
+    taijutsu: { attackBonus: '', saveDc: '' },
+    genjutsu: { attackBonus: '', saveDc: '' },
+    ranks
   };
 }
 
@@ -99,7 +121,8 @@ export function createDefaultCharacterSheet(): CharacterSheetState {
       features: ''
     },
     equipment: '',
-    profileSheet: createDefaultProfileSheet()
+    profileSheet: createDefaultProfileSheet(),
+    jutsuListSheet: createDefaultJutsuListSheet()
   };
 }
 
@@ -157,6 +180,45 @@ function mergePhysical(
   };
 }
 
+function mergeJutsuTypeBlock(
+  base: CharacterJutsuListSheetState['ninjutsu'],
+  saved: CharacterJutsuListSheetState['ninjutsu'] | undefined
+): CharacterJutsuListSheetState['ninjutsu'] {
+  if (!saved) {
+    return base;
+  }
+  return {
+    attackBonus: typeof saved.attackBonus === 'string' ? saved.attackBonus : base.attackBonus,
+    saveDc: typeof saved.saveDc === 'string' ? saved.saveDc : base.saveDc
+  };
+}
+
+function mergeRankLines(base: string[], saved: string[] | undefined): string[] {
+  if (!Array.isArray(saved)) {
+    return base;
+  }
+  return base.map((_, i) => (typeof saved[i] === 'string' ? saved[i] : ''));
+}
+
+function mergeJutsuListSheet(
+  base: CharacterJutsuListSheetState,
+  saved: CharacterJutsuListSheetState | undefined
+): CharacterJutsuListSheetState {
+  if (!saved) {
+    return base;
+  }
+  const ranks = { ...base.ranks };
+  for (const r of JUTSU_RANKS) {
+    ranks[r] = mergeRankLines(base.ranks[r], saved.ranks?.[r]);
+  }
+  return {
+    ninjutsu: mergeJutsuTypeBlock(base.ninjutsu, saved.ninjutsu),
+    taijutsu: mergeJutsuTypeBlock(base.taijutsu, saved.taijutsu),
+    genjutsu: mergeJutsuTypeBlock(base.genjutsu, saved.genjutsu),
+    ranks
+  };
+}
+
 function mergeProfileSheet(
   base: CharacterProfileSheetState,
   saved: CharacterProfileSheetState | undefined
@@ -193,7 +255,8 @@ export function mergeCharacterSheet(saved: Character['sheet'] | undefined): Char
     attacks: mergeAttacks(base.attacks, saved.attacks),
     traits: { ...base.traits, ...saved.traits },
     equipment: saved.equipment ?? base.equipment,
-    profileSheet: mergeProfileSheet(base.profileSheet, saved.profileSheet)
+    profileSheet: mergeProfileSheet(base.profileSheet, saved.profileSheet),
+    jutsuListSheet: mergeJutsuListSheet(base.jutsuListSheet, saved.jutsuListSheet)
   };
 }
 

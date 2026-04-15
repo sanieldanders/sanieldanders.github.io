@@ -57,6 +57,9 @@ export interface CharacterProfileSheetState {
   quadrants: [string, string, string, string];
 }
 
+/** Jutsu letter rank (sheet list + jutsu builder). */
+export type JutsuRank = 'E' | 'D' | 'C' | 'B' | 'A' | 'S';
+
 export interface CharacterSheetState {
   rail: {
     proficiencyBonus: string;
@@ -95,6 +98,19 @@ export interface CharacterSheetState {
   equipment: string;
   /** Extended profile / appearance page (merged from defaults when missing on disk). */
   profileSheet: CharacterProfileSheetState;
+  /** Third page: ranked jutsu lines and jutsu attack / save DC summary. */
+  jutsuListSheet: CharacterJutsuListSheetState;
+}
+
+/** Lines per rank on the printable-style jutsu list (matches typical sheet density). */
+export const JUTSU_LIST_LINES_PER_RANK = 15;
+
+/** Form-fillable jutsu list page (E–S ranks + ninjutsu / taijutsu / genjutsu summary). */
+export interface CharacterJutsuListSheetState {
+  ninjutsu: { attackBonus: string; saveDc: string };
+  taijutsu: { attackBonus: string; saveDc: string };
+  genjutsu: { attackBonus: string; saveDc: string };
+  ranks: Record<JutsuRank, string[]>;
 }
 
 /** ND&D player character + full sheet state. */
@@ -107,8 +123,6 @@ export interface Character {
 }
 
 export type JutsuClassification = 'ninjutsu' | 'genjutsu' | 'taijutsu' | 'bukijutsu';
-
-export type JutsuRank = 'E' | 'D' | 'C' | 'B' | 'A' | 'S';
 
 export type JutsuArchetype = 'offensive' | 'defensive' | 'control' | 'support';
 

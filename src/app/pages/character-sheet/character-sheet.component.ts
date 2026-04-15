@@ -7,10 +7,12 @@ import { ABILITY_LAYOUT } from '../../core/character/ability-layout';
 import { ensureCharacterSheet, type CharacterWithSheet } from '../../core/character/character-sheet.defaults';
 import {
   CHAKRA_NATURE_META,
+  JUTSU_LIST_LINES_PER_RANK,
   type AbilityAbbr,
   type CharacterProfileSheetState,
   type CharacterSheetState,
   type ChakraNature,
+  type JutsuRank,
   type SkillDot
 } from '../../core/models/app-data.model';
 import { DataStoreService } from '../../core/services/data-store.service';
@@ -30,8 +32,16 @@ export class CharacterSheetComponent {
   readonly quadrantIndexes = [0, 1, 2, 3] as const;
   readonly natureMeta = CHAKRA_NATURE_META;
 
-  /** Main ND&D page vs. profile / appearance sheet. */
-  readonly sheetTab = signal<'main' | 'profile'>('main');
+  /** Main ND&D page, profile sheet, or jutsu list. */
+  readonly sheetTab = signal<'main' | 'profile' | 'jutsu'>('main');
+
+  readonly jutsuLineIndexes = Array.from({ length: JUTSU_LIST_LINES_PER_RANK }, (_, i) => i);
+
+  readonly jutsuColumnRanks: ReadonlyArray<readonly JutsuRank[]> = [
+    ['E', 'D'],
+    ['C', 'B'],
+    ['A', 'S']
+  ];
 
   private readonly characterId = toSignal(
     this.route.paramMap.pipe(map((p) => p.get('characterId') ?? '')),
@@ -159,8 +169,22 @@ export class CharacterSheetComponent {
     });
   }
 
-  setSheetTab(tab: 'main' | 'profile'): void {
+  setSheetTab(tab: 'main' | 'profile' | 'jutsu'): void {
     this.sheetTab.set(tab);
+  }
+
+  onJutsuSummary(kind: 'ninjutsu' | 'taijutsu' | 'genjutsu', field: 'attackBonus' | 'saveDc', value: string): void {
+    this.patch((ch) => {
+      ch.sheet.jutsuListSheet[kind][field] = value;
+    });
+  }
+
+  onJutsuRankLine(rank: JutsuRank, index: number, value: string): void {
+    this.patch((ch) => {
+      const lines = [...ch.sheet.jutsuListSheet.ranks[rank]] as string[];
+      lines[index] = value;
+      ch.sheet.jutsuListSheet.ranks[rank] = lines;
+    });
   }
 
   onProfilePhysical<K extends keyof CharacterProfileSheetState['physical']>(key: K, value: string): void {
