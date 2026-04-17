@@ -1,0 +1,124 @@
+.rl-page {
+  padding: 1rem 0.75rem 2rem;
+  min-height: 100%;
+  background: radial-gradient(ellipse 120% 80% at 50% 0%, #1e2433 0%, #0c1017 52%);
+  font-family: system-ui, sans-serif;
+}
+
+.rl-nav {
+  max-width: 1100px;
+  margin: 0 auto 0.75rem;
+}
+
+.rl-nav__link {
+  color: #a8c4ff;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.rl-panel {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(168, 196, 255, 0.22);
+  background: rgba(20, 26, 38, 0.55);
+}
+
+.rl-panel__head h1 {
+  margin: 0;
+  font-size: 1rem;
+  color: #d4e2ff;
+}
+
+.rl-panel__head p {
+  margin: 0.2rem 0 0.6rem;
+  font-size: 0.8rem;
+  color: #8a93a8;
+}
+
+.rl-state {
+  margin: 0 0 0.45rem;
+  color: #8a93a8;
+  font-size: 0.74rem;
+}
+
+.rl-state--error {
+  color: #e2a7a7;
+}
+
+.rl-compose {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.45rem;
+  margin-bottom: 0.55rem;
+}
+
+.rl-compose__input {
+  border: 1px solid rgba(168, 196, 255, 0.35);
+  border-radius: 8px;
+  background: rgba(16, 22, 32, 0.8);
+  color: #d4e2ff;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.76rem;
+}
+
+.rl-compose__btn {
+  border: 1px solid rgba(168, 196, 255, 0.45);
+  border-radius: 8px;
+  background: rgba(30, 38, 52, 0.9);
+  color: #d4e2ff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.36rem 0.65rem;
+}
+
+.rl-empty {
+  margin: 0;
+  color: #8a93a8;
+  font-size: 0.78rem;
+}
+
+.rl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.rl-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.55rem;
+  align-items: center;
+  border: 1px solid rgba(168, 196, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.32rem 0.45rem;
+  background: rgba(16, 22, 32, 0.65);
+}
+
+.rl-item__tag {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #d4e2ff;
+  min-width: 2.2rem;
+}
+
+.rl-item__tag--msg {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9fc3ff;
+}
+
+.rl-item__body {
+  font-size: 0.76rem;
+  color: #b7c5df;
+}
+
+.rl-item__time {
+  font-size: 0.7rem;
+  color: #8a93a8;
+}

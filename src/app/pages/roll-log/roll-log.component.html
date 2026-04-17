@@ -1,0 +1,54 @@
+<div class="rl-page">
+  <nav class="rl-nav">
+    <a routerLink="/home" class="rl-nav__link">← Home</a>
+  </nav>
+
+  <section class="rl-panel" aria-label="Shared dice and chat feed">
+    <div class="rl-panel__head">
+      <h1>Shared roll log</h1>
+      <p>All logged-in players can see this realtime feed.</p>
+    </div>
+
+    @if (status() === 'connecting') {
+      <p class="rl-state">Connecting to shared feed…</p>
+    } @else if (status() === 'error') {
+      <p class="rl-state rl-state--error">Shared feed unavailable right now.</p>
+    }
+
+    <div class="rl-compose">
+      <input
+        class="rl-compose__input"
+        type="text"
+        placeholder="Send a message to everyone…"
+        [ngModel]="chatDraft()"
+        (ngModelChange)="chatDraft.set($event)"
+        (keydown.enter)="sendChatMessage()"
+      />
+      <button type="button" class="rl-compose__btn" [disabled]="chatSending()" (click)="sendChatMessage()">Send</button>
+    </div>
+
+    @if (events().length === 0) {
+      <p class="rl-empty">No rolls yet.</p>
+    } @else {
+      <ul class="rl-list">
+        @for (e of events(); track e.id) {
+          <li class="rl-item">
+            @if (e.kind === 'roll') {
+              <span class="rl-item__tag">{{ e.total }}</span>
+              <span class="rl-item__body">
+                {{ e.userEmail }} rolled {{ e.skill }} ({{ e.ability }}) · d20 {{ e.d20 }} {{ formatModifier(e.modifier ?? 0) }}
+                @if (e.characterId !== 'global') {
+                  <span> · character: {{ e.characterId }}</span>
+                }
+              </span>
+            } @else {
+              <span class="rl-item__tag rl-item__tag--msg">Chat</span>
+              <span class="rl-item__body">{{ e.userEmail }}: {{ e.message }}</span>
+            }
+            <span class="rl-item__time">{{ e.createdAt | date: 'shortTime' }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>

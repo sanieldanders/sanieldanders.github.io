@@ -22,6 +22,18 @@ type RollEventRow = {
 export class RollLogService {
   private readonly auth = inject(SupabaseAuthService);
 
+  async loadRecentGlobal(limit = 100): Promise<RollEvent[]> {
+    const { data, error } = await this.auth.client
+      .from('roll_events')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) {
+      throw error;
+    }
+    return (data ?? []).map((row) => this.fromRow(row as RollEventRow));
+  }
+
   async loadRecent(characterId: string, limit = 50): Promise<RollEvent[]> {
     const { data, error } = await this.auth.client
       .from('roll_events')
@@ -86,6 +98,30 @@ export class RollLogService {
           schema: 'public',
           table: 'roll_events',
           filter: `character_id=eq.${characterId}`
+        },
+        (payload) => {
+          if (payload.new) {
+            onInsert(this.fromRow(payload.new as RollEventRow));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void this.auth.client.removeChannel(channel);
+    };
+  }
+
+  subscribeToAll(onInsert: (event: RollEvent) => void): () => void {
+    const channelName = `roll-events:all:${crypto.randomUUID()}`;
+    const channel: RealtimeChannel = this.auth.client
+      .channel(channelName)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'roll_events'
         },
         (payload) => {
           if (payload.new) {

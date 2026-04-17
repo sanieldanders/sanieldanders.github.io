@@ -1,4 +1,4 @@
-import { DatePipe, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -17,14 +17,13 @@ import {
   type JutsuRank,
   type SkillDot
 } from '../../core/models/app-data.model';
-import type { RollEvent } from '../../core/models/roll-event.model';
 import { DataStoreService } from '../../core/services/data-store.service';
 import { RollLogService } from '../../core/services/roll-log.service';
 import { SupabaseAuthService } from '../../core/services/supabase-auth.service';
 
 @Component({
   selector: 'app-character-sheet',
-  imports: [RouterLink, FormsModule, TitleCasePipe, DatePipe],
+  imports: [RouterLink, FormsModule, TitleCasePipe],
   templateUrl: './character-sheet.component.html',
   styleUrl: './character-sheet.component.scss'
 })
@@ -44,10 +43,6 @@ export class CharacterSheetComponent {
   readonly sheetTab = signal<'main' | 'profile' | 'jutsu'>('main');
 
   readonly jutsuLineIndexes = Array.from({ length: JUTSU_LIST_LINES_PER_RANK }, (_, i) => i);
-  readonly rollLog = signal<RollEvent[]>([]);
-  readonly rollLogStatus = signal<'connecting' | 'ready' | 'error'>('connecting');
-  readonly chatDraft = signal('');
-  readonly chatSending = signal(false);
 
   readonly jutsuColumnRanks: ReadonlyArray<readonly JutsuRank[]> = [
     ['E', 'D'],
@@ -74,47 +69,6 @@ export class CharacterSheetComponent {
         const c = id ? this.store.getCharacter(id) : undefined;
         this.draft.set(c ? structuredClone(ensureCharacterSheet(c)) : null);
       }
-    });
-    effect((onCleanup) => {
-      const id = this.characterId();
-      if (!id) {
-        this.rollLog.set([]);
-        this.rollLogStatus.set('error');
-        return;
-      }
-      let disposed = false;
-      let unsub: (() => void) | null = null;
-      this.rollLogStatus.set('connecting');
-      void (async () => {
-        try {
-          await this.auth.init();
-          const recent = await this.rollLogService.loadRecent(id);
-          if (!disposed) {
-            this.rollLog.set(recent);
-            this.rollLogStatus.set('ready');
-          }
-          if (!disposed) {
-            unsub = this.rollLogService.subscribeToCharacter(id, (event) => {
-              this.rollLog.update((prev) => {
-                if (prev.some((entry) => entry.id === event.id)) {
-                  return prev;
-                }
-                return [event, ...prev].slice(0, 50);
-              });
-            });
-          }
-        } catch {
-          if (!disposed) {
-            this.rollLogStatus.set('error');
-          }
-        }
-      })();
-      onCleanup(() => {
-        disposed = true;
-        if (unsub) {
-          unsub();
-        }
-      });
     });
   }
 
@@ -204,7 +158,7 @@ export class CharacterSheetComponent {
       return;
     }
     try {
-      const created = await this.rollLogService.createRoll({
+      await this.rollLogService.createRoll({
         characterId,
         userId: user.id,
         userEmail: user.email ?? 'unknown@user',
@@ -214,51 +168,7 @@ export class CharacterSheetComponent {
         modifier,
         total
       });
-      this.rollLog.update((prev) => {
-        if (prev.some((entry) => entry.id === created.id)) {
-          return prev;
-        }
-        return [created, ...prev].slice(0, 50);
-      });
-    } catch {
-      this.rollLogStatus.set('error');
-    }
-  }
-
-  clearRollLog(): void {
-    this.rollLog.set([]);
-  }
-
-  async sendChatMessage(): Promise<void> {
-    const message = this.chatDraft().trim();
-    if (!message) {
-      return;
-    }
-    const user = this.auth.user();
-    const characterId = this.characterId();
-    if (!user || !characterId) {
-      return;
-    }
-    this.chatSending.set(true);
-    try {
-      const created = await this.rollLogService.createMessage({
-        characterId,
-        userId: user.id,
-        userEmail: user.email ?? 'unknown@user',
-        message
-      });
-      this.chatDraft.set('');
-      this.rollLog.update((prev) => {
-        if (prev.some((entry) => entry.id === created.id)) {
-          return prev;
-        }
-        return [created, ...prev].slice(0, 50);
-      });
-    } catch {
-      this.rollLogStatus.set('error');
-    } finally {
-      this.chatSending.set(false);
-    }
+    } catch {}
   }
 
   formatModifier(modifier: number): string {

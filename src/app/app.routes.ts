@@ -54,6 +54,10 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/jutsu-compendium/jutsu-compendium.component').then((m) => m.JutsuCompendiumComponent)
       },
+      {
+        path: 'roll-log',
+        loadComponent: () => import('./pages/roll-log/roll-log.component').then((m) => m.RollLogComponent)
+      },
       { path: '**', redirectTo: 'home' }
     ]
   },
