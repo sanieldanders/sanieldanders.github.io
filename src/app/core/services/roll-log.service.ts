@@ -9,7 +9,7 @@ type RollEventRow = {
   character_id: string;
   user_id: string;
   user_email: string;
-  roller_name: string | null;
+  roller_name?: string | null;
   skill: string | null;
   ability: string | null;
   d20: number | null;
@@ -49,7 +49,7 @@ export class RollLogService {
   }
 
   async createRoll(input: NewRollEvent): Promise<RollEvent> {
-    const { data, error } = await this.auth.client
+    const primaryInsert = await this.auth.client
       .from('roll_events')
       .insert({
         event_type: 'roll',
@@ -65,10 +65,36 @@ export class RollLogService {
       })
       .select('*')
       .single();
-    if (error) {
-      throw error;
+    if (!primaryInsert.error) {
+      return this.fromRow(primaryInsert.data as RollEventRow);
     }
-    return this.fromRow(data as RollEventRow);
+
+    const missingRollerNameColumn =
+      primaryInsert.error.message.includes('roller_name') &&
+      primaryInsert.error.message.toLowerCase().includes('column');
+    if (!missingRollerNameColumn) {
+      throw primaryInsert.error;
+    }
+
+    const fallbackInsert = await this.auth.client
+      .from('roll_events')
+      .insert({
+        event_type: 'roll',
+        character_id: input.characterId,
+        user_id: input.userId,
+        user_email: input.userEmail,
+        skill: input.skill,
+        ability: input.ability,
+        d20: input.d20,
+        modifier: input.modifier,
+        total: input.total
+      })
+      .select('*')
+      .single();
+    if (fallbackInsert.error) {
+      throw fallbackInsert.error;
+    }
+    return this.fromRow(fallbackInsert.data as RollEventRow);
   }
 
   async createMessage(input: NewChatMessageEvent): Promise<RollEvent> {
