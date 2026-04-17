@@ -40,13 +40,25 @@
           <li class="rl-item">
             @if (e.kind === 'roll') {
               <span class="rl-item__tag">{{ e.total }}</span>
-              <span class="rl-item__body">
-                {{ e.rollerName || 'Unnamed character' }} rolled {{ e.skill }} ({{ e.ability }}) · d20 {{ e.d20 }}
-                {{ formatModifier(e.modifier ?? 0) }}
+              <span class="rl-item__body rl-item__body--roll">
+                <span class="rl-item__who">{{ e.rollerName || 'Unnamed character' }}</span>
+                <span class="rl-item__check">{{ e.skill }} ({{ e.ability }})</span>
+                <span class="rl-item__formula">{{ skillRollFormulaLine(e) }}</span>
+                <span class="rl-item__detail">d20: {{ e.d20 }}</span>
               </span>
             } @else {
               <span class="rl-item__tag rl-item__tag--msg">Chat</span>
-              <span class="rl-item__body">{{ e.userEmail }}: {{ e.message }}</span>
+              <span class="rl-item__body" [class.rl-item__body--roll-msg]="parseSlashRollMessage(e.message)">
+                @if (parseSlashRollMessage(e.message); as parsed) {
+                  <span class="rl-item__who">{{ parsed.who }}</span>
+                  <span class="rl-item__formula">{{ parsed.formula }} = {{ parsed.total }}</span>
+                  @if (parsed.breakdown) {
+                    <span class="rl-item__detail">{{ parsed.breakdown }}</span>
+                  }
+                } @else {
+                  {{ e.userEmail }}: {{ e.message }}
+                }
+              </span>
             }
             <span class="rl-item__time">{{ e.createdAt | date: 'shortTime' }}</span>
           </li>

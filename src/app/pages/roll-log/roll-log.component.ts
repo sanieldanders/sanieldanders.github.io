@@ -3,6 +3,13 @@ import { Component, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import type { RollEvent } from '../../core/models/roll-event.model';
+
+type ParsedSlashRoll = {
+  who: string;
+  formula: string;
+  total: string;
+  breakdown: string | null;
+};
 import { RollLogService } from '../../core/services/roll-log.service';
 import { SupabaseAuthService } from '../../core/services/supabase-auth.service';
 
@@ -103,6 +110,45 @@ export class RollLogComponent {
     return modifier >= 0 ? `+${modifier}` : `${modifier}`;
   }
 
+  /** Readable skill check line: `1d20+5 = 18` (modifier is the skill/ability bonus applied). */
+  skillRollFormulaLine(e: RollEvent): string {
+    const mod = this.formatModifier(e.modifier ?? 0);
+    return `1d20${mod} = ${e.total ?? '—'}`;
+  }
+
+  /**
+   * Parses `/roll` chat lines: `[ROLL] who: expression = total (breakdown)`.
+   */
+  parseSlashRollMessage(message: string | undefined): ParsedSlashRoll | null {
+    if (!message?.startsWith('[ROLL]')) {
+      return null;
+    }
+    const afterTag = message.slice(6).trim();
+    const colonIdx = afterTag.indexOf(':');
+    if (colonIdx < 0) {
+      return null;
+    }
+    const who = afterTag.slice(0, colonIdx).trim();
+    const rest = afterTag.slice(colonIdx + 1).trim();
+    const eqIdx = rest.indexOf('=');
+    if (eqIdx < 0) {
+      return null;
+    }
+    const formula = rest.slice(0, eqIdx).trim();
+    let afterEq = rest.slice(eqIdx + 1).trim();
+    let breakdown: string | null = null;
+    const open = afterEq.indexOf('(');
+    if (open >= 0) {
+      const close = afterEq.lastIndexOf(')');
+      const total = afterEq.slice(0, open).trim();
+      if (close > open) {
+        breakdown = afterEq.slice(open + 1, close).trim();
+      }
+      return { who, formula, total, breakdown };
+    }
+    return { who, formula, total: afterEq, breakdown: null };
+  }
+
   private tryBuildRollMessage(input: string): string | null {
     if (!input.toLowerCase().startsWith('/roll ')) {
       return null;
@@ -165,7 +211,7 @@ export class RollLogComponent {
 
     const userEmail = this.auth.user()?.email ?? 'unknown@user';
     const breakdown = parts.join(' ').replace(/^\+/, '');
-    return `[ROLL] ${userEmail} rolled ${expression} = ${total} (${breakdown})`;
+    return `[ROLL] ${userEmail}: ${expression} = ${total} (${breakdown})`;
   }
 
   private rollDie(sides: number): number {
