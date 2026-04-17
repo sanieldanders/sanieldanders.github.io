@@ -19,6 +19,8 @@ type RollEventRow = {
   created_at: string;
 };
 
+const ROLLER_NAME_FALLBACK_PREFIX = '__roller_name__:';
+
 @Injectable({ providedIn: 'root' })
 export class RollLogService {
   private readonly auth = inject(SupabaseAuthService);
@@ -83,6 +85,7 @@ export class RollLogService {
         character_id: input.characterId,
         user_id: input.userId,
         user_email: input.userEmail,
+        message: `${ROLLER_NAME_FALLBACK_PREFIX}${input.rollerName}`,
         skill: input.skill,
         ability: input.ability,
         d20: input.d20,
@@ -165,20 +168,35 @@ export class RollLogService {
   }
 
   private fromRow(row: RollEventRow): RollEvent {
+    const parsedFallbackRollerName = this.parseFallbackRollerName(row.message);
     return {
       id: row.id,
       kind: row.event_type,
       characterId: row.character_id,
       userId: row.user_id,
       userEmail: row.user_email,
-      rollerName: row.roller_name ?? undefined,
+      rollerName: row.roller_name ?? parsedFallbackRollerName ?? undefined,
       skill: row.skill ?? undefined,
       ability: (row.ability as RollEvent['ability']) ?? undefined,
       d20: row.d20 ?? undefined,
       modifier: row.modifier ?? undefined,
       total: row.total ?? undefined,
-      message: row.message ?? undefined,
+      message: this.stripFallbackRollerName(row.message) ?? undefined,
       createdAt: row.created_at
     };
+  }
+
+  private parseFallbackRollerName(message: string | null): string | null {
+    if (!message || !message.startsWith(ROLLER_NAME_FALLBACK_PREFIX)) {
+      return null;
+    }
+    return message.slice(ROLLER_NAME_FALLBACK_PREFIX.length).trim() || null;
+  }
+
+  private stripFallbackRollerName(message: string | null): string | null {
+    if (!message || !message.startsWith(ROLLER_NAME_FALLBACK_PREFIX)) {
+      return message;
+    }
+    return null;
   }
 }
