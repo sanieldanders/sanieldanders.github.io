@@ -33,6 +33,8 @@ function entryHaystack(e: JutsuCompendiumEntry): string {
     .toLowerCase();
 }
 
+const BASE_RELEASE_TYPES = ['Earth Release', 'Fire Release', 'Lightning Release', 'Water Release', 'Wind Release'];
+
 @Component({
   selector: 'app-jutsu-compendium',
   imports: [RouterLink, TitleCasePipe],
@@ -82,8 +84,13 @@ export class JutsuCompendiumComponent {
       if (classification && (e.classification ?? '') !== classification) {
         return false;
       }
-      if (release && !(e.keywords ?? []).includes(release)) {
-        return false;
+      if (release) {
+        const releaseLower = release.toLowerCase();
+        const hasReleaseKeyword = (e.keywords ?? []).some((k) => k.toLowerCase() === releaseLower);
+        const hasReleaseText = entryHaystack(e).includes(releaseLower);
+        if (!hasReleaseKeyword && !hasReleaseText) {
+          return false;
+        }
       }
       if (keyword && !(e.keywords ?? []).includes(keyword)) {
         return false;
@@ -102,9 +109,9 @@ export class JutsuCompendiumComponent {
   readonly releaseTypes = computed(() =>
     Array.from(
       new Set(
-        this.entries()
+        [...BASE_RELEASE_TYPES, ...this.entries()
           .flatMap((e) => e.keywords ?? [])
-          .filter((k) => /release/i.test(k))
+          .filter((k) => /release/i.test(k))]
       )
     ).sort()
   );
