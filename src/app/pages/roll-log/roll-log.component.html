@@ -41,11 +41,8 @@
             @if (e.kind === 'roll') {
               <span class="rl-item__tag">{{ e.total }}</span>
               <span class="rl-item__body">
-                {{ e.rollerName || e.userEmail }} rolled {{ e.skill }} ({{ e.ability }}) · d20 {{ e.d20 }}
+                {{ e.rollerName || 'Unnamed character' }} rolled {{ e.skill }} ({{ e.ability }}) · d20 {{ e.d20 }}
                 {{ formatModifier(e.modifier ?? 0) }}
-                @if (e.characterId !== 'global') {
-                  <span> · character: {{ e.characterId }}</span>
-                }
               </span>
             } @else {
               <span class="rl-item__tag rl-item__tag--msg">Chat</span>
