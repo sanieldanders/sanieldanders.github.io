@@ -115,18 +115,41 @@ create policy "user_account_profiles_delete_own"
 
 create table if not exists public.roll_events (
   id uuid primary key default gen_random_uuid(),
+  event_type text not null default 'roll' check (event_type in ('roll', 'message')),
   character_id text not null,
   user_id uuid not null references auth.users (id) on delete cascade,
   user_email text not null,
-  skill text not null,
-  ability text not null,
-  d20 smallint not null check (d20 between 1 and 20),
-  modifier integer not null,
-  total integer not null,
+  skill text,
+  ability text,
+  d20 smallint check (d20 between 1 and 20),
+  modifier integer,
+  total integer,
+  message text,
   created_at timestamptz not null default now()
 );
 
 comment on table public.roll_events is 'Shared, realtime dice roll events keyed by character_id.';
+
+alter table public.roll_events add column if not exists event_type text;
+alter table public.roll_events add column if not exists message text;
+alter table public.roll_events alter column event_type set default 'roll';
+update public.roll_events set event_type = 'roll' where event_type is null;
+alter table public.roll_events alter column event_type set not null;
+alter table public.roll_events drop constraint if exists roll_events_event_type_check;
+alter table public.roll_events
+  add constraint roll_events_event_type_check check (event_type in ('roll', 'message'));
+alter table public.roll_events alter column skill drop not null;
+alter table public.roll_events alter column ability drop not null;
+alter table public.roll_events alter column d20 drop not null;
+alter table public.roll_events alter column modifier drop not null;
+alter table public.roll_events alter column total drop not null;
+alter table public.roll_events drop constraint if exists roll_events_payload_check;
+alter table public.roll_events
+  add constraint roll_events_payload_check check (
+    (event_type = 'roll' and skill is not null and ability is not null and d20 is not null and modifier is not null and total is not null)
+    or
+    (event_type = 'message' and message is not null and length(trim(message)) > 0)
+  );
 
 create index if not exists idx_roll_events_character_created
   on public.roll_events (character_id, created_at desc);

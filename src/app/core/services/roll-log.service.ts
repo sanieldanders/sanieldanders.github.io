@@ -1,18 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import type { RealtimeChannel } from '@supabase/supabase-js';
-import type { NewRollEvent, RollEvent } from '../models/roll-event.model';
+import type { NewChatMessageEvent, NewRollEvent, RollEvent } from '../models/roll-event.model';
 import { SupabaseAuthService } from './supabase-auth.service';
 
 type RollEventRow = {
   id: string;
+  event_type: 'roll' | 'message';
   character_id: string;
   user_id: string;
   user_email: string;
-  skill: string;
-  ability: string;
-  d20: number;
-  modifier: number;
-  total: number;
+  skill: string | null;
+  ability: string | null;
+  d20: number | null;
+  modifier: number | null;
+  total: number | null;
+  message: string | null;
   created_at: string;
 };
 
@@ -37,6 +39,7 @@ export class RollLogService {
     const { data, error } = await this.auth.client
       .from('roll_events')
       .insert({
+        event_type: 'roll',
         character_id: input.characterId,
         user_id: input.userId,
         user_email: input.userEmail,
@@ -45,6 +48,24 @@ export class RollLogService {
         d20: input.d20,
         modifier: input.modifier,
         total: input.total
+      })
+      .select('*')
+      .single();
+    if (error) {
+      throw error;
+    }
+    return this.fromRow(data as RollEventRow);
+  }
+
+  async createMessage(input: NewChatMessageEvent): Promise<RollEvent> {
+    const { data, error } = await this.auth.client
+      .from('roll_events')
+      .insert({
+        event_type: 'message',
+        character_id: input.characterId,
+        user_id: input.userId,
+        user_email: input.userEmail,
+        message: input.message.trim()
       })
       .select('*')
       .single();
@@ -82,14 +103,16 @@ export class RollLogService {
   private fromRow(row: RollEventRow): RollEvent {
     return {
       id: row.id,
+      kind: row.event_type,
       characterId: row.character_id,
       userId: row.user_id,
       userEmail: row.user_email,
-      skill: row.skill,
-      ability: row.ability as RollEvent['ability'],
-      d20: row.d20,
-      modifier: row.modifier,
-      total: row.total,
+      skill: row.skill ?? undefined,
+      ability: (row.ability as RollEvent['ability']) ?? undefined,
+      d20: row.d20 ?? undefined,
+      modifier: row.modifier ?? undefined,
+      total: row.total ?? undefined,
+      message: row.message ?? undefined,
       createdAt: row.created_at
     };
   }

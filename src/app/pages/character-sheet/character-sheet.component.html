@@ -74,16 +74,36 @@
       } @else if (rollLogStatus() === 'error') {
         <p class="cs-roll-log__state cs-roll-log__state--error">Roll feed unavailable right now.</p>
       }
+      <div class="cs-roll-log__composer">
+        <input
+          class="cs-roll-log__input"
+          type="text"
+          placeholder="Send chat to everyone on this character…"
+          [ngModel]="chatDraft()"
+          (ngModelChange)="chatDraft.set($event)"
+          (keydown.enter)="sendChatMessage()"
+        />
+        <button type="button" class="cs-roll-log__send" [disabled]="chatSending()" (click)="sendChatMessage()">
+          Send
+        </button>
+      </div>
       @if (rollLog().length === 0) {
         <p class="cs-roll-log__empty">Click a skill Roll button to log 1d20 checks here.</p>
       } @else {
         <ul class="cs-roll-log__list">
           @for (r of rollLog(); track r.id) {
             <li class="cs-roll-log__item">
-              <span class="cs-roll-log__total">{{ r.total }}</span>
-              <span class="cs-roll-log__detail">
-                {{ r.userEmail }} · {{ r.skill }} ({{ r.ability }}) · d20 {{ r.d20 }} {{ formatModifier(r.modifier) }}
-              </span>
+              @if (r.kind === 'roll') {
+                <span class="cs-roll-log__total">{{ r.total }}</span>
+                <span class="cs-roll-log__detail">
+                  {{ r.userEmail }} · {{ r.skill }} ({{ r.ability }}) · d20 {{ r.d20 }} {{ formatModifier(r.modifier ?? 0) }}
+                </span>
+              } @else {
+                <span class="cs-roll-log__total cs-roll-log__total--msg">Chat</span>
+                <span class="cs-roll-log__detail">
+                  {{ r.userEmail }}: {{ r.message }}
+                </span>
+              }
               <span class="cs-roll-log__time">{{ r.createdAt | date: 'shortTime' }}</span>
             </li>
           }

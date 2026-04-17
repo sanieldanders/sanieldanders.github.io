@@ -46,6 +46,8 @@ export class CharacterSheetComponent {
   readonly jutsuLineIndexes = Array.from({ length: JUTSU_LIST_LINES_PER_RANK }, (_, i) => i);
   readonly rollLog = signal<RollEvent[]>([]);
   readonly rollLogStatus = signal<'connecting' | 'ready' | 'error'>('connecting');
+  readonly chatDraft = signal('');
+  readonly chatSending = signal(false);
 
   readonly jutsuColumnRanks: ReadonlyArray<readonly JutsuRank[]> = [
     ['E', 'D'],
@@ -225,6 +227,38 @@ export class CharacterSheetComponent {
 
   clearRollLog(): void {
     this.rollLog.set([]);
+  }
+
+  async sendChatMessage(): Promise<void> {
+    const message = this.chatDraft().trim();
+    if (!message) {
+      return;
+    }
+    const user = this.auth.user();
+    const characterId = this.characterId();
+    if (!user || !characterId) {
+      return;
+    }
+    this.chatSending.set(true);
+    try {
+      const created = await this.rollLogService.createMessage({
+        characterId,
+        userId: user.id,
+        userEmail: user.email ?? 'unknown@user',
+        message
+      });
+      this.chatDraft.set('');
+      this.rollLog.update((prev) => {
+        if (prev.some((entry) => entry.id === created.id)) {
+          return prev;
+        }
+        return [created, ...prev].slice(0, 50);
+      });
+    } catch {
+      this.rollLogStatus.set('error');
+    } finally {
+      this.chatSending.set(false);
+    }
   }
 
   formatModifier(modifier: number): string {
