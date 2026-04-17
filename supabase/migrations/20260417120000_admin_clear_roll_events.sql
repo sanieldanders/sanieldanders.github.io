@@ -16,7 +16,8 @@ begin
   if not exists (select 1 from public.admin_users au where au.user_id = uid) then
     raise exception 'Not authorized';
   end if;
-  delete from public.roll_events;
+  -- Some hosts require DELETE to include a WHERE clause (bare DELETE is rejected).
+  delete from public.roll_events where true;
 end;
 $$;
 
