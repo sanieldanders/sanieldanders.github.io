@@ -1,4 +1,4 @@
-import { TitleCasePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -19,9 +19,19 @@ import {
 } from '../../core/models/app-data.model';
 import { DataStoreService } from '../../core/services/data-store.service';
 
+interface SkillRollLogEntry {
+  id: string;
+  skill: string;
+  ability: AbilityAbbr;
+  d20: number;
+  modifier: number;
+  total: number;
+  timestamp: Date;
+}
+
 @Component({
   selector: 'app-character-sheet',
-  imports: [RouterLink, FormsModule, TitleCasePipe],
+  imports: [RouterLink, FormsModule, TitleCasePipe, DatePipe],
   templateUrl: './character-sheet.component.html',
   styleUrl: './character-sheet.component.scss'
 })
@@ -39,6 +49,7 @@ export class CharacterSheetComponent {
   readonly sheetTab = signal<'main' | 'profile' | 'jutsu'>('main');
 
   readonly jutsuLineIndexes = Array.from({ length: JUTSU_LIST_LINES_PER_RANK }, (_, i) => i);
+  readonly rollLog = signal<SkillRollLogEntry[]>([]);
 
   readonly jutsuColumnRanks: ReadonlyArray<readonly JutsuRank[]> = [
     ['E', 'D'],
@@ -133,6 +144,52 @@ export class CharacterSheetComponent {
     this.patch((ch) => {
       ch.sheet.abilities[abbr].skills[skill].mod = value;
     });
+  }
+
+  rollSkill(abbr: AbilityAbbr, skill: string): void {
+    const ch = this.draft();
+    if (!ch) {
+      return;
+    }
+    const skillModRaw = ch.sheet.abilities[abbr].skills[skill]?.mod ?? '';
+    const abilityModRaw = ch.sheet.abilities[abbr].mod ?? '';
+    const modifier = this.parseModifier(skillModRaw) ?? this.parseModifier(abilityModRaw) ?? 0;
+    const d20 = this.rollDie(20);
+    const total = d20 + modifier;
+    const entry: SkillRollLogEntry = {
+      id: crypto.randomUUID(),
+      skill,
+      ability: abbr,
+      d20,
+      modifier,
+      total,
+      timestamp: new Date()
+    };
+    this.rollLog.update((prev) => [entry, ...prev].slice(0, 30));
+  }
+
+  clearRollLog(): void {
+    this.rollLog.set([]);
+  }
+
+  formatModifier(modifier: number): string {
+    return modifier >= 0 ? `+${modifier}` : `${modifier}`;
+  }
+
+  private parseModifier(value: string): number | null {
+    const cleaned = value.trim().replace(/\s+/g, '');
+    if (!cleaned) {
+      return null;
+    }
+    const n = Number.parseInt(cleaned, 10);
+    if (Number.isNaN(n)) {
+      return null;
+    }
+    return n;
+  }
+
+  private rollDie(sides: number): number {
+    return Math.floor(Math.random() * sides) + 1;
   }
 
   cycleSkillDot(abbr: AbilityAbbr, skill: string): void {

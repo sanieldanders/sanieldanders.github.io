@@ -62,6 +62,29 @@
     </div>
 
     @if (sheetTab() === 'main') {
+    <section class="cs-roll-log" aria-label="Skill dice rolls">
+      <div class="cs-roll-log__head">
+        <h3>Dice roll log</h3>
+        @if (rollLog().length > 0) {
+          <button type="button" class="cs-roll-log__clear" (click)="clearRollLog()">Clear</button>
+        }
+      </div>
+      @if (rollLog().length === 0) {
+        <p class="cs-roll-log__empty">Click a skill Roll button to log 1d20 checks here.</p>
+      } @else {
+        <ul class="cs-roll-log__list">
+          @for (r of rollLog(); track r.id) {
+            <li class="cs-roll-log__item">
+              <span class="cs-roll-log__total">{{ r.total }}</span>
+              <span class="cs-roll-log__detail">
+                {{ r.skill }} ({{ r.ability }}) · d20 {{ r.d20 }} {{ formatModifier(r.modifier) }}
+              </span>
+              <span class="cs-roll-log__time">{{ r.timestamp | date: 'shortTime' }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
     <div class="cs-paper">
       <div class="cs-ornament cs-ornament--tl" aria-hidden="true"></div>
       <div class="cs-ornament cs-ornament--tr" aria-hidden="true"></div>
@@ -199,6 +222,7 @@
                       [ngModel]="ch.sheet.abilities[a.abbr].skills[sk].mod"
                       (ngModelChange)="onSkillMod(a.abbr, sk, $event)"
                     />
+                    <button type="button" class="cs-skill__roll" (click)="rollSkill(a.abbr, sk)">Roll</button>
                   </li>
                 }
               </ul>
