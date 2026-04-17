@@ -208,3 +208,6 @@ $$;
 comment on function public.admin_clear_roll_events() is 'Deletes all rows from roll_events; restricted to admin_users.';
 
 grant execute on function public.admin_clear_roll_events() to authenticated;
+
+-- Help PostgREST pick up new/updated RPCs immediately (otherwise you may see “schema cache” errors until reload).
+notify pgrst, 'reload schema';
