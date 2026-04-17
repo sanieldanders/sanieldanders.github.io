@@ -35,6 +35,42 @@
         <option value="BUKIJUTSU">Bukijutsu</option>
       </select>
     </label>
+    <label class="jc-filter">
+      <span class="jc-filter__label">Entry type</span>
+      <select class="jc-filter__select" [value]="kindFilter()" (change)="onKindChange($event)">
+        <option value="">All</option>
+        <option value="jutsu">Jutsu</option>
+        <option value="summonStat">Summon stat block</option>
+        <option value="rules">Rules reference</option>
+      </select>
+    </label>
+    <label class="jc-filter">
+      <span class="jc-filter__label">Jutsu type</span>
+      <select class="jc-filter__select" [value]="classificationFilter()" (change)="onClassificationChange($event)">
+        <option value="">All</option>
+        @for (c of classifications(); track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+    </label>
+    <label class="jc-filter">
+      <span class="jc-filter__label">Release type</span>
+      <select class="jc-filter__select" [value]="releaseFilter()" (change)="onReleaseChange($event)">
+        <option value="">All</option>
+        @for (r of releaseTypes(); track r) {
+          <option [value]="r">{{ r }}</option>
+        }
+      </select>
+    </label>
+    <label class="jc-filter">
+      <span class="jc-filter__label">Keyword</span>
+      <select class="jc-filter__select" [value]="keywordFilter()" (change)="onKeywordChange($event)">
+        <option value="">All</option>
+        @for (k of keywords(); track k) {
+          <option [value]="k">{{ k }}</option>
+        }
+      </select>
+    </label>
     @if (entries().length) {
       <p class="jc-toolbar__meta">{{ matchCount() }} shown</p>
     }

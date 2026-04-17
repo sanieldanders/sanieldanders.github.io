@@ -48,6 +48,10 @@ export class JutsuCompendiumComponent {
   readonly entries = signal<JutsuCompendiumEntry[]>([]);
   readonly searchQuery = signal('');
   readonly majorFilter = signal<string>('');
+  readonly kindFilter = signal<string>('');
+  readonly classificationFilter = signal<string>('');
+  readonly releaseFilter = signal<string>('');
+  readonly keywordFilter = signal<string>('');
   readonly selectedId = signal<string | null>(null);
 
   private readonly closeBtn = viewChild<ElementRef<HTMLButtonElement>>('closeBtn');
@@ -64,8 +68,24 @@ export class JutsuCompendiumComponent {
     const list = this.entries();
     const q = this.searchQuery().trim().toLowerCase();
     const maj = this.majorFilter();
+    const kind = this.kindFilter();
+    const classification = this.classificationFilter();
+    const release = this.releaseFilter();
+    const keyword = this.keywordFilter();
     return list.filter((e) => {
       if (maj && (e.major ?? '') !== maj) {
+        return false;
+      }
+      if (kind && e.kind !== kind) {
+        return false;
+      }
+      if (classification && (e.classification ?? '') !== classification) {
+        return false;
+      }
+      if (release && !(e.keywords ?? []).includes(release)) {
+        return false;
+      }
+      if (keyword && !(e.keywords ?? []).includes(keyword)) {
         return false;
       }
       if (!q) {
@@ -76,6 +96,23 @@ export class JutsuCompendiumComponent {
   });
 
   readonly matchCount = computed(() => this.filteredEntries().length);
+  readonly classifications = computed(() =>
+    Array.from(new Set(this.entries().map((e) => e.classification).filter((v): v is string => Boolean(v)))).sort()
+  );
+  readonly releaseTypes = computed(() =>
+    Array.from(
+      new Set(
+        this.entries()
+          .flatMap((e) => e.keywords ?? [])
+          .filter((k) => /release/i.test(k))
+      )
+    ).sort()
+  );
+  readonly keywords = computed(() =>
+    Array.from(new Set(this.entries().flatMap((e) => e.keywords ?? [])))
+      .filter((k) => !/release/i.test(k))
+      .sort()
+  );
 
   readonly modalNav = computed(() => {
     const cur = this.selectedEntry();
@@ -133,6 +170,22 @@ export class JutsuCompendiumComponent {
 
   onMajorChange(event: Event): void {
     this.majorFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  onKindChange(event: Event): void {
+    this.kindFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  onClassificationChange(event: Event): void {
+    this.classificationFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  onReleaseChange(event: Event): void {
+    this.releaseFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  onKeywordChange(event: Event): void {
+    this.keywordFilter.set((event.target as HTMLSelectElement).value);
   }
 
   openEntry(e: JutsuCompendiumEntry): void {
