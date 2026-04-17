@@ -5,7 +5,6 @@
       <nav class="shell__nav">
         <a routerLink="/home" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
         <a routerLink="/characters" routerLinkActive="is-active">Characters</a>
-        <a routerLink="/roll-log" routerLinkActive="is-active">Roll log</a>
         <a routerLink="/encyclopedia" routerLinkActive="is-active">Encyclopedia</a>
         <a routerLink="/compendium" routerLinkActive="is-active">Jutsu compendium</a>
         @if (showAdmin()) {
@@ -29,7 +28,19 @@
       </div>
     </header>
   }
-  <main class="shell__main">
-    <router-outlet />
-  </main>
+  @if (!isLoginRoute() && userEmail()) {
+    <button type="button" class="shell__roll-toggle" (click)="toggleRollSidebar()">
+      {{ showRollSidebar() ? 'Hide log' : 'Show log' }}
+    </button>
+  }
+  <div class="shell__content" [class.shell__content--with-sidebar]="showRollSidebar()">
+    <main class="shell__main">
+      <router-outlet />
+    </main>
+    @if (showRollSidebar()) {
+      <aside class="shell__sidebar" aria-label="Shared roll and chat log">
+        <app-roll-log [sidebarMode]="true" />
+      </aside>
+    }
+  </div>
 </div>

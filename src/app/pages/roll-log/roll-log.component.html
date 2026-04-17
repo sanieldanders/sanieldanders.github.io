@@ -1,9 +1,11 @@
-<div class="rl-page">
-  <nav class="rl-nav">
-    <a routerLink="/home" class="rl-nav__link">← Home</a>
-  </nav>
+<div class="rl-page" [class.rl-page--sidebar]="sidebarMode()">
+  @if (!sidebarMode()) {
+    <nav class="rl-nav">
+      <a routerLink="/home" class="rl-nav__link">← Home</a>
+    </nav>
+  }
 
-  <section class="rl-panel" aria-label="Shared dice and chat feed">
+  <section class="rl-panel" [class.rl-panel--sidebar]="sidebarMode()" aria-label="Shared dice and chat feed">
     <div class="rl-panel__head">
       <h1>Shared roll log</h1>
       <p>All logged-in players can see this realtime feed.</p>
@@ -26,6 +28,9 @@
       />
       <button type="button" class="rl-compose__btn" [disabled]="chatSending()" (click)="sendChatMessage()">Send</button>
     </div>
+    @if (commandError(); as err) {
+      <p class="rl-state rl-state--error">{{ err }}</p>
+    }
 
     @if (events().length === 0) {
       <p class="rl-empty">No rolls yet.</p>
@@ -36,7 +41,8 @@
             @if (e.kind === 'roll') {
               <span class="rl-item__tag">{{ e.total }}</span>
               <span class="rl-item__body">
-                {{ e.userEmail }} rolled {{ e.skill }} ({{ e.ability }}) · d20 {{ e.d20 }} {{ formatModifier(e.modifier ?? 0) }}
+                {{ e.rollerName || e.userEmail }} rolled {{ e.skill }} ({{ e.ability }}) · d20 {{ e.d20 }}
+                {{ formatModifier(e.modifier ?? 0) }}
                 @if (e.characterId !== 'global') {
                   <span> · character: {{ e.characterId }}</span>
                 }

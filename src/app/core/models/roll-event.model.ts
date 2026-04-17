@@ -8,6 +8,7 @@ export interface RollEvent {
   characterId: string;
   userId: string;
   userEmail: string;
+  rollerName?: string;
   skill?: string;
   ability?: AbilityAbbr;
   d20?: number;
@@ -21,6 +22,7 @@ export interface NewRollEvent {
   characterId: string;
   userId: string;
   userEmail: string;
+  rollerName: string;
   skill: string;
   ability: AbilityAbbr;
   d20: number;

@@ -162,6 +162,7 @@ export class CharacterSheetComponent {
         characterId,
         userId: user.id,
         userEmail: user.email ?? 'unknown@user',
+        rollerName: ch.name.trim() || user.email || 'Unknown roller',
         skill,
         ability: abbr,
         d20,

@@ -9,6 +9,7 @@ type RollEventRow = {
   character_id: string;
   user_id: string;
   user_email: string;
+  roller_name: string | null;
   skill: string | null;
   ability: string | null;
   d20: number | null;
@@ -55,6 +56,7 @@ export class RollLogService {
         character_id: input.characterId,
         user_id: input.userId,
         user_email: input.userEmail,
+        roller_name: input.rollerName,
         skill: input.skill,
         ability: input.ability,
         d20: input.d20,
@@ -143,6 +145,7 @@ export class RollLogService {
       characterId: row.character_id,
       userId: row.user_id,
       userEmail: row.user_email,
+      rollerName: row.roller_name ?? undefined,
       skill: row.skill ?? undefined,
       ability: (row.ability as RollEvent['ability']) ?? undefined,
       d20: row.d20 ?? undefined,
