@@ -51,4 +51,12 @@ export class AdminService {
     }
     return (data ?? []) as AdminUserDataRow[];
   }
+
+  /** Removes every row from `roll_events` (shared dice + chat). Requires admin_users membership. */
+  async clearRollLog(): Promise<void> {
+    const { error } = await this.auth.client.rpc('admin_clear_roll_events');
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
 }

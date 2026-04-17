@@ -7,7 +7,19 @@
 
   <section class="rl-panel" [class.rl-panel--sidebar]="sidebarMode()" aria-label="Shared dice and chat feed">
     <div class="rl-panel__head">
-      <h1>Shared roll log</h1>
+      <div class="rl-panel__head-row">
+        <h1>Shared roll log</h1>
+        @if (admin.isAdmin()) {
+          <button
+            type="button"
+            class="rl-panel__clear"
+            [disabled]="clearBusy()"
+            (click)="clearEntireLog()"
+          >
+            {{ clearBusy() ? 'Clearing…' : 'Clear log' }}
+          </button>
+        }
+      </div>
       <p>All logged-in players can see this realtime feed.</p>
     </div>
 
@@ -39,19 +51,23 @@
         @for (e of events(); track e.id) {
           <li class="rl-item">
             @if (e.kind === 'roll') {
-              <span class="rl-item__tag">{{ e.total }}</span>
+              <span class="rl-item__tag" [ngClass]="natClasses(skillD20Highlight(e))">{{ e.total }}</span>
               <span class="rl-item__body rl-item__body--roll">
                 <span class="rl-item__who">{{ e.rollerName || 'Unnamed character' }}</span>
                 <span class="rl-item__check">{{ e.skill }} ({{ e.ability }})</span>
-                <span class="rl-item__formula">{{ skillRollFormulaLine(e) }}</span>
-                <span class="rl-item__detail">d20: {{ e.d20 }}</span>
+                <span class="rl-item__formula" [ngClass]="natClasses(skillD20Highlight(e))">{{
+                  skillRollFormulaLine(e)
+                }}</span>
+                <span class="rl-item__detail" [ngClass]="natClasses(skillD20Highlight(e))">d20: {{ e.d20 }}</span>
               </span>
             } @else {
               <span class="rl-item__tag rl-item__tag--msg">Chat</span>
               <span class="rl-item__body" [class.rl-item__body--roll-msg]="parseSlashRollMessage(e.message)">
                 @if (parseSlashRollMessage(e.message); as parsed) {
                   <span class="rl-item__who">{{ parsed.who }}</span>
-                  <span class="rl-item__formula">{{ parsed.formula }} = {{ parsed.total }}</span>
+                  <span class="rl-item__formula" [ngClass]="natClasses(slashD20Highlight(parsed))"
+                    >{{ parsed.formula }} = {{ parsed.total }}</span
+                  >
                   @if (parsed.breakdown) {
                     <span class="rl-item__detail">{{ parsed.breakdown }}</span>
                   }

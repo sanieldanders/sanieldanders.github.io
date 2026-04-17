@@ -1,8 +1,11 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import type { RollEvent } from '../../core/models/roll-event.model';
+import { AdminService } from '../../core/services/admin.service';
+import { RollLogService } from '../../core/services/roll-log.service';
+import { SupabaseAuthService } from '../../core/services/supabase-auth.service';
 
 type ParsedSlashRoll = {
   who: string;
@@ -10,24 +13,26 @@ type ParsedSlashRoll = {
   total: string;
   breakdown: string | null;
 };
-import { RollLogService } from '../../core/services/roll-log.service';
-import { SupabaseAuthService } from '../../core/services/supabase-auth.service';
+
+type NatHighlight = 'nat1' | 'nat20' | null;
 
 @Component({
   selector: 'app-roll-log',
-  imports: [RouterLink, FormsModule, DatePipe],
+  imports: [RouterLink, FormsModule, DatePipe, NgClass],
   templateUrl: './roll-log.component.html',
   styleUrl: './roll-log.component.scss'
 })
 export class RollLogComponent {
   private readonly auth = inject(SupabaseAuthService);
   private readonly rollLogService = inject(RollLogService);
+  readonly admin = inject(AdminService);
 
   readonly events = signal<RollEvent[]>([]);
   readonly status = signal<'connecting' | 'ready' | 'error'>('connecting');
   readonly chatDraft = signal('');
   readonly chatSending = signal(false);
   readonly commandError = signal<string | null>(null);
+  readonly clearBusy = signal(false);
   readonly sidebarMode = input(false);
 
   private readonly allowedDice = new Set([4, 6, 8, 10, 12, 20, 100]);
@@ -40,6 +45,7 @@ export class RollLogComponent {
       void (async () => {
         try {
           await this.auth.init();
+          await this.admin.refreshAdminState();
           const recent = await this.rollLogService.loadRecentGlobal();
           if (!disposed) {
             this.events.set(recent);
@@ -68,6 +74,25 @@ export class RollLogComponent {
         }
       });
     });
+  }
+
+  async clearEntireLog(): Promise<void> {
+    await this.admin.refreshAdminState();
+    if (!this.admin.isAdmin()) {
+      return;
+    }
+    if (!window.confirm('Clear the entire roll and chat log for everyone? This cannot be undone.')) {
+      return;
+    }
+    this.clearBusy.set(true);
+    try {
+      await this.admin.clearRollLog();
+      this.events.set([]);
+    } catch (error) {
+      this.commandError.set((error as Error).message);
+    } finally {
+      this.clearBusy.set(false);
+    }
   }
 
   async sendChatMessage(): Promise<void> {
@@ -114,6 +139,58 @@ export class RollLogComponent {
   skillRollFormulaLine(e: RollEvent): string {
     const mod = this.formatModifier(e.modifier ?? 0);
     return `1d20${mod} = ${e.total ?? '—'}`;
+  }
+
+  /** Skill / save rolls: color by natural d20 on the die. */
+  skillD20Highlight(e: RollEvent): NatHighlight {
+    const n = e.d20;
+    if (n === 1) {
+      return 'nat1';
+    }
+    if (n === 20) {
+      return 'nat20';
+    }
+    return null;
+  }
+
+  /** `/roll` lines: inspect d20[n,…] groups in the stored breakdown. */
+  slashD20Highlight(parsed: ParsedSlashRoll): NatHighlight {
+    return this.natHighlightFromBreakdown(parsed.breakdown);
+  }
+
+  private natHighlightFromBreakdown(breakdown: string | null): NatHighlight {
+    if (!breakdown) {
+      return null;
+    }
+    const values: number[] = [];
+    const re = /\d*d20\[([^\]]+)\]/gi;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(breakdown)) !== null) {
+      const inner = m[1];
+      for (const part of inner.split(',')) {
+        const n = Number.parseInt(part.trim(), 10);
+        if (Number.isFinite(n)) {
+          values.push(n);
+        }
+      }
+    }
+    if (values.length === 0) {
+      return null;
+    }
+    if (values.some((v) => v === 20)) {
+      return 'nat20';
+    }
+    if (values.some((v) => v === 1)) {
+      return 'nat1';
+    }
+    return null;
+  }
+
+  natClasses(kind: NatHighlight): Record<string, boolean> {
+    return {
+      'rl-nat20': kind === 'nat20',
+      'rl-nat1': kind === 'nat1'
+    };
   }
 
   /**
