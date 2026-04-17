@@ -17,14 +17,7 @@ import { TitleCasePipe } from '@angular/common';
 import type { JutsuCompendiumEntry, JutsuCompendiumPayload } from '../../core/models/jutsu-compendium.model';
 
 function compendiumJsonHref(doc: Document): string {
-  const path = doc.location.pathname.replace(/\/$/, '') || '/';
-  const segs = path.split('/').filter(Boolean);
-  if (segs.length > 0) {
-    segs.pop();
-  }
-  const basePath = segs.length ? `/${segs.join('/')}/` : '/';
-  const u = new URL('jutsu-compendium.json', `${doc.location.origin}${basePath}`);
-  return u.href;
+  return new URL('jutsu-compendium.json', doc.baseURI).href;
 }
 
 function entryHaystack(e: JutsuCompendiumEntry): string {
