@@ -108,3 +108,51 @@ drop policy if exists "user_account_profiles_delete_own" on public.user_account_
 create policy "user_account_profiles_delete_own"
   on public.user_account_profiles for delete
   using (auth.uid() = user_id);
+
+-- ---------------------------------------------------------------------------
+-- 3) Shared dice roll feed (realtime) by character_id
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.roll_events (
+  id uuid primary key default gen_random_uuid(),
+  character_id text not null,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  user_email text not null,
+  skill text not null,
+  ability text not null,
+  d20 smallint not null check (d20 between 1 and 20),
+  modifier integer not null,
+  total integer not null,
+  created_at timestamptz not null default now()
+);
+
+comment on table public.roll_events is 'Shared, realtime dice roll events keyed by character_id.';
+
+create index if not exists idx_roll_events_character_created
+  on public.roll_events (character_id, created_at desc);
+
+alter table public.roll_events enable row level security;
+
+drop policy if exists "roll_events_select_authenticated" on public.roll_events;
+create policy "roll_events_select_authenticated"
+  on public.roll_events for select
+  using (auth.uid() is not null);
+
+drop policy if exists "roll_events_insert_self" on public.roll_events;
+create policy "roll_events_insert_self"
+  on public.roll_events for insert
+  with check (auth.uid() = user_id);
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'roll_events'
+  ) then
+    alter publication supabase_realtime add table public.roll_events;
+  end if;
+end;
+$$;

@@ -69,6 +69,11 @@
           <button type="button" class="cs-roll-log__clear" (click)="clearRollLog()">Clear</button>
         }
       </div>
+      @if (rollLogStatus() === 'connecting') {
+        <p class="cs-roll-log__state">Connecting to shared roll feed…</p>
+      } @else if (rollLogStatus() === 'error') {
+        <p class="cs-roll-log__state cs-roll-log__state--error">Roll feed unavailable right now.</p>
+      }
       @if (rollLog().length === 0) {
         <p class="cs-roll-log__empty">Click a skill Roll button to log 1d20 checks here.</p>
       } @else {
@@ -77,9 +82,9 @@
             <li class="cs-roll-log__item">
               <span class="cs-roll-log__total">{{ r.total }}</span>
               <span class="cs-roll-log__detail">
-                {{ r.skill }} ({{ r.ability }}) · d20 {{ r.d20 }} {{ formatModifier(r.modifier) }}
+                {{ r.userEmail }} · {{ r.skill }} ({{ r.ability }}) · d20 {{ r.d20 }} {{ formatModifier(r.modifier) }}
               </span>
-              <span class="cs-roll-log__time">{{ r.timestamp | date: 'shortTime' }}</span>
+              <span class="cs-roll-log__time">{{ r.createdAt | date: 'shortTime' }}</span>
             </li>
           }
         </ul>

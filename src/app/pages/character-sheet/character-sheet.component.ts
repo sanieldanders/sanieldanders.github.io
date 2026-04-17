@@ -17,17 +17,10 @@ import {
   type JutsuRank,
   type SkillDot
 } from '../../core/models/app-data.model';
+import type { RollEvent } from '../../core/models/roll-event.model';
 import { DataStoreService } from '../../core/services/data-store.service';
-
-interface SkillRollLogEntry {
-  id: string;
-  skill: string;
-  ability: AbilityAbbr;
-  d20: number;
-  modifier: number;
-  total: number;
-  timestamp: Date;
-}
+import { RollLogService } from '../../core/services/roll-log.service';
+import { SupabaseAuthService } from '../../core/services/supabase-auth.service';
 
 @Component({
   selector: 'app-character-sheet',
@@ -39,6 +32,8 @@ export class CharacterSheetComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly store = inject(DataStoreService);
+  private readonly auth = inject(SupabaseAuthService);
+  private readonly rollLogService = inject(RollLogService);
 
   readonly abilityLayout = ABILITY_LAYOUT;
   readonly attackRowIndexes = [0, 1, 2, 3, 4, 5, 6, 7] as const;
@@ -49,7 +44,8 @@ export class CharacterSheetComponent {
   readonly sheetTab = signal<'main' | 'profile' | 'jutsu'>('main');
 
   readonly jutsuLineIndexes = Array.from({ length: JUTSU_LIST_LINES_PER_RANK }, (_, i) => i);
-  readonly rollLog = signal<SkillRollLogEntry[]>([]);
+  readonly rollLog = signal<RollEvent[]>([]);
+  readonly rollLogStatus = signal<'connecting' | 'ready' | 'error'>('connecting');
 
   readonly jutsuColumnRanks: ReadonlyArray<readonly JutsuRank[]> = [
     ['E', 'D'],
@@ -76,6 +72,47 @@ export class CharacterSheetComponent {
         const c = id ? this.store.getCharacter(id) : undefined;
         this.draft.set(c ? structuredClone(ensureCharacterSheet(c)) : null);
       }
+    });
+    effect((onCleanup) => {
+      const id = this.characterId();
+      if (!id) {
+        this.rollLog.set([]);
+        this.rollLogStatus.set('error');
+        return;
+      }
+      let disposed = false;
+      let unsub: (() => void) | null = null;
+      this.rollLogStatus.set('connecting');
+      void (async () => {
+        try {
+          await this.auth.init();
+          const recent = await this.rollLogService.loadRecent(id);
+          if (!disposed) {
+            this.rollLog.set(recent);
+            this.rollLogStatus.set('ready');
+          }
+          if (!disposed) {
+            unsub = this.rollLogService.subscribeToCharacter(id, (event) => {
+              this.rollLog.update((prev) => {
+                if (prev.some((entry) => entry.id === event.id)) {
+                  return prev;
+                }
+                return [event, ...prev].slice(0, 50);
+              });
+            });
+          }
+        } catch {
+          if (!disposed) {
+            this.rollLogStatus.set('error');
+          }
+        }
+      })();
+      onCleanup(() => {
+        disposed = true;
+        if (unsub) {
+          unsub();
+        }
+      });
     });
   }
 
@@ -146,9 +183,13 @@ export class CharacterSheetComponent {
     });
   }
 
-  rollSkill(abbr: AbilityAbbr, skill: string): void {
+  async rollSkill(abbr: AbilityAbbr, skill: string): Promise<void> {
     const ch = this.draft();
     if (!ch) {
+      return;
+    }
+    const user = this.auth.user();
+    if (!user) {
       return;
     }
     const skillModRaw = ch.sheet.abilities[abbr].skills[skill]?.mod ?? '';
@@ -156,16 +197,30 @@ export class CharacterSheetComponent {
     const modifier = this.parseModifier(skillModRaw) ?? this.parseModifier(abilityModRaw) ?? 0;
     const d20 = this.rollDie(20);
     const total = d20 + modifier;
-    const entry: SkillRollLogEntry = {
-      id: crypto.randomUUID(),
-      skill,
-      ability: abbr,
-      d20,
-      modifier,
-      total,
-      timestamp: new Date()
-    };
-    this.rollLog.update((prev) => [entry, ...prev].slice(0, 30));
+    const characterId = this.characterId();
+    if (!characterId) {
+      return;
+    }
+    try {
+      const created = await this.rollLogService.createRoll({
+        characterId,
+        userId: user.id,
+        userEmail: user.email ?? 'unknown@user',
+        skill,
+        ability: abbr,
+        d20,
+        modifier,
+        total
+      });
+      this.rollLog.update((prev) => {
+        if (prev.some((entry) => entry.id === created.id)) {
+          return prev;
+        }
+        return [created, ...prev].slice(0, 50);
+      });
+    } catch {
+      this.rollLogStatus.set('error');
+    }
   }
 
   clearRollLog(): void {
