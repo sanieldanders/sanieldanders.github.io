@@ -57,6 +57,11 @@
   color: var(--muted);
 }
 
+.pill--warn {
+  border-color: #9c3f3f;
+  color: #f2a9a9;
+}
+
 .shell__main {
   flex: 1;
 }
@@ -68,6 +73,7 @@
 }
 
 .auth__btn {
+  text-decoration: none;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text);

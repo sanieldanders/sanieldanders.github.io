@@ -1,0 +1,44 @@
+<div class="page">
+  <header class="page__head">
+    <h1>Account</h1>
+    <p class="muted">Sign in to sync characters and jutsu between devices.</p>
+  </header>
+
+  <div class="card">
+    <div class="mode">
+      <button type="button" [class.is-active]="mode() === 'signin'" (click)="switchMode('signin')">Sign in</button>
+      <button type="button" [class.is-active]="mode() === 'signup'" (click)="switchMode('signup')">Create account</button>
+    </div>
+
+    <form class="form" (ngSubmit)="submit()">
+      <label>
+        Email
+        <input type="email" name="email" [(ngModel)]="email" autocomplete="email" required />
+      </label>
+
+      <label>
+        Password
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          autocomplete="current-password"
+          minlength="6"
+          required
+        />
+      </label>
+
+      <button type="submit" [disabled]="busy()">
+        {{ busy() ? 'Working...' : mode() === 'signin' ? 'Sign in' : 'Create account' }}
+      </button>
+    </form>
+
+    @if (message(); as msg) {
+      <p class="message">{{ msg }}</p>
+    }
+  </div>
+
+  <p class="hint">
+    Back to <a routerLink="/home">Home</a>.
+  </p>
+</div>

@@ -25,18 +25,24 @@ export class DataStoreService {
   private readonly data = signal<AppData>(emptyData());
   private ready = signal(false);
   private hydrating = false;
+  private saveTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly syncStatusState = signal<'local' | 'syncing' | 'synced' | 'error'>('local');
+  private readonly syncMessageState = signal('Using local storage');
 
   readonly profiles = computed(() => this.data().profiles);
   readonly characters = computed(() => this.data().characters);
   readonly isReady = computed(() => this.ready());
+  readonly syncStatus = computed(() => this.syncStatusState());
+  readonly syncMessage = computed(() => this.syncMessageState());
 
   async init(): Promise<void> {
     await this.auth.init();
     await this.reloadFromBestSource();
     this.auth.client.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        await this.reloadFromBestSource();
+      if (!session?.user) {
+        this.clearPendingCloudSave();
       }
+      await this.reloadFromBestSource();
     });
     this.ready.set(true);
   }
@@ -48,9 +54,12 @@ export class DataStoreService {
       try {
         loaded = this.normalize((await this.cloud.loadForUser(user.id)) ?? emptyData());
         this.setDataWithoutPersist(loaded);
+        this.syncStatusState.set('synced');
+        this.syncMessageState.set('Cloud sync connected');
         return;
       } catch {
-        loaded = emptyData();
+        this.syncStatusState.set('error');
+        this.syncMessageState.set('Cloud load failed. Showing local data.');
       }
     }
     const bridge = window.jutsuElectron;
@@ -61,6 +70,8 @@ export class DataStoreService {
       } catch {
         loaded = emptyData();
       }
+      this.syncStatusState.set('local');
+      this.syncMessageState.set('Using local app file');
     } else {
       try {
         const raw = localStorage.getItem(LOCAL_KEY);
@@ -68,6 +79,8 @@ export class DataStoreService {
       } catch {
         loaded = emptyData();
       }
+      this.syncStatusState.set('local');
+      this.syncMessageState.set('Using browser local storage');
     }
     this.setDataWithoutPersist(loaded);
   }
@@ -124,7 +137,9 @@ export class DataStoreService {
     const snapshot = this.data();
     const user = this.auth.user();
     if (user) {
-      void this.cloud.saveForUser(user.id, snapshot);
+      this.syncStatusState.set('syncing');
+      this.syncMessageState.set('Saving to cloud...');
+      this.queueCloudSave(user.id, snapshot);
       return;
     }
     const bridge = window.jutsuElectron;
@@ -133,6 +148,30 @@ export class DataStoreService {
     } else {
       localStorage.setItem(LOCAL_KEY, JSON.stringify(snapshot));
     }
+    this.syncStatusState.set('local');
+    this.syncMessageState.set('Saved locally');
+  }
+
+  private queueCloudSave(userId: string, snapshot: AppData): void {
+    this.clearPendingCloudSave();
+    this.saveTimer = setTimeout(async () => {
+      try {
+        await this.cloud.saveForUser(userId, snapshot);
+        this.syncStatusState.set('synced');
+        this.syncMessageState.set('Cloud saved');
+      } catch {
+        this.syncStatusState.set('error');
+        this.syncMessageState.set('Cloud save failed');
+      }
+    }, 700);
+  }
+
+  private clearPendingCloudSave(): void {
+    if (!this.saveTimer) {
+      return;
+    }
+    clearTimeout(this.saveTimer);
+    this.saveTimer = null;
   }
 
   private touch(): void {

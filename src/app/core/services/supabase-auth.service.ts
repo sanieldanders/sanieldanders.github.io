@@ -34,21 +34,38 @@ export class SupabaseAuthService {
   async signUp(email: string, password: string): Promise<void> {
     const { error } = await this.clientInstance.auth.signUp({ email, password });
     if (error) {
-      throw error;
+      throw new Error(this.readableError(error.message));
     }
   }
 
   async signIn(email: string, password: string): Promise<void> {
     const { error } = await this.clientInstance.auth.signInWithPassword({ email, password });
     if (error) {
-      throw error;
+      throw new Error(this.readableError(error.message));
     }
   }
 
   async signOut(): Promise<void> {
     const { error } = await this.clientInstance.auth.signOut();
     if (error) {
-      throw error;
+      throw new Error(this.readableError(error.message));
     }
+  }
+
+  private readableError(message: string): string {
+    const msg = message.toLowerCase();
+    if (msg.includes('invalid login credentials')) {
+      return 'Incorrect email or password.';
+    }
+    if (msg.includes('email not confirmed')) {
+      return 'Please confirm your email before signing in.';
+    }
+    if (msg.includes('already registered')) {
+      return 'That email is already registered. Try signing in instead.';
+    }
+    if (msg.includes('password')) {
+      return 'Password must be at least 6 characters.';
+    }
+    return message;
   }
 }
