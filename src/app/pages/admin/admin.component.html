@@ -1,0 +1,54 @@
+<div class="page">
+  <header class="page__head">
+    <h1>Admin</h1>
+    <p class="muted">View all cloud-saved user characters and sheets.</p>
+  </header>
+
+  <div class="toolbar">
+    <input
+      type="search"
+      placeholder="Filter by user id or character name"
+      [ngModel]="filter()"
+      (ngModelChange)="setFilter($event)"
+    />
+    <button type="button" (click)="load()" [disabled]="loading()">
+      {{ loading() ? 'Refreshing...' : 'Refresh' }}
+    </button>
+  </div>
+
+  @if (error(); as err) {
+    <p class="error">{{ err }}</p>
+  } @else {
+    <p class="meta">
+      Users: {{ visibleRows().length }} / {{ rows().length }} · Characters: {{ totalCharacters() }}
+    </p>
+    <div class="cards">
+      @for (row of visibleRows(); track row.user_id) {
+        <details class="card">
+          <summary>
+            <strong>{{ row.user_id }}</strong>
+            <span>{{ row.data.characters.length }} characters</span>
+            <span>Updated {{ row.updated_at | date: 'medium' }}</span>
+          </summary>
+          <div class="body">
+            @if (!row.data.characters.length) {
+              <p class="muted">No characters saved for this user.</p>
+            } @else {
+              @for (character of row.data.characters; track character.id) {
+                <article class="character">
+                  <h3>{{ character.name }}</h3>
+                  <p class="muted">Created {{ character.createdAt | date: 'medium' }}</p>
+                  <pre>{{ character.sheet ? (character.sheet | json) : 'No sheet data' }}</pre>
+                </article>
+              }
+            }
+          </div>
+        </details>
+      }
+    </div>
+  }
+
+  <p class="hint">
+    Back to <a routerLink="/home">Home</a>.
+  </p>
+</div>

@@ -6,6 +6,9 @@
       <a routerLink="/characters" routerLinkActive="is-active">Characters</a>
       <a routerLink="/encyclopedia" routerLinkActive="is-active">Encyclopedia</a>
       <a routerLink="/compendium" routerLinkActive="is-active">Jutsu compendium</a>
+      @if (showAdmin()) {
+        <a routerLink="/admin" routerLinkActive="is-active">Admin</a>
+      }
     </nav>
     @if (!window.jutsuElectron) {
       <span class="pill">Browser preview · use Electron for file save</span>
