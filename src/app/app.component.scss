@@ -60,3 +60,23 @@
 .shell__main {
   flex: 1;
 }
+
+.auth {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.auth__btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.auth__btn--alt {
+  color: var(--accent);
+}

@@ -10,6 +10,15 @@
     @if (!window.jutsuElectron) {
       <span class="pill">Browser preview · use Electron for file save</span>
     }
+    <div class="auth">
+      @if (userEmail(); as email) {
+        <span class="pill">Signed in: {{ email }}</span>
+        <button type="button" class="auth__btn" (click)="signOut()">Sign out</button>
+      } @else {
+        <button type="button" class="auth__btn" (click)="signIn()">Sign in</button>
+        <button type="button" class="auth__btn auth__btn--alt" (click)="signUp()">Create account</button>
+      }
+    </div>
   </header>
   <main class="shell__main">
     <router-outlet />

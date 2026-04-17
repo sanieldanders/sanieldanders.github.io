@@ -1,10 +1,12 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import {
   createDefaultCharacterSheet,
   normalizeCharacter,
   type CharacterWithSheet
 } from '../character/character-sheet.defaults';
 import type { AppData, Character, JutsuDraft, Profile } from '../models/app-data.model';
+import { SupabaseAuthService } from './supabase-auth.service';
+import { CloudDataService } from './cloud-data.service';
 
 const LOCAL_KEY = 'jutsu-companion-data';
 
@@ -18,15 +20,39 @@ function emptyData(): AppData {
 
 @Injectable({ providedIn: 'root' })
 export class DataStoreService {
+  private readonly auth = inject(SupabaseAuthService);
+  private readonly cloud = inject(CloudDataService);
   private readonly data = signal<AppData>(emptyData());
   private ready = signal(false);
+  private hydrating = false;
 
   readonly profiles = computed(() => this.data().profiles);
   readonly characters = computed(() => this.data().characters);
   readonly isReady = computed(() => this.ready());
 
   async init(): Promise<void> {
+    await this.auth.init();
+    await this.reloadFromBestSource();
+    this.auth.client.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        await this.reloadFromBestSource();
+      }
+    });
+    this.ready.set(true);
+  }
+
+  private async reloadFromBestSource(): Promise<void> {
     let loaded: AppData = emptyData();
+    const user = this.auth.user();
+    if (user) {
+      try {
+        loaded = this.normalize((await this.cloud.loadForUser(user.id)) ?? emptyData());
+        this.setDataWithoutPersist(loaded);
+        return;
+      } catch {
+        loaded = emptyData();
+      }
+    }
     const bridge = window.jutsuElectron;
     if (bridge?.load) {
       try {
@@ -43,8 +69,13 @@ export class DataStoreService {
         loaded = emptyData();
       }
     }
-    this.data.set(loaded);
-    this.ready.set(true);
+    this.setDataWithoutPersist(loaded);
+  }
+
+  private setDataWithoutPersist(next: AppData): void {
+    this.hydrating = true;
+    this.data.set(next);
+    this.hydrating = false;
   }
 
   private normalize(raw: unknown): AppData {
@@ -87,7 +118,15 @@ export class DataStoreService {
   }
 
   private persist(): void {
+    if (this.hydrating) {
+      return;
+    }
     const snapshot = this.data();
+    const user = this.auth.user();
+    if (user) {
+      void this.cloud.saveForUser(user.id, snapshot);
+      return;
+    }
     const bridge = window.jutsuElectron;
     if (bridge?.save) {
       void bridge.save(snapshot);
