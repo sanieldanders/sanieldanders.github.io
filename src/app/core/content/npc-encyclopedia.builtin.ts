@@ -258,5 +258,24 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
     affiliations: 'Konoha',
     description:
       'Shikaichi Nara, nicknamed Ichi. He looks a lot like his grandmother Temari but with low tired eyes like Shikamaru. Always has a book in his hands (usually some kind of combat tactics book) and hates disruptive people who don\'t \"fall in line\". When stressed he will often just disappear and can be found on a rooftop or high place reading in the quiet. He hates to be disturbed while reading; it\'s very important to him to calm down and regroup.'
+  },
+  {
+    id: 'nasu-ketsuryu',
+    sectionId: 'player',
+    portraitUrl: './npcs/Ketsuryū,Nāsu.png',
+    name: 'Nāsu Ketsuryū',
+    age: '16',
+    birthday: 'October 7th',
+    occupationRank: 'Genin of Team One',
+    affiliations: 'Konoha',
+    description: [
+      'Forged not by bloodline, but by necessity, this shinobi walks a path rarely chosen—and even more rarely survived. Orphaned at a young age and raised by medical-nin, they grew up surrounded by discipline, anatomy charts, and the quiet, constant tension between life and death. Where others inherited legacy, they built themselves from nothing.',
+      'They chose the path of a combat medic, rejecting the safety of the rear lines in favor of the chaos of the front. To them, protection means presence. If they are close enough, fast enough, skilled enough—no one has to die. On the battlefield, they move in a relentless rhythm: strike, step, heal. Their taijutsu is sharpened by medical precision, targeting muscles, joints, and chakra pathways to disable efficiently. The same hands that mend shattered bodies can just as easily break them.',
+      'Despite their role, they are not naturally optimistic. A quiet pessimism lingers in their thoughts—an expectation that things will go wrong, that people will fall, that they may not be enough. But instead of breaking them, this mindset fuels their drive. They prepare more. Train harder. Push further. Because if the worst is coming, they intend to meet it head-on.',
+      'Still, they strive for something more than survival—they want belonging. Having grown up without a true family, they are learning, slowly and awkwardly, how to be part of a team. Trust does not come easily, but loyalty does. Once they accept someone as a comrade, they will endure any pain, take any hit, and risk everything to keep them alive. They would rather fall themselves than watch another take their place on the operating table.',
+      'Outside of combat, their studies take a darker, more experimental turn. In stolen moments of free time, they research and attempt to develop a unique chakra-afflicting technique—one that could drain chakra from an enemy and redirect it to themselves or an ally. To them, this is the next evolution of medical ninjutsu: not just healing damage, but preventing it by weakening the source. It is a dangerous line of research, one that toes the boundary between healing and harm—but they are willing to walk it.',
+      'Their ultimate goal is not just to survive or even to be recognized—it is to create a legacy. They want to found a clan of their own, built not on bloodline, but on philosophy: strength through protection, power through control, and the unbreakable will to stand between life and death. A clan that ensures no one grows up as alone as they did.',
+      'Until then, they fight on the front lines—unyielding, self-sacrificing, and determined to prove that even someone with no name can become unforgettable.'
+    ].join('\n\n')
   }
 ];
