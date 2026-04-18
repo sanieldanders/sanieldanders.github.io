@@ -1,0 +1,266 @@
+.cal-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.cal-page__head {
+  margin-bottom: 1rem;
+
+  h1 {
+    margin: 0 0 0.35rem;
+    font-size: 1.65rem;
+  }
+}
+
+.muted {
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+.cal-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.cal-page__back {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.95rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.cal-error {
+  border: 1px solid #9c3f3f;
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  color: #f2a9a9;
+  margin: 0 0 1rem;
+}
+
+.cal-hint {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin: 0 0 1.25rem;
+}
+
+.cal-year {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.cal-month {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 0.75rem 0.65rem 0.85rem;
+}
+
+.cal-month__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  text-align: center;
+  color: var(--accent-2);
+}
+
+.cal-month__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-month__wd {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-align: center;
+  padding: 0.2rem 0;
+}
+
+.cal-month__cell {
+  position: relative;
+  min-height: 2.35rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.12);
+  color: var(--text);
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.25rem 0.15rem 0.35rem;
+  font: inherit;
+
+  &--empty {
+    background: transparent;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &--has-events {
+    border-color: #2f6b82;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(91, 192, 222, 0.12);
+    }
+  }
+
+  &--admin-empty {
+    cursor: pointer;
+    border-style: dashed;
+    border-color: rgba(154, 166, 191, 0.35);
+
+    &:hover {
+      background: rgba(122, 168, 255, 0.08);
+    }
+  }
+}
+
+.cal-month__num {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.cal-month__dots {
+  display: flex;
+  gap: 3px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cal-month__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.cal-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.cal-modal {
+  max-width: min(520px, 94vw);
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  padding: 0;
+
+  &::backdrop {
+    background: rgba(5, 8, 12, 0.72);
+  }
+}
+
+.cal-modal__body {
+  padding: 1rem 1.1rem 1.15rem;
+}
+
+.cal-modal__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
+.cal-modal__x {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.15rem;
+
+  &:hover {
+    color: var(--text);
+  }
+}
+
+.cal-modal__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.cal-modal__item {
+  border-top: 1px solid var(--border);
+  padding-top: 0.85rem;
+
+  &:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+  }
+}
+
+.cal-modal__desc {
+  margin: 0 0 0.5rem;
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+.cal-modal__meta {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.cal-modal__danger {
+  font-size: 0.85rem;
+  border-color: #7a3a3a;
+  color: #f0b4b4;
+}
+
+.cal-form {
+  display: grid;
+  gap: 0.65rem;
+
+  label {
+    display: grid;
+    gap: 0.25rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  input[type='number'] {
+    max-width: 6rem;
+  }
+}
+
+.cal-form__btns {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}

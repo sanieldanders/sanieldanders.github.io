@@ -58,6 +58,10 @@ export const routes: Routes = [
         path: 'roll-log',
         loadComponent: () => import('./pages/roll-log/roll-log.component').then((m) => m.RollLogComponent)
       },
+      {
+        path: 'calendar',
+        loadComponent: () => import('./pages/calendar/calendar.component').then((m) => m.CalendarComponent)
+      },
       { path: '**', redirectTo: 'home' }
     ]
   },

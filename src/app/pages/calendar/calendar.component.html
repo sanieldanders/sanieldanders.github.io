@@ -1,0 +1,141 @@
+<div class="cal-page">
+  <header class="cal-page__head">
+    <h1>World calendar · {{ anbYear }} ANB</h1>
+    <p class="muted">After Naruto’s Birth · January–December</p>
+    <div class="cal-page__actions">
+      @if (admin.isAdmin()) {
+        <button type="button" class="primary" (click)="openAddForm()">Add event</button>
+      }
+      <button type="button" [disabled]="loading()" (click)="reload()">
+        {{ loading() ? 'Loading…' : 'Refresh' }}
+      </button>
+      <a routerLink="/home" class="cal-page__back">← Home</a>
+    </div>
+  </header>
+
+  @if (error(); as err) {
+    <p class="cal-error">{{ err }}</p>
+  }
+
+  <p class="cal-hint">
+    @if (admin.isAdmin()) {
+      Click a day with events to read details, or an empty day to add one.
+    } @else {
+      Click a day with an event to see details.
+    }
+  </p>
+
+  <div class="cal-year">
+    @for (month of monthNames; track month; let mi = $index) {
+      <section class="cal-month" [attr.aria-label]="month + ' ' + anbYear + ' ANB'">
+        <h2 class="cal-month__title">{{ month }}</h2>
+        <div class="cal-month__grid" role="grid" [attr.aria-rowcount]="monthCells(mi + 1).length / 7 + 1">
+          @for (w of weekdayLabels; track w) {
+            <div class="cal-month__wd" role="columnheader">{{ w }}</div>
+          }
+          @for (cell of monthCells(mi + 1); track $index) {
+            @if (cell === null) {
+              <div class="cal-month__cell cal-month__cell--empty" aria-hidden="true"></div>
+            } @else {
+              <button
+                type="button"
+                class="cal-month__cell"
+                [class.cal-month__cell--has-events]="eventsForDay(mi + 1, cell).length > 0"
+                [class.cal-month__cell--admin-empty]="
+                  admin.isAdmin() && eventsForDay(mi + 1, cell).length === 0
+                "
+                (click)="onDayCellClick(mi + 1, cell)"
+              >
+                <span class="cal-month__num">{{ cell }}</span>
+                @if (eventsForDay(mi + 1, cell).length > 0) {
+                  <span class="cal-month__dots" aria-hidden="true">
+                    @for (e of eventsForDay(mi + 1, cell).slice(0, 3); track e.id) {
+                      <span class="cal-month__dot"></span>
+                    }
+                  </span>
+                  <span class="cal-visually-hidden">
+                    {{ eventsForDay(mi + 1, cell).length }} event(s)
+                  </span>
+                }
+              </button>
+            }
+          }
+        </div>
+      </section>
+    }
+  </div>
+
+  <dialog #detailDialog class="cal-modal" (cancel)="$event.preventDefault(); closeDetail()">
+    @if (selectedDay(); as day) {
+      <div class="cal-modal__body">
+        <header class="cal-modal__head">
+          <h2>{{ monthNames[day.month - 1] }} {{ day.day }}, {{ anbYear }} ANB</h2>
+          <button type="button" class="cal-modal__x" (click)="closeDetail()" aria-label="Close">×</button>
+        </header>
+        <ul class="cal-modal__list">
+          @for (ev of day.items; track ev.id) {
+            <li class="cal-modal__item">
+              <h3>{{ ev.title }}</h3>
+              @if (ev.description) {
+                <p class="cal-modal__desc">{{ ev.description }}</p>
+              } @else {
+                <p class="muted cal-modal__desc">No extra details.</p>
+              }
+              <p class="cal-modal__meta">Added {{ ev.created_at | date: 'medium' }}</p>
+              @if (admin.isAdmin()) {
+                <button
+                  type="button"
+                  class="cal-modal__danger"
+                  [disabled]="deleteBusyId() === ev.id"
+                  (click)="deleteEvent(ev.id)"
+                >
+                  {{ deleteBusyId() === ev.id ? 'Removing…' : 'Remove' }}
+                </button>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </dialog>
+
+  <dialog #addDialog class="cal-modal" (cancel)="$event.preventDefault(); closeAdd()">
+    <div class="cal-modal__body">
+      <header class="cal-modal__head">
+        <h2>Add calendar event</h2>
+        <button type="button" class="cal-modal__x" (click)="closeAdd()" aria-label="Close">×</button>
+      </header>
+      <div class="cal-form">
+        <label>
+          Month
+          <select [ngModel]="addMonth()" (ngModelChange)="addMonth.set($event)">
+            @for (m of monthNames; track m; let i = $index) {
+              <option [ngValue]="i + 1">{{ m }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          Day
+          <input type="number" min="1" max="31" [ngModel]="addDay()" (ngModelChange)="addDay.set(+$event)" />
+        </label>
+        <label>
+          Title
+          <input type="text" [ngModel]="addTitle()" (ngModelChange)="addTitle.set($event)" maxlength="200" />
+        </label>
+        <label>
+          Details
+          <textarea rows="4" [ngModel]="addDescription()" (ngModelChange)="addDescription.set($event)"></textarea>
+        </label>
+        @if (formError(); as fe) {
+          <p class="cal-error">{{ fe }}</p>
+        }
+        <div class="cal-form__btns">
+          <button type="button" (click)="closeAdd()">Cancel</button>
+          <button type="button" class="primary" [disabled]="saveBusy()" (click)="submitAdd()">
+            {{ saveBusy() ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</div>
