@@ -277,5 +277,20 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
       'Their ultimate goal is not just to survive or even to be recognized—it is to create a legacy. They want to found a clan of their own, built not on bloodline, but on philosophy: strength through protection, power through control, and the unbreakable will to stand between life and death. A clan that ensures no one grows up as alone as they did.',
       'Until then, they fight on the front lines—unyielding, self-sacrificing, and determined to prove that even someone with no name can become unforgettable.'
     ].join('\n\n')
+  },
+  {
+    id: 'kenzou-namikaze',
+    sectionId: 'player',
+    portraitUrl: './npcs/Namikaze,Kenzou.png',
+    name: 'Kenzou Namikaze',
+    age: '16',
+    birthday: 'February 28th',
+    occupationRank: 'Genin of Team One',
+    affiliations: 'Konoha',
+    description: [
+      'Kenzou is independent, calm, and collected—a people person who matches others\' energy and personalities well, moves easily between silly and serious, and is a strong talker. He cares for those close to him and is ruthless against threats; he sits in the grey and rejects absolutes.',
+      'He can be annoying to those who are more reserved, or who are snobby about their passions. He can be pretentious, overconfident in his understanding of social situations or of specific people and their intentions, and he has poor time management. He disregards guidelines he finds unnecessary, often to a fault.',
+      'Likes: arts (music, poetry, literature), sports, botany, history, philosophy, and beautiful scenery. Dislikes: absolutes, dismissive people, arrogance, bland food, and traveling.'
+    ].join('\n\n')
   }
 ];
