@@ -1,6 +1,6 @@
 <div class="cal-page">
   <header class="cal-page__head">
-    <h1>World calendar · {{ anbYear }} ANB</h1>
+    <h1>World calendar · {{ displayAnbYear() }} ANB</h1>
     <p class="muted">After Naruto’s Birth · January–December</p>
     <div class="cal-page__actions">
       @if (admin.isAdmin()) {
@@ -17,17 +17,63 @@
     <p class="cal-error">{{ err }}</p>
   }
 
+  @if (activeState(); as st) {
+    <p class="cal-active-banner">
+      Current story date:
+      <strong>{{ monthNames[st.month - 1] }} {{ st.day }}, {{ st.anb_year }} ANB</strong>
+      <span class="cal-active-banner__tag" aria-hidden="true">highlighted in green</span>
+    </p>
+  }
+
+  @if (admin.isAdmin()) {
+    <section class="cal-time-admin" aria-label="Set campaign active day">
+      <h2 class="cal-time-admin__title">Pass time (admin)</h2>
+      <p class="muted cal-time-admin__lead">
+        The green cell is the active in-world day. Use the buttons to advance, or set the date and ANB year manually.
+      </p>
+      <div class="cal-time-admin__row">
+        <label class="cal-time-admin__field">
+          Month
+          <select [ngModel]="timeMonth()" (ngModelChange)="timeMonth.set($event)">
+            @for (m of monthNames; track m; let i = $index) {
+              <option [ngValue]="i + 1">{{ m }}</option>
+            }
+          </select>
+        </label>
+        <label class="cal-time-admin__field">
+          Day
+          <input type="number" min="1" max="31" [ngModel]="timeDay()" (ngModelChange)="timeDay.set(+$event)" />
+        </label>
+        <label class="cal-time-admin__field">
+          ANB year
+          <input type="number" min="1" max="9999" [ngModel]="timeAnbYear()" (ngModelChange)="timeAnbYear.set(+$event)" />
+        </label>
+      </div>
+      <div class="cal-time-admin__actions">
+        <button type="button" [disabled]="timeBusy()" (click)="advanceStoryTime(-1)">−1 day</button>
+        <button type="button" [disabled]="timeBusy()" (click)="advanceStoryTime(1)">+1 day</button>
+        <button type="button" [disabled]="timeBusy()" (click)="advanceStoryTime(7)">+1 week</button>
+        <button type="button" class="primary" [disabled]="timeBusy()" (click)="submitStoryTime()">
+          {{ timeBusy() ? 'Saving…' : 'Apply date' }}
+        </button>
+      </div>
+      @if (timeError(); as te) {
+        <p class="cal-error cal-time-admin__err">{{ te }}</p>
+      }
+    </section>
+  }
+
   <p class="cal-hint">
     @if (admin.isAdmin()) {
-      Click a day with events to read details, or an empty day to add one.
+      Click a day with events to read details, or an empty day to add one. The green day is “today” in the story.
     } @else {
-      Click a day with an event to see details.
+      Click a day with an event to see details. The green day is “today” in the story.
     }
   </p>
 
   <div class="cal-year">
     @for (month of monthNames; track month; let mi = $index) {
-      <section class="cal-month" [attr.aria-label]="month + ' ' + anbYear + ' ANB'">
+      <section class="cal-month" [attr.aria-label]="month + ' ' + displayAnbYear() + ' ANB'">
         <h2 class="cal-month__title">{{ month }}</h2>
         <div class="cal-month__grid" role="grid" [attr.aria-rowcount]="monthCells(mi + 1).length / 7 + 1">
           @for (w of weekdayLabels; track w) {
@@ -40,6 +86,8 @@
               <button
                 type="button"
                 class="cal-month__cell"
+                [attr.aria-current]="isActiveDay(mi + 1, cell) ? 'date' : null"
+                [class.cal-month__cell--active]="isActiveDay(mi + 1, cell)"
                 [class.cal-month__cell--has-events]="eventsForDay(mi + 1, cell).length > 0"
                 [class.cal-month__cell--admin-empty]="
                   admin.isAdmin() && eventsForDay(mi + 1, cell).length === 0
@@ -69,7 +117,7 @@
     @if (selectedDay(); as day) {
       <div class="cal-modal__body">
         <header class="cal-modal__head">
-          <h2>{{ monthNames[day.month - 1] }} {{ day.day }}, {{ anbYear }} ANB</h2>
+          <h2>{{ monthNames[day.month - 1] }} {{ day.day }}, {{ displayAnbYear() }} ANB</h2>
           <button type="button" class="cal-modal__x" (click)="closeDetail()" aria-label="Close">×</button>
         </header>
         <ul class="cal-modal__list">

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../../core/services/admin.service';
 import { CalendarEventsService, CALENDAR_ANCHOR_YEAR } from '../../core/services/calendar-events.service';
-import type { CalendarEventRow } from '../../core/models/calendar-event.model';
+import type { CalendarEventRow, CampaignCalendarState } from '../../core/models/calendar-event.model';
 
 @Component({
   selector: 'app-calendar',
@@ -16,7 +16,6 @@ export class CalendarComponent {
   private readonly calendar = inject(CalendarEventsService);
   readonly admin = inject(AdminService);
 
-  readonly anbYear = 60;
   readonly monthNames = [
     'January',
     'February',
@@ -36,6 +35,15 @@ export class CalendarComponent {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly events = signal<CalendarEventRow[]>([]);
+  readonly activeState = signal<CampaignCalendarState | null>(null);
+
+  readonly displayAnbYear = computed(() => this.activeState()?.anb_year ?? 60);
+
+  readonly timeMonth = signal(1);
+  readonly timeDay = signal(1);
+  readonly timeAnbYear = signal(60);
+  readonly timeError = signal<string | null>(null);
+  readonly timeBusy = signal(false);
 
   readonly detailDialog = viewChild<ElementRef<HTMLDialogElement>>('detailDialog');
   readonly addDialog = viewChild<ElementRef<HTMLDialogElement>>('addDialog');
@@ -73,12 +81,80 @@ export class CalendarComponent {
     this.loading.set(true);
     this.error.set(null);
     try {
-      const rows = await this.calendar.listEvents();
+      const [rows, state] = await Promise.all([
+        this.calendar.listEvents(),
+        this.calendar.getCampaignCalendarState()
+      ]);
       this.events.set(rows);
+      this.activeState.set(state);
+      this.syncTimeFormFromState(state);
     } catch (err) {
       this.error.set((err as Error).message);
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private syncTimeFormFromState(state: CampaignCalendarState): void {
+    this.timeMonth.set(state.month);
+    this.timeDay.set(state.day);
+    this.timeAnbYear.set(state.anb_year);
+  }
+
+  isActiveDay(month: number, day: number): boolean {
+    const s = this.activeState();
+    return s !== null && s.month === month && s.day === day;
+  }
+
+  async submitStoryTime(): Promise<void> {
+    if (!this.admin.isAdmin()) {
+      return;
+    }
+    const month = this.timeMonth();
+    const day = this.timeDay();
+    const anb_year = this.timeAnbYear();
+    if (!Number.isFinite(anb_year) || anb_year < 1 || anb_year > 9999) {
+      this.timeError.set('ANB year must be between 1 and 9999.');
+      return;
+    }
+    if (!this.calendar.isValidCalendarDay(month, day)) {
+      this.timeError.set('Pick a valid day for that month.');
+      return;
+    }
+    this.timeError.set(null);
+    this.timeBusy.set(true);
+    try {
+      await this.calendar.setCampaignActiveDay({ month, day, anb_year });
+      await this.reload();
+    } catch (err) {
+      this.timeError.set((err as Error).message);
+    } finally {
+      this.timeBusy.set(false);
+    }
+  }
+
+  async advanceStoryTime(deltaDays: number): Promise<void> {
+    if (!this.admin.isAdmin()) {
+      return;
+    }
+    const s = this.activeState();
+    if (!s) {
+      return;
+    }
+    this.timeError.set(null);
+    this.timeBusy.set(true);
+    try {
+      const next = this.calendar.advanceActiveDay(s.month, s.day, deltaDays);
+      await this.calendar.setCampaignActiveDay({
+        month: next.month,
+        day: next.day,
+        anb_year: s.anb_year
+      });
+      await this.reload();
+    } catch (err) {
+      this.timeError.set((err as Error).message);
+    } finally {
+      this.timeBusy.set(false);
     }
   }
 
