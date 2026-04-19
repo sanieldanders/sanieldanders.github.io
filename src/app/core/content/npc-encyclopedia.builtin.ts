@@ -251,13 +251,13 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
     id: 'shikaichi-nara',
     sectionId: 'player',
     portraitUrl: './npcs/Nara,Shikaichi.png',
-    name: 'Shikaichi Nara',
+    name: 'Shikaichi Nara (Ichi)',
     age: '16',
     birthday: 'July 17th',
-    occupationRank: 'Genin in Team One (Ichi)',
+    occupationRank: 'Genin of Team One',
     affiliations: 'Konoha',
     description:
-      'Shikaichi Nara, nicknamed Ichi. He looks a lot like his grandmother Temari but with low tired eyes like Shikamaru. Always has a book in his hands (usually some kind of combat tactics book) and hates disruptive people who don\'t \"fall in line\". When stressed he will often just disappear and can be found on a rooftop or high place reading in the quiet. He hates to be disturbed while reading; it\'s very important to him to calm down and regroup.'
+      'Shikaichi looks a lot like his grandmother Temari but with low tired eyes like Shikamaru. Always has a book in his hands (usually some kind of combat tactics book) and hates disruptive people who don\'t \"fall in line\". When stressed he will often just disappear and can be found on a rooftop or high place reading in the quiet. He hates to be disturbed while reading; it\'s very important to him to calm down and regroup.'
   },
   {
     id: 'nasu-ketsuryu',
