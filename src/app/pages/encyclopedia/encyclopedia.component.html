@@ -6,7 +6,8 @@
   <header class="enc-head">
     <h1>Character encyclopedia</h1>
     <p class="muted">
-      Profiles by category. Portraits live in <code>public/npcs/</code>. Select a name to open the full profile.
+      Profiles by category. Character art in <code>public/npcs/</code>, place images in <code>public/places/</code>.
+      Select an entry to open the full view.
     </p>
   </header>
 
@@ -76,6 +77,37 @@
           } @else {
             <ul class="enc-grid" role="list">
               @for (npc of filteredPlayerCharacters(); track npc.id) {
+                <li class="enc-grid__cell">
+                  <button type="button" class="enc-grid__btn" (click)="openNpc(npc)">
+                    <span class="enc-grid__name">{{ npc.name }}</span>
+                    <span class="enc-grid__rank">{{ npc.occupationRank }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </details>
+
+      <details class="enc-section" open>
+        <summary class="enc-section__summary">
+          <span class="enc-section__title">Important Places</span>
+          @if (searchQuery().trim()) {
+            <span class="enc-section__meta">{{ filteredImportantPlaces().length }} in section</span>
+          }
+        </summary>
+        <div class="enc-section__body">
+          @if (filteredImportantPlaces().length === 0) {
+            <p class="enc-section__empty">
+              @if (searchQuery().trim()) {
+                No matching entries in this category.
+              } @else {
+                No entries yet.
+              }
+            </p>
+          } @else {
+            <ul class="enc-grid" role="list">
+              @for (npc of filteredImportantPlaces(); track npc.id) {
                 <li class="enc-grid__cell">
                   <button type="button" class="enc-grid__btn" (click)="openNpc(npc)">
                     <span class="enc-grid__name">{{ npc.name }}</span>
@@ -164,35 +196,55 @@
     </div>
 
     <div class="enc-modal__scroll">
-      <article class="enc-card">
-        <div class="enc-card__portrait">
-          <img [src]="npc.portraitUrl" [alt]="'Portrait of ' + npc.name" loading="lazy" />
-        </div>
-        <div class="enc-card__body">
-          <dl class="enc-facts">
-            <div class="enc-facts__row">
-              <dt>Age</dt>
-              <dd>{{ npc.age }}</dd>
-            </div>
-            <div class="enc-facts__row">
-              <dt>Birthday</dt>
-              <dd>{{ npc.birthday }}</dd>
-            </div>
-            <div class="enc-facts__row">
-              <dt>Occupation / rank</dt>
-              <dd>{{ npc.occupationRank }}</dd>
-            </div>
-            <div class="enc-facts__row">
-              <dt>Affiliations</dt>
-              <dd>{{ npc.affiliations }}</dd>
-            </div>
-          </dl>
-          <section class="enc-desc" aria-label="Description">
-            <h3 class="enc-desc__title">Description</h3>
-            <div class="enc-desc__text">{{ npc.description }}</div>
-          </section>
-        </div>
-      </article>
+      @if (npc.sectionId === 'important-places') {
+        <article class="enc-card enc-card--place">
+          <div class="enc-card__portrait enc-card__portrait--place">
+            <img [src]="npc.portraitUrl" [alt]="npc.name" loading="lazy" />
+          </div>
+          <div class="enc-card__body">
+            <dl class="enc-facts">
+              <div class="enc-facts__row">
+                <dt>Location</dt>
+                <dd>{{ npc.affiliations }}</dd>
+              </div>
+            </dl>
+            <section class="enc-desc" aria-label="Notes">
+              <h3 class="enc-desc__title">Notes</h3>
+              <div class="enc-desc__text">{{ npc.description }}</div>
+            </section>
+          </div>
+        </article>
+      } @else {
+        <article class="enc-card">
+          <div class="enc-card__portrait">
+            <img [src]="npc.portraitUrl" [alt]="'Portrait of ' + npc.name" loading="lazy" />
+          </div>
+          <div class="enc-card__body">
+            <dl class="enc-facts">
+              <div class="enc-facts__row">
+                <dt>Age</dt>
+                <dd>{{ npc.age }}</dd>
+              </div>
+              <div class="enc-facts__row">
+                <dt>Birthday</dt>
+                <dd>{{ npc.birthday }}</dd>
+              </div>
+              <div class="enc-facts__row">
+                <dt>Occupation / rank</dt>
+                <dd>{{ npc.occupationRank }}</dd>
+              </div>
+              <div class="enc-facts__row">
+                <dt>Affiliations</dt>
+                <dd>{{ npc.affiliations }}</dd>
+              </div>
+            </dl>
+            <section class="enc-desc" aria-label="Description">
+              <h3 class="enc-desc__title">Description</h3>
+              <div class="enc-desc__text">{{ npc.description }}</div>
+            </section>
+          </div>
+        </article>
+      }
     </div>
   </div>
 }

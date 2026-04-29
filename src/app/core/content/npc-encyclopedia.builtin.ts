@@ -1,6 +1,6 @@
 import type { NpcEncyclopediaEntry } from '../models/app-data.model';
 
-/** Shipped NPC profiles (add images under `public/npcs/`). */
+/** Shipped encyclopedia entries (portraits in `public/npcs/`, places in `public/places/`). */
 export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
   {
     id: 'enya-sarutobi',
@@ -292,5 +292,17 @@ export const NPC_ENCYCLOPEDIA_BUILTIN: readonly NpcEncyclopediaEntry[] = [
       'He can be annoying to those who are more reserved, or who are snobby about their passions. He can be pretentious, overconfident in his understanding of social situations or of specific people and their intentions, and he has poor time management. He disregards guidelines he finds unnecessary, often to a fault.',
       'Likes: arts (music, poetry, literature), sports, botany, history, philosophy, and beautiful scenery. Dislikes: absolutes, dismissive people, arrogance, bland food, and traveling.'
     ].join('\n\n')
+  },
+  {
+    id: 'konoha-map',
+    sectionId: 'important-places',
+    portraitUrl: './places/KonohaMap.png',
+    name: 'Map of Konoha',
+    age: '',
+    birthday: '',
+    occupationRank: 'Important place',
+    affiliations: 'Konoha (Hidden Leaf Village)',
+    description:
+      'Reference map of the Hidden Leaf Village for orientation and planning during missions and downtime.'
   }
 ];

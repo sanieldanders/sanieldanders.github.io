@@ -187,13 +187,17 @@ export interface Profile {
 }
 
 /** Collapsible encyclopedia section on the Character Encyclopedia page. */
-export type NpcEncyclopediaSectionId = 'non-player' | 'player' | 'genin-teams';
+export type NpcEncyclopediaSectionId =
+  | 'non-player'
+  | 'player'
+  | 'important-places'
+  | 'genin-teams';
 
 /** NPC profile for the Character Encyclopedia (read-only catalog; portraits from `public/npcs/`). */
 export interface NpcEncyclopediaEntry {
   id: string;
   sectionId: NpcEncyclopediaSectionId;
-  /** Site-relative path, e.g. `./npcs/Portrait.png` (served from `public/npcs/`). */
+  /** Site-relative path, e.g. `./npcs/Portrait.png` or `./places/Map.png` (served from `public/`). */
   portraitUrl: string;
   name: string;
   age: string;

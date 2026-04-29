@@ -73,12 +73,15 @@ export class EncyclopediaComponent {
 
   readonly filteredPlayerCharacters = computed(() => this.filteredSection('player'));
 
+  readonly filteredImportantPlaces = computed(() => this.filteredSection('important-places'));
+
   readonly filteredGeninTeams = computed(() => this.filteredSection('genin-teams'));
 
   readonly totalSearchMatches = computed(
     () =>
       this.filteredNonPlayer().length +
       this.filteredPlayerCharacters().length +
+      this.filteredImportantPlaces().length +
       this.filteredGeninTeams().length
   );
 
@@ -90,6 +93,7 @@ export class EncyclopediaComponent {
     return (
       this.filteredNonPlayer().find((n) => n.id === id) ??
       this.filteredPlayerCharacters().find((n) => n.id === id) ??
+      this.filteredImportantPlaces().find((n) => n.id === id) ??
       this.filteredGeninTeams().find((n) => n.id === id) ??
       null
     );
@@ -101,6 +105,8 @@ export class EncyclopediaComponent {
         return this.filteredNonPlayer();
       case 'player':
         return this.filteredPlayerCharacters();
+      case 'important-places':
+        return this.filteredImportantPlaces();
       case 'genin-teams':
         return this.filteredGeninTeams();
     }

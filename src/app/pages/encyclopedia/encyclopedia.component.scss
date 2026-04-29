@@ -453,6 +453,15 @@
   }
 }
 
+.enc-card__portrait--place {
+  min-height: min(48vh, 520px);
+  max-height: min(78vh, 900px);
+
+  img {
+    max-height: min(72vh, 880px);
+  }
+}
+
 .enc-card__body {
   padding: 1.25rem 1.35rem 1.5rem;
 }
