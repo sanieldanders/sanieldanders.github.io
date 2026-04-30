@@ -1,17 +1,21 @@
-import { DatePipe, JsonPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { ABILITY_LAYOUT } from '../../core/character/ability-layout';
+import { ensureCharacterSheet, type CharacterWithSheet } from '../../core/character/character-sheet.defaults';
+import type { Character } from '../../core/models/app-data.model';
 import { AdminService, type AdminUserDataRow } from '../../core/services/admin.service';
 
 @Component({
   selector: 'app-admin',
-  imports: [DatePipe, JsonPipe, FormsModule, RouterLink],
+  imports: [DatePipe, FormsModule, RouterLink],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
 export class AdminComponent {
   private readonly admin = inject(AdminService);
+  readonly abilityLayout = ABILITY_LAYOUT;
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -60,5 +64,9 @@ export class AdminComponent {
 
   setFilter(value: string): void {
     this.filter.set(value);
+  }
+
+  displayCharacter(character: Character): CharacterWithSheet {
+    return ensureCharacterSheet(character);
   }
 }

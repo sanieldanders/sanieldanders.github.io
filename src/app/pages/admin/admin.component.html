@@ -35,11 +35,69 @@
               <p class="muted">No characters saved for this user.</p>
             } @else {
               @for (character of row.data.characters; track character.id) {
-                <article class="character">
-                  <h3>{{ character.name }}</h3>
-                  <p class="muted">Created {{ character.createdAt | date: 'medium' }}</p>
-                  <pre>{{ character.sheet ? (character.sheet | json) : 'No sheet data' }}</pre>
-                </article>
+                @if (displayCharacter(character); as ch) {
+                  <article class="character">
+                    <header class="character__head">
+                      <h3>{{ ch.name }}</h3>
+                      <p class="muted">Created {{ ch.createdAt | date: 'medium' }}</p>
+                    </header>
+
+                    <section class="sheet-grid">
+                      <div class="sheet-card">
+                        <h4>Identity</h4>
+                        <p><strong>Clan:</strong> {{ ch.sheet.identity.clan || '—' }}</p>
+                        <p><strong>Player:</strong> {{ ch.sheet.identity.playerName || '—' }}</p>
+                        <p><strong>Class / Level:</strong> {{ ch.sheet.identity.classLevel || '—' }}</p>
+                        <p><strong>XP:</strong> {{ ch.sheet.identity.experiencePoints || '—' }}</p>
+                      </div>
+
+                      <div class="sheet-card">
+                        <h4>Combat</h4>
+                        <p><strong>AC:</strong> {{ ch.sheet.combat.armorClass || '—' }}</p>
+                        <p><strong>Initiative:</strong> {{ ch.sheet.combat.initiative || '—' }}</p>
+                        <p><strong>Speed:</strong> {{ ch.sheet.combat.speed || '—' }}</p>
+                        <p>
+                          <strong>HP:</strong> {{ ch.sheet.combat.currentHitPoints || '—' }} /
+                          {{ ch.sheet.combat.hitPointMax || '—' }}
+                        </p>
+                        <p>
+                          <strong>Chakra:</strong> {{ ch.sheet.combat.currentChakra || '—' }} /
+                          {{ ch.sheet.combat.chakraPointMax || '—' }}
+                        </p>
+                      </div>
+                    </section>
+
+                    <section class="sheet-card">
+                      <h4>Abilities</h4>
+                      <div class="abilities">
+                        @for (row of abilityLayout; track row.abbr) {
+                          <div class="ability">
+                            <strong>{{ row.abbr }}</strong>
+                            <span>Score: {{ ch.sheet.abilities[row.abbr].score || '—' }}</span>
+                            <span>Mod: {{ ch.sheet.abilities[row.abbr].mod || '—' }}</span>
+                          </div>
+                        }
+                      </div>
+                    </section>
+
+                    <section class="sheet-grid">
+                      <div class="sheet-card">
+                        <h4>Traits</h4>
+                        <p><strong>Personality:</strong> {{ ch.sheet.traits.personality || '—' }}</p>
+                        <p><strong>Ideals:</strong> {{ ch.sheet.traits.ideals || '—' }}</p>
+                        <p><strong>Bonds:</strong> {{ ch.sheet.traits.bonds || '—' }}</p>
+                        <p><strong>Flaws:</strong> {{ ch.sheet.traits.flaws || '—' }}</p>
+                      </div>
+                      <div class="sheet-card">
+                        <h4>Profile</h4>
+                        <p><strong>Village / Rank:</strong> {{ ch.sheet.profileSheet.villageRank || '—' }}</p>
+                        <p><strong>Allies:</strong> {{ ch.sheet.profileSheet.alliesOrganizations || '—' }}</p>
+                        <p><strong>Appearance:</strong> {{ ch.sheet.profileSheet.appearance || '—' }}</p>
+                        <p><strong>Backstory:</strong> {{ ch.sheet.profileSheet.backstory || '—' }}</p>
+                      </div>
+                    </section>
+                  </article>
+                }
               }
             }
           </div>

@@ -90,19 +90,62 @@
   p {
     margin: 0.25rem 0 0.45rem;
   }
+}
 
-  pre {
-    margin: 0;
-    padding: 0.55rem;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: #0d131a;
-    color: #d5dee8;
-    white-space: pre-wrap;
-    word-break: break-word;
-    font-size: 0.75rem;
-    max-height: 280px;
-    overflow: auto;
+.character__head {
+  margin-bottom: 0.55rem;
+
+  h3 {
+    margin-bottom: 0.2rem;
+  }
+}
+
+.sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.sheet-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  background: #0d131a;
+
+  h4 {
+    margin: 0 0 0.45rem;
+    font-size: 0.86rem;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  p {
+    margin: 0.25rem 0;
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+}
+
+.abilities {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.4rem;
+}
+
+.ability {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.4rem 0.45rem;
+  display: grid;
+  gap: 0.15rem;
+  font-size: 0.75rem;
+
+  strong {
+    color: var(--accent);
+    font-size: 0.8rem;
   }
 }
 
