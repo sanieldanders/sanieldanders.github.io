@@ -715,19 +715,20 @@
                     <span class="jl-rank-bar__bracket jl-rank-bar__bracket--right" aria-hidden="true"></span>
                   </div>
                   <div class="jl-rank-add">
-                    <select
-                      class="jl-rank-add__select"
+                    <input
+                      class="jl-rank-add__input"
+                      type="search"
+                      [attr.list]="rankDatalistId(rank)"
                       [ngModel]="addSelection(rank)"
                       (ngModelChange)="setAddSelection(rank, $event)"
-                    >
-                      <option value="">Add from compendium...</option>
-                      @for (j of compendiumJutsu(); track j.id) {
-                        @if (j.rank === rank) {
-                          <option [value]="j.id">{{ j.name }}</option>
-                        }
-                      }
-                    </select>
+                      [placeholder]="'Search ' + rank + '-Rank jutsu...'"
+                    />
                     <button type="button" class="jl-rank-add__btn" (click)="addJutsuToRank(rank)">Add</button>
+                    <datalist [id]="rankDatalistId(rank)">
+                      @for (j of compendiumForRank(rank); track j.id) {
+                        <option [value]="j.name"></option>
+                      }
+                    </datalist>
                   </div>
                   <div class="jl-lines">
                     @for (i of jutsuLineIndexes; track i) {
@@ -736,7 +737,7 @@
                           class="jl-line-input"
                           [class.jl-line-input--unmatched]="isUnmatchedJutsuLine(ch.sheet.jutsuListSheet.ranks[rank][i])"
                           type="text"
-                          list="jl-compendium-jutsu"
+                          [attr.list]="rankDatalistId(rank)"
                           [ngModel]="ch.sheet.jutsuListSheet.ranks[rank][i]"
                           (ngModelChange)="onJutsuRankLine(rank, i, $event)"
                           [attr.aria-label]="'Jutsu line ' + (i + 1) + ' (' + rank + '-rank)'"
@@ -758,11 +759,6 @@
             </div>
           }
         </div>
-        <datalist id="jl-compendium-jutsu">
-          @for (j of compendiumJutsu(); track j.id) {
-            <option [value]="j.name"></option>
-          }
-        </datalist>
       </div>
     }
   </div>

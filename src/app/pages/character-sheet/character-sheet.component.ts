@@ -19,6 +19,7 @@ import {
   type JutsuRank,
   type SkillDot
 } from '../../core/models/app-data.model';
+import { buildClanJutsuCompendiumEntries } from '../../core/content/clan-jutsu.compendium';
 import type { JutsuCompendiumEntry, JutsuCompendiumPayload } from '../../core/models/jutsu-compendium.model';
 import { DataStoreService } from '../../core/services/data-store.service';
 import { RollLogService } from '../../core/services/roll-log.service';
@@ -80,10 +81,11 @@ export class CharacterSheetComponent {
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (payload) => {
-          this.compendiumJutsu.set((payload.entries ?? []).filter((e) => e.kind === 'jutsu'));
+          const base = (payload.entries ?? []).filter((e) => e.kind === 'jutsu');
+          this.compendiumJutsu.set([...base, ...buildClanJutsuCompendiumEntries()]);
         },
         error: () => {
-          this.compendiumJutsu.set([]);
+          this.compendiumJutsu.set(buildClanJutsuCompendiumEntries());
         }
       });
 
@@ -265,6 +267,10 @@ export class CharacterSheetComponent {
   }
 
   onJutsuRankLine(rank: JutsuRank, index: number, value: string): void {
+    const matched = this.jutsuForLine(value);
+    if (matched && this.entryRank(matched) && this.entryRank(matched) !== rank) {
+      return;
+    }
     this.patch((ch) => {
       const lines = [...ch.sheet.jutsuListSheet.ranks[rank]] as string[];
       lines[index] = value;
@@ -273,12 +279,15 @@ export class CharacterSheetComponent {
   }
 
   addJutsuToRank(rank: JutsuRank): void {
-    const jutsuId = this.addSelectionByRank()[rank];
-    if (!jutsuId) {
+    const selectedName = this.addSelectionByRank()[rank].trim();
+    if (!selectedName) {
       return;
     }
-    const picked = this.compendiumJutsu().find((j) => j.id === jutsuId);
+    const picked = this.compendiumJutsu().find((j) => j.name.trim().toLowerCase() === selectedName.toLowerCase());
     if (!picked) {
+      return;
+    }
+    if (this.entryRank(picked) && this.entryRank(picked) !== rank) {
       return;
     }
     let added = false;
@@ -305,6 +314,14 @@ export class CharacterSheetComponent {
     return this.addSelectionByRank()[rank] ?? '';
   }
 
+  compendiumForRank(rank: JutsuRank): JutsuCompendiumEntry[] {
+    return this.compendiumJutsu().filter((j) => this.entryRank(j) === rank);
+  }
+
+  rankDatalistId(rank: JutsuRank): string {
+    return `jl-rank-options-${rank}`;
+  }
+
   jutsuForLine(name: string): JutsuCompendiumEntry | null {
     const trimmed = name.trim().toLowerCase();
     if (!trimmed) {
@@ -315,6 +332,15 @@ export class CharacterSheetComponent {
 
   isUnmatchedJutsuLine(name: string): boolean {
     return name.trim().length > 0 && !this.jutsuForLine(name);
+  }
+
+  private entryRank(entry: JutsuCompendiumEntry): JutsuRank | null {
+    const rank = (entry.rank ?? '').trim().toUpperCase();
+    const m = rank.match(/^([EDCBAS])(?:-RANK)?$/);
+    if (!m) {
+      return null;
+    }
+    return m[1] as JutsuRank;
   }
 
   onProfilePhysical<K extends keyof CharacterProfileSheetState['physical']>(key: K, value: string): void {

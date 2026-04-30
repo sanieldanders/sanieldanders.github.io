@@ -14,6 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
+import { buildClanJutsuCompendiumEntries } from '../../core/content/clan-jutsu.compendium';
 import type { JutsuCompendiumEntry, JutsuCompendiumPayload } from '../../core/models/jutsu-compendium.model';
 
 function compendiumJsonHref(doc: Document): string {
@@ -141,7 +142,9 @@ export class JutsuCompendiumComponent {
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (p) => {
-          this.entries.set(p.entries ?? []);
+          const base = p.entries ?? [];
+          const clanEntries = buildClanJutsuCompendiumEntries();
+          this.entries.set([...base, ...clanEntries]);
           this.loadError.set(null);
         },
         error: () => {
