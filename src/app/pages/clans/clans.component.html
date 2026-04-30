@@ -1,0 +1,75 @@
+<div class="page clans">
+  <header class="page__head">
+    <h1>Clans</h1>
+    <p class="muted">Clan packet reference (overview, traits, features, and signature jutsu).</p>
+  </header>
+
+  <label class="clans__search">
+    <span>Search clans, traits, or jutsu</span>
+    <input
+      type="search"
+      [value]="search()"
+      (input)="onSearchInput($event)"
+      placeholder="Try: shadow, byakugan, wood, sealing..."
+    />
+  </label>
+
+  <section class="clans__list" aria-label="Clan list">
+    @for (clan of filteredClans(); track clan.id) {
+      <details class="clan-item">
+        <summary>
+          <span class="clan-item__name">{{ clan.name }}</span>
+          <span class="clan-item__tag">{{ clan.tagline }}</span>
+        </summary>
+        <p><strong>Affiliations:</strong> {{ clan.affiliations }}</p>
+        <p>{{ clan.notes }}</p>
+        <button type="button" class="clan-item__open" (click)="openClan(clan)">Open full clan card</button>
+      </details>
+    } @empty {
+      <p class="muted">No clans match your search.</p>
+    }
+  </section>
+
+  @if (modalClan(); as clan) {
+    <div class="clan-modal-backdrop" (click)="closeModal()">
+      <article class="clan-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <header class="clan-modal__head">
+          <div>
+            <h2>{{ clan.name }}</h2>
+            <p class="muted">{{ clan.tagline }} · {{ clan.affiliations }}</p>
+          </div>
+          <button type="button" class="clan-modal__close" (click)="closeModal()">Close</button>
+        </header>
+
+        <p class="clan-modal__notes">{{ clan.notes }}</p>
+
+        <section>
+          <h3>Core Traits</h3>
+          <ul>
+            @for (item of clan.traits; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </section>
+
+        <section>
+          <h3>Clan Features</h3>
+          <ul>
+            @for (item of clan.features; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </section>
+
+        <section>
+          <h3>Signature Jutsu</h3>
+          <ul>
+            @for (item of clan.signatureJutsu; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </section>
+      </article>
+    </div>
+  }
+</div>

@@ -1,5 +1,7 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -17,6 +19,7 @@ import {
   type JutsuRank,
   type SkillDot
 } from '../../core/models/app-data.model';
+import type { JutsuCompendiumEntry, JutsuCompendiumPayload } from '../../core/models/jutsu-compendium.model';
 import { DataStoreService } from '../../core/services/data-store.service';
 import { RollLogService } from '../../core/services/roll-log.service';
 import { SupabaseAuthService } from '../../core/services/supabase-auth.service';
@@ -28,6 +31,7 @@ import { SupabaseAuthService } from '../../core/services/supabase-auth.service';
   styleUrl: './character-sheet.component.scss'
 })
 export class CharacterSheetComponent {
+  private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly store = inject(DataStoreService);
@@ -49,6 +53,15 @@ export class CharacterSheetComponent {
     ['C', 'B'],
     ['A', 'S']
   ];
+  readonly compendiumJutsu = signal<JutsuCompendiumEntry[]>([]);
+  readonly addSelectionByRank = signal<Record<JutsuRank, string>>({
+    E: '',
+    D: '',
+    C: '',
+    B: '',
+    A: '',
+    S: ''
+  });
 
   private readonly characterId = toSignal(
     this.route.paramMap.pipe(map((p) => p.get('characterId') ?? '')),
@@ -62,6 +75,18 @@ export class CharacterSheetComponent {
   private loadedCharacterId = '';
 
   constructor() {
+    this.http
+      .get<JutsuCompendiumPayload>('jutsu-compendium.json')
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (payload) => {
+          this.compendiumJutsu.set((payload.entries ?? []).filter((e) => e.kind === 'jutsu'));
+        },
+        error: () => {
+          this.compendiumJutsu.set([]);
+        }
+      });
+
     effect(() => {
       const id = this.characterId();
       if (id !== this.loadedCharacterId) {
@@ -245,6 +270,51 @@ export class CharacterSheetComponent {
       lines[index] = value;
       ch.sheet.jutsuListSheet.ranks[rank] = lines;
     });
+  }
+
+  addJutsuToRank(rank: JutsuRank): void {
+    const jutsuId = this.addSelectionByRank()[rank];
+    if (!jutsuId) {
+      return;
+    }
+    const picked = this.compendiumJutsu().find((j) => j.id === jutsuId);
+    if (!picked) {
+      return;
+    }
+    let added = false;
+    this.patch((ch) => {
+      const lines = [...ch.sheet.jutsuListSheet.ranks[rank]] as string[];
+      const target = lines.findIndex((line) => line.trim().length === 0);
+      if (target < 0) {
+        return;
+      }
+      lines[target] = picked.name;
+      ch.sheet.jutsuListSheet.ranks[rank] = lines;
+      added = true;
+    });
+    if (added) {
+      this.setAddSelection(rank, '');
+    }
+  }
+
+  setAddSelection(rank: JutsuRank, value: string): void {
+    this.addSelectionByRank.update((cur) => ({ ...cur, [rank]: value }));
+  }
+
+  addSelection(rank: JutsuRank): string {
+    return this.addSelectionByRank()[rank] ?? '';
+  }
+
+  jutsuForLine(name: string): JutsuCompendiumEntry | null {
+    const trimmed = name.trim().toLowerCase();
+    if (!trimmed) {
+      return null;
+    }
+    return this.compendiumJutsu().find((j) => j.name.trim().toLowerCase() === trimmed) ?? null;
+  }
+
+  isUnmatchedJutsuLine(name: string): boolean {
+    return name.trim().length > 0 && !this.jutsuForLine(name);
   }
 
   onProfilePhysical<K extends keyof CharacterProfileSheetState['physical']>(key: K, value: string): void {
