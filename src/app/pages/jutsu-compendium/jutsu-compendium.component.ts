@@ -14,7 +14,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
-import { buildClanJutsuCompendiumEntries } from '../../core/content/clan-jutsu.compendium';
 import type { JutsuCompendiumEntry, JutsuCompendiumPayload } from '../../core/models/jutsu-compendium.model';
 
 function compendiumJsonHref(doc: Document): string {
@@ -48,6 +47,7 @@ export class JutsuCompendiumComponent {
   readonly classificationFilter = signal<string>('');
   readonly releaseFilter = signal<string>('');
   readonly keywordFilter = signal<string>('');
+  readonly clanFilter = signal<string>('');
   readonly selectedId = signal<string | null>(null);
 
   private readonly closeBtn = viewChild<ElementRef<HTMLButtonElement>>('closeBtn');
@@ -68,6 +68,7 @@ export class JutsuCompendiumComponent {
     const classification = this.classificationFilter();
     const release = this.releaseFilter();
     const keyword = this.keywordFilter();
+    const clan = this.clanFilter();
     return list.filter((e) => {
       if (maj && (e.major ?? '') !== maj) {
         return false;
@@ -80,13 +81,15 @@ export class JutsuCompendiumComponent {
       }
       if (release) {
         const releaseLower = release.toLowerCase();
-        const hasReleaseKeyword = (e.keywords ?? []).some((k) => k.toLowerCase() === releaseLower);
-        const hasReleaseText = entryHaystack(e).includes(releaseLower);
-        if (!hasReleaseKeyword && !hasReleaseText) {
+        const hasExactReleaseKeyword = (e.keywords ?? []).some((k) => k.toLowerCase() === releaseLower);
+        if (!hasExactReleaseKeyword) {
           return false;
         }
       }
       if (keyword && !(e.keywords ?? []).includes(keyword)) {
+        return false;
+      }
+      if (clan && (e.subsection ?? '') !== clan) {
         return false;
       }
       if (!q) {
@@ -113,6 +116,21 @@ export class JutsuCompendiumComponent {
     Array.from(new Set(this.entries().flatMap((e) => e.keywords ?? [])))
       .filter((k) => !/release/i.test(k))
       .sort()
+  );
+  readonly clans = computed(() =>
+    Array.from(new Set(this.entries().filter((e) => (e.major ?? '') === 'CLANS').map((e) => e.subsection ?? '')))
+      .filter(Boolean)
+      .sort()
+  );
+  readonly hasActiveFilters = computed(
+    () =>
+      Boolean(this.searchQuery().trim()) ||
+      Boolean(this.majorFilter()) ||
+      Boolean(this.kindFilter()) ||
+      Boolean(this.classificationFilter()) ||
+      Boolean(this.releaseFilter()) ||
+      Boolean(this.keywordFilter()) ||
+      Boolean(this.clanFilter())
   );
 
   readonly modalNav = computed(() => {
@@ -142,9 +160,7 @@ export class JutsuCompendiumComponent {
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (p) => {
-          const base = p.entries ?? [];
-          const clanEntries = buildClanJutsuCompendiumEntries();
-          this.entries.set([...base, ...clanEntries]);
+          this.entries.set(p.entries ?? []);
           this.loadError.set(null);
         },
         error: () => {
@@ -189,6 +205,20 @@ export class JutsuCompendiumComponent {
 
   onKeywordChange(event: Event): void {
     this.keywordFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  onClanChange(event: Event): void {
+    this.clanFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  clearFilters(): void {
+    this.searchQuery.set('');
+    this.majorFilter.set('');
+    this.kindFilter.set('');
+    this.classificationFilter.set('');
+    this.releaseFilter.set('');
+    this.keywordFilter.set('');
+    this.clanFilter.set('');
   }
 
   openEntry(e: JutsuCompendiumEntry): void {

@@ -71,6 +71,18 @@
         }
       </select>
     </label>
+    <label class="jc-filter">
+      <span class="jc-filter__label">Clan</span>
+      <select class="jc-filter__select" [value]="clanFilter()" (change)="onClanChange($event)">
+        <option value="">All</option>
+        @for (clan of clans(); track clan) {
+          <option [value]="clan">{{ clan }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="jc-clear-btn" (click)="clearFilters()" [disabled]="!hasActiveFilters()">
+      Clear filters
+    </button>
     @if (entries().length) {
       <p class="jc-toolbar__meta">{{ matchCount() }} shown</p>
     }

@@ -108,6 +108,25 @@
   min-width: 9rem;
 }
 
+.jc-clear-btn {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.86rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
 .jc-empty {
   margin: 0;
   padding: 1.5rem 1rem;

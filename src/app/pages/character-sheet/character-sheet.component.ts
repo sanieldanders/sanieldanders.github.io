@@ -19,7 +19,6 @@ import {
   type JutsuRank,
   type SkillDot
 } from '../../core/models/app-data.model';
-import { buildClanJutsuCompendiumEntries } from '../../core/content/clan-jutsu.compendium';
 import type { JutsuCompendiumEntry, JutsuCompendiumPayload } from '../../core/models/jutsu-compendium.model';
 import { DataStoreService } from '../../core/services/data-store.service';
 import { RollLogService } from '../../core/services/roll-log.service';
@@ -81,11 +80,10 @@ export class CharacterSheetComponent {
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (payload) => {
-          const base = (payload.entries ?? []).filter((e) => e.kind === 'jutsu');
-          this.compendiumJutsu.set([...base, ...buildClanJutsuCompendiumEntries()]);
+          this.compendiumJutsu.set((payload.entries ?? []).filter((e) => e.kind === 'jutsu'));
         },
         error: () => {
-          this.compendiumJutsu.set(buildClanJutsuCompendiumEntries());
+          this.compendiumJutsu.set([]);
         }
       });
 
