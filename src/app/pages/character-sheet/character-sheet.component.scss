@@ -1620,39 +1620,126 @@ $paper-deep: #e4dccf;
 .jl-line-info {
   position: absolute;
   right: 0.2rem;
-  width: 1rem;
-  height: 1rem;
+  width: 1.1rem;
+  height: 1.1rem;
   display: inline-grid;
   place-items: center;
-  font-size: 0.65rem;
-  font-weight: 700;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
   border-radius: 50%;
-  border: 1px solid rgba($line, 0.42);
-  background: rgba(255, 255, 255, 0.9);
-  color: rgba($ink, 0.9);
+  border: 1px solid rgba(74, 58, 42, 0.35);
+  background: #fffef8;
+  color: rgba($ink, 0.85);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   cursor: help;
+
+  &:hover,
+  .jl-line-item:focus-within & {
+    border-color: rgba(139, 90, 43, 0.55);
+  }
 }
 
 .jl-line-tip {
   display: none;
   position: absolute;
-  z-index: 4;
-  left: 0.25rem;
-  top: calc(100% + 0.1rem);
-  max-width: min(34rem, 88vw);
-  padding: 0.45rem 0.55rem;
-  border: 1px solid rgba($line, 0.45);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-  font-size: 0.72rem;
-  line-height: 1.28;
-  white-space: normal;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  max-width: min(28rem, calc(100vw - 2rem));
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+  border: 1px solid rgba($line, 0.5);
+  background: #fffef9;
+  box-shadow: 0 8px 24px rgba(20, 17, 14, 0.14);
+  overflow: hidden;
+  text-align: left;
+  pointer-events: none;
+}
 
-  strong,
-  span {
-    display: block;
-  }
+.jl-line-tip__chrome {
+  height: 3px;
+  background: #8b5a2b;
+}
+
+.jl-line-tip__inner {
+  padding: 0.65rem 0.75rem 0.6rem;
+}
+
+.jl-line-tip__title {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  color: #1a1612;
+  word-break: break-word;
+}
+
+.jl-line-tip__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.4rem;
+}
+
+.jl-line-tip__pill {
+  display: inline-block;
+  padding: 0.12rem 0.4rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid rgba($line, 0.45);
+  background: rgba(255, 255, 255, 0.85);
+  color: rgba($ink, 0.88);
+}
+
+.jl-line-tip__pill--rank {
+  border-color: rgba(139, 90, 43, 0.45);
+  background: rgba(255, 244, 220, 0.95);
+  color: #5c3d1a;
+}
+
+.jl-line-tip__pill--muted {
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.jl-line-tip__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.22rem;
+  margin-bottom: 0.45rem;
+}
+
+.jl-line-tip__tag {
+  padding: 0.1rem 0.32rem;
+  font-size: 0.57rem;
+  font-weight: 600;
+  border-radius: 4px;
+  background: rgba(90, 122, 74, 0.12);
+  color: rgba(30, 50, 28, 0.95);
+  border: 1px solid rgba(90, 122, 74, 0.22);
+}
+
+.jl-line-tip__body {
+  max-height: 14rem;
+  overflow: auto;
+  padding: 0.5rem 0.6rem;
+  margin: 0 -0.05rem;
+  border-radius: 6px;
+  border: 1px solid rgba($line, 0.28);
+  background: rgba(255, 255, 255, 0.78);
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: rgba($ink, 0.92);
+  white-space: pre-wrap;
+  word-break: break-word;
+  scrollbar-width: thin;
 }
 
 .jl-line-item:hover .jl-line-tip,

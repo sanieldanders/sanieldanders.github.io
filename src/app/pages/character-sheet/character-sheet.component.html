@@ -744,11 +744,31 @@
                         />
                         @if (jutsuForLine(ch.sheet.jutsuListSheet.ranks[rank][i]); as info) {
                           <span class="jl-line-linked">linked</span>
-                          <span class="jl-line-info" tabindex="0">i</span>
-                          <div class="jl-line-tip">
-                            <strong>{{ info.name }}</strong>
-                            <span>{{ info.classification | titlecase }} · {{ info.rank }}-Rank</span>
-                            <span>{{ info.body }}</span>
+                          <span class="jl-line-info" tabindex="0" aria-label="Jutsu details">?</span>
+                          <div class="jl-line-tip" role="tooltip">
+                            <div class="jl-line-tip__chrome"></div>
+                            <div class="jl-line-tip__inner">
+                              <h4 class="jl-line-tip__title">{{ info.name }}</h4>
+                              <div class="jl-line-tip__meta">
+                                @if (info.rank) {
+                                  <span class="jl-line-tip__pill jl-line-tip__pill--rank">{{ info.rank }}</span>
+                                }
+                                @if (info.classification) {
+                                  <span class="jl-line-tip__pill">{{ info.classification | titlecase }}</span>
+                                }
+                                @if (info.major) {
+                                  <span class="jl-line-tip__pill jl-line-tip__pill--muted">{{ info.major | titlecase }}</span>
+                                }
+                              </div>
+                              @if ((info.keywords ?? []).length) {
+                                <div class="jl-line-tip__tags">
+                                  @for (kw of (info.keywords ?? []).slice(0, 8); track kw) {
+                                    <span class="jl-line-tip__tag">{{ kw }}</span>
+                                  }
+                                </div>
+                              }
+                              <div class="jl-line-tip__body">{{ info.body }}</div>
+                            </div>
                           </div>
                         }
                       </div>
