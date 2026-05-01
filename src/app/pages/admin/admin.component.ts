@@ -69,4 +69,12 @@ export class AdminComponent {
   displayCharacter(character: Character): CharacterWithSheet {
     return ensureCharacterSheet(character);
   }
+
+  rowTitle(row: AdminUserDataRow): string {
+    const names = row.data.characters.map((c) => c.name.trim()).filter(Boolean);
+    if (!names.length) {
+      return 'No characters';
+    }
+    return names.join(', ');
+  }
 }

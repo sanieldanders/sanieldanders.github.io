@@ -26,8 +26,9 @@
       @for (row of visibleRows(); track row.user_id) {
         <details class="card">
           <summary>
-            <strong>{{ row.user_id }}</strong>
+            <strong>{{ rowTitle(row) }}</strong>
             <span>{{ row.data.characters.length }} characters</span>
+            <span class="muted">User ID: {{ row.user_id }}</span>
             <span>Updated {{ row.updated_at | date: 'medium' }}</span>
           </summary>
           <div class="body">
