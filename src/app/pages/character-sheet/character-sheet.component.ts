@@ -1,5 +1,6 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
+import { DomSanitizer, type SafeHtml } from '@angular/platform-browser';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -37,6 +38,11 @@ export class CharacterSheetComponent {
   private readonly store = inject(DataStoreService);
   private readonly auth = inject(SupabaseAuthService);
   private readonly rollLogService = inject(RollLogService);
+  private readonly sanitizer = inject(DomSanitizer);
+
+  /** Bold common jutsu stat-line labels (Classification:, Range:, etc.) after escaping HTML. */
+  private static readonly jutsuBodyLabelRe =
+    /\b(Classification|Rank|Casting Time|Range|Duration|Components?|Cost|Keywords|Description|At Higher Ranks|Prerequisites|PREREQUISITES|Archetypes|Concept Notes|Effects|Finalize|Material|Targets?|Area|Upcasting|Saving Throw|Attack Roll):\s*/gi;
 
   readonly abilityLayout = ABILITY_LAYOUT;
   readonly attackRowIndexes = [0, 1, 2, 3, 4, 5, 6, 7] as const;
@@ -330,6 +336,22 @@ export class CharacterSheetComponent {
 
   isUnmatchedJutsuLine(name: string): boolean {
     return name.trim().length > 0 && !this.jutsuForLine(name);
+  }
+
+  /** Rich HTML for tooltip body: escaped, line breaks, bold field labels. */
+  jutsuTooltipBody(raw: string | undefined): SafeHtml {
+    const text = raw ?? '';
+    if (!text.trim()) {
+      return this.sanitizer.bypassSecurityTrustHtml('');
+    }
+    const escaped = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+    const labeled = escaped.replace(CharacterSheetComponent.jutsuBodyLabelRe, '<strong>$1:</strong> ');
+    const withBreaks = labeled.replace(/\r\n|\n|\r/g, '<br>');
+    return this.sanitizer.bypassSecurityTrustHtml(withBreaks);
   }
 
   private entryRank(entry: JutsuCompendiumEntry): JutsuRank | null {

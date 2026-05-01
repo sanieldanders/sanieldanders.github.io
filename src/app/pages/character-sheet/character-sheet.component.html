@@ -767,7 +767,7 @@
                                   }
                                 </div>
                               }
-                              <div class="jl-line-tip__body">{{ info.body }}</div>
+                              <div class="jl-line-tip__body" [innerHTML]="jutsuTooltipBody(info.body)"></div>
                             </div>
                           </div>
                         }
