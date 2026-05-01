@@ -8,7 +8,7 @@ export const CALENDAR_ANCHOR_YEAR = 2000;
 @Injectable({ providedIn: 'root' })
 export class CalendarEventsService {
   private readonly auth = inject(SupabaseAuthService);
-  private static readonly REQUEST_TIMEOUT_MS = 12000;
+  private static readonly REQUEST_TIMEOUT_MS = 30000;
 
   private async withTimeout<T>(promiseLike: PromiseLike<T>, action: string): Promise<T> {
     const timeout = new Promise<never>((_, reject) => {
@@ -97,30 +97,60 @@ export class CalendarEventsService {
       title: input.title.trim(),
       description: input.description.trim() ? input.description.trim() : null
     };
-    try {
+    const fullPayload = {
+      ...payload,
+      created_by: user?.id ?? null
+    };
+
+    const tryInsert = async (withCreatedBy: boolean): Promise<void> => {
       const { error } = await this.withTimeout(
-        this.auth.client.from('calendar_events').insert({
-          ...payload,
-          created_by: user?.id ?? null
-        }),
+        this.auth.client.from('calendar_events').insert(withCreatedBy ? fullPayload : payload),
         'Saving calendar event'
       );
       if (error) {
         throw new Error(error.message);
       }
-    } catch (err) {
-      const message = (err as Error).message ?? '';
-      if (!/timed out/i.test(message)) {
-        throw err;
-      }
-      // Fallback: avoid created_by FK/policy edge cases that can stall insert.
-      const { error: fallbackError } = await this.withTimeout(
-        this.auth.client.from('calendar_events').insert(payload),
-        'Saving calendar event'
+    };
+
+    const wasSaved = async (): Promise<boolean> => {
+      const { data, error } = await this.withTimeout(
+        this.auth.client
+          .from('calendar_events')
+          .select('id')
+          .eq('event_on', payload.event_on)
+          .eq('title', payload.title)
+          .limit(1),
+        'Checking saved calendar event'
       );
-      if (fallbackError) {
-        throw new Error(fallbackError.message);
+      if (error) {
+        return false;
       }
+      return Array.isArray(data) && data.length > 0;
+    };
+
+    try {
+      await tryInsert(true);
+      return;
+    } catch (firstError) {
+      const message = (firstError as Error).message ?? '';
+      if (!/timed out/i.test(message)) {
+        throw firstError;
+      }
+      // If the write actually landed despite timeout, don't fail the user.
+      if (await wasSaved()) {
+        return;
+      }
+    }
+
+    try {
+      await tryInsert(false);
+      return;
+    } catch (fallbackError) {
+      const message = (fallbackError as Error).message ?? '';
+      if (/timed out/i.test(message) && (await wasSaved())) {
+        return;
+      }
+      throw fallbackError;
     }
   }
 
