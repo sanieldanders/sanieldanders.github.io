@@ -92,17 +92,35 @@ export class CalendarEventsService {
     await this.auth.init();
     const eventOn = this.toIsoDate(input.month, input.day);
     const user = this.auth.user();
-    const { error } = await this.withTimeout(
-      this.auth.client.from('calendar_events').insert({
-        event_on: eventOn,
-        title: input.title.trim(),
-        description: input.description.trim() ? input.description.trim() : null,
-        created_by: user?.id ?? null
-      }),
-      'Saving calendar event'
-    );
-    if (error) {
-      throw new Error(error.message);
+    const payload = {
+      event_on: eventOn,
+      title: input.title.trim(),
+      description: input.description.trim() ? input.description.trim() : null
+    };
+    try {
+      const { error } = await this.withTimeout(
+        this.auth.client.from('calendar_events').insert({
+          ...payload,
+          created_by: user?.id ?? null
+        }),
+        'Saving calendar event'
+      );
+      if (error) {
+        throw new Error(error.message);
+      }
+    } catch (err) {
+      const message = (err as Error).message ?? '';
+      if (!/timed out/i.test(message)) {
+        throw err;
+      }
+      // Fallback: avoid created_by FK/policy edge cases that can stall insert.
+      const { error: fallbackError } = await this.withTimeout(
+        this.auth.client.from('calendar_events').insert(payload),
+        'Saving calendar event'
+      );
+      if (fallbackError) {
+        throw new Error(fallbackError.message);
+      }
     }
   }
 
