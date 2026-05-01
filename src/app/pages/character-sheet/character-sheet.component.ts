@@ -349,7 +349,12 @@ export class CharacterSheetComponent {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
-    const labeled = escaped.replace(CharacterSheetComponent.jutsuBodyLabelRe, '<strong>$1:</strong> ');
+    let firstFieldLabel = true;
+    const labeled = escaped.replace(CharacterSheetComponent.jutsuBodyLabelRe, (_m, p1: string) => {
+      const prefix = firstFieldLabel ? '' : '<br>';
+      firstFieldLabel = false;
+      return `${prefix}<strong>${p1}:</strong> `;
+    });
     const withBreaks = labeled.replace(/\r\n|\n|\r/g, '<br>');
     return this.sanitizer.bypassSecurityTrustHtml(withBreaks);
   }
