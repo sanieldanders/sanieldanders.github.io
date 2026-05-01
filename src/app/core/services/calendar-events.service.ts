@@ -8,13 +8,25 @@ export const CALENDAR_ANCHOR_YEAR = 2000;
 @Injectable({ providedIn: 'root' })
 export class CalendarEventsService {
   private readonly auth = inject(SupabaseAuthService);
+  private static readonly REQUEST_TIMEOUT_MS = 12000;
+
+  private async withTimeout<T>(promiseLike: PromiseLike<T>, action: string): Promise<T> {
+    const timeout = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error(`${action} timed out. Please try again.`)), CalendarEventsService.REQUEST_TIMEOUT_MS);
+    });
+    return Promise.race([Promise.resolve(promiseLike), timeout]);
+  }
 
   async getCampaignCalendarState(): Promise<CampaignCalendarState> {
-    const { data, error } = await this.auth.client
-      .from('campaign_calendar_state')
-      .select('active_on, anb_year, updated_at')
-      .eq('id', 1)
-      .maybeSingle<{ active_on: string; anb_year: number; updated_at: string | null }>();
+    await this.auth.init();
+    const { data, error } = await this.withTimeout(
+      this.auth.client
+        .from('campaign_calendar_state')
+        .select('active_on, anb_year, updated_at')
+        .eq('id', 1)
+        .maybeSingle<{ active_on: string; anb_year: number; updated_at: string | null }>(),
+      'Loading campaign calendar'
+    );
     if (error) {
       throw new Error(error.message);
     }
@@ -31,20 +43,24 @@ export class CalendarEventsService {
   }
 
   async setCampaignActiveDay(input: { month: number; day: number; anb_year: number }): Promise<void> {
+    await this.auth.init();
     if (!this.isValidCalendarDay(input.month, input.day)) {
       throw new Error('That month and day do not form a valid calendar date.');
     }
     const active_on = this.toIsoDate(input.month, input.day);
     const user = this.auth.user();
-    const { error } = await this.auth.client
-      .from('campaign_calendar_state')
-      .update({
-        active_on,
-        anb_year: input.anb_year,
-        updated_at: new Date().toISOString(),
-        updated_by: user?.id ?? null
-      })
-      .eq('id', 1);
+    const { error } = await this.withTimeout(
+      this.auth.client
+        .from('campaign_calendar_state')
+        .update({
+          active_on,
+          anb_year: input.anb_year,
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id ?? null
+        })
+        .eq('id', 1),
+      'Saving campaign date'
+    );
     if (error) {
       throw new Error(error.message);
     }
@@ -57,11 +73,15 @@ export class CalendarEventsService {
   }
 
   async listEvents(): Promise<CalendarEventRow[]> {
-    const { data, error } = await this.auth.client
-      .from('calendar_events')
-      .select('id, event_on, title, description, created_at, created_by')
-      .order('event_on', { ascending: true })
-      .order('title', { ascending: true });
+    await this.auth.init();
+    const { data, error } = await this.withTimeout(
+      this.auth.client
+        .from('calendar_events')
+        .select('id, event_on, title, description, created_at, created_by')
+        .order('event_on', { ascending: true })
+        .order('title', { ascending: true }),
+      'Loading calendar events'
+    );
     if (error) {
       throw new Error(error.message);
     }
@@ -69,21 +89,29 @@ export class CalendarEventsService {
   }
 
   async createEvent(input: { month: number; day: number; title: string; description: string }): Promise<void> {
+    await this.auth.init();
     const eventOn = this.toIsoDate(input.month, input.day);
     const user = this.auth.user();
-    const { error } = await this.auth.client.from('calendar_events').insert({
-      event_on: eventOn,
-      title: input.title.trim(),
-      description: input.description.trim() ? input.description.trim() : null,
-      created_by: user?.id ?? null
-    });
+    const { error } = await this.withTimeout(
+      this.auth.client.from('calendar_events').insert({
+        event_on: eventOn,
+        title: input.title.trim(),
+        description: input.description.trim() ? input.description.trim() : null,
+        created_by: user?.id ?? null
+      }),
+      'Saving calendar event'
+    );
     if (error) {
       throw new Error(error.message);
     }
   }
 
   async deleteEvent(id: string): Promise<void> {
-    const { error } = await this.auth.client.from('calendar_events').delete().eq('id', id);
+    await this.auth.init();
+    const { error } = await this.withTimeout(
+      this.auth.client.from('calendar_events').delete().eq('id', id),
+      'Removing calendar event'
+    );
     if (error) {
       throw new Error(error.message);
     }
