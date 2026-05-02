@@ -24,6 +24,23 @@ function npcSearchHaystack(npc: NpcEncyclopediaEntry): string {
 }
 
 /** Assumes Western order "Given Family" (e.g. Naruto Uzumaki); sorts by family name, then given name. */
+const ENC_BG_ROW_COUNT = 3;
+
+function splitPortraitUrlsIntoRows(urls: readonly string[]): string[][] {
+  if (urls.length === 0) {
+    return [];
+  }
+  const per = Math.ceil(urls.length / ENC_BG_ROW_COUNT);
+  const rows: string[][] = [];
+  for (let i = 0; i < ENC_BG_ROW_COUNT; i++) {
+    const slice = urls.slice(i * per, (i + 1) * per);
+    if (slice.length > 0) {
+      rows.push([...slice]);
+    }
+  }
+  return rows;
+}
+
 function compareNpcByLastName(a: NpcEncyclopediaEntry, b: NpcEncyclopediaEntry): number {
   const parts = (full: string) => full.trim().split(/\s+/).filter(Boolean);
   const familyName = (full: string) => {
@@ -53,6 +70,11 @@ export class EncyclopediaComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly entries = [...NPC_ENCYCLOPEDIA_BUILTIN].sort(compareNpcByLastName);
+
+  /** Portrait URLs for the scrolling page background (NPCs, PCs, genin teams — not place maps). */
+  readonly backgroundPortraitRows = splitPortraitUrlsIntoRows(
+    this.entries.filter((e) => e.sectionId !== 'important-places').map((e) => e.portraitUrl)
+  );
 
   readonly searchQuery = signal('');
   /** When set, modal is open; character resolved from current filter via `modalNpc`. */

@@ -1,4 +1,99 @@
+.enc-shell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100%;
+}
+
+.enc-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.enc-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+}
+
+.enc-bg__row {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.enc-bg__row:nth-child(1) {
+  top: 6%;
+  height: 28%;
+}
+
+.enc-bg__row:nth-child(2) {
+  top: 36%;
+  height: 28%;
+}
+
+.enc-bg__row:nth-child(3) {
+  top: 66%;
+  height: 28%;
+}
+
+.enc-bg__track {
+  display: flex;
+  width: max-content;
+  gap: 0.65rem;
+  will-change: transform;
+  animation: enc-bg-marquee-l 110s linear infinite;
+}
+
+.enc-bg__row--rev .enc-bg__track {
+  animation-name: enc-bg-marquee-r;
+}
+
+.enc-bg__img {
+  flex-shrink: 0;
+  height: min(26vh, 220px);
+  width: 132px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 10px;
+  opacity: 0.42;
+  filter: saturate(0.92);
+}
+
+@keyframes enc-bg-marquee-l {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes enc-bg-marquee-r {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enc-bg__track {
+    animation: none;
+  }
+}
+
 .enc-page {
+  position: relative;
+  z-index: 2;
   max-width: 960px;
   margin: 0 auto;
   padding: 1.25rem 1.25rem 3rem;

@@ -1,4 +1,20 @@
-<div class="enc-page">
+<div class="enc-shell">
+  <div class="enc-bg" aria-hidden="true">
+    @for (row of backgroundPortraitRows; track $index) {
+      <div class="enc-bg__row" [class.enc-bg__row--rev]="$index % 2 === 1">
+        <div class="enc-bg__track">
+          @for (url of row; track url + '-' + $index) {
+            <img class="enc-bg__img" [src]="url" alt="" decoding="async" />
+          }
+          @for (url of row; track 'dup-' + url + $index) {
+            <img class="enc-bg__img" [src]="url" alt="" decoding="async" />
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="enc-page">
   <nav class="enc-nav">
     <a routerLink="/home" class="enc-nav__link">← Home</a>
   </nav>
@@ -152,6 +168,7 @@
       </details>
     </div>
   }
+  </div>
 </div>
 
 @if (modalNpc(); as npc) {
