@@ -129,11 +129,16 @@
   margin: 0 0 1.25rem;
 }
 
-.cal-body {
+/* Events column left; header / story date / pass time / calendar share one aligned column. */
+.cal-layout {
   display: grid;
   grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
   gap: 1.5rem 1.75rem;
   align-items: start;
+}
+
+.cal-content {
+  min-width: 0;
 }
 
 .cal-sidebar {
@@ -221,10 +226,6 @@
   color: var(--muted);
   line-height: 1.45;
   padding: 0.35rem 0;
-}
-
-.cal-main {
-  min-width: 0;
 }
 
 .cal-year {
@@ -464,8 +465,12 @@
 }
 
 @media (max-width: 900px) {
-  .cal-body {
+  .cal-layout {
     grid-template-columns: 1fr;
+  }
+
+  .cal-content {
+    order: -1;
   }
 
   .cal-sidebar {

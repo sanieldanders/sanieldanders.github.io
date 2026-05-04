@@ -1,69 +1,5 @@
 <div class="cal-page">
-  <header class="cal-page__head">
-    <h1>World calendar · {{ displayAnbYear() }} ANB</h1>
-    <p class="muted">After Naruto’s Birth · January–December</p>
-    <div class="cal-page__actions">
-      @if (admin.isAdmin()) {
-        <button type="button" class="primary" (click)="openAddForm()">Add event</button>
-      }
-      <button type="button" [disabled]="loading()" (click)="reload()">
-        {{ loading() ? 'Loading…' : 'Refresh' }}
-      </button>
-      <a routerLink="/home" class="cal-page__back">← Home</a>
-    </div>
-  </header>
-
-  @if (error(); as err) {
-    <p class="cal-error">{{ err }}</p>
-  }
-
-  @if (activeState(); as st) {
-    <p class="cal-active-banner">
-      Current story date:
-      <strong>{{ monthNames[st.month - 1] }} {{ st.day }}, {{ st.anb_year }} ANB</strong>
-      <span class="cal-active-banner__tag" aria-hidden="true">highlighted in green</span>
-    </p>
-  }
-
-  @if (admin.isAdmin()) {
-    <section class="cal-time-admin" aria-label="Set campaign active day">
-      <h2 class="cal-time-admin__title">Pass time (admin)</h2>
-      <p class="muted cal-time-admin__lead">
-        The green cell is the active in-world day. Use the buttons to advance, or set the date and ANB year manually.
-      </p>
-      <div class="cal-time-admin__row">
-        <label class="cal-time-admin__field">
-          Month
-          <select [ngModel]="timeMonth()" (ngModelChange)="timeMonth.set($event)">
-            @for (m of monthNames; track m; let i = $index) {
-              <option [ngValue]="i + 1">{{ m }}</option>
-            }
-          </select>
-        </label>
-        <label class="cal-time-admin__field">
-          Day
-          <input type="number" min="1" max="31" [ngModel]="timeDay()" (ngModelChange)="timeDay.set(+$event)" />
-        </label>
-        <label class="cal-time-admin__field">
-          ANB year
-          <input type="number" min="1" max="9999" [ngModel]="timeAnbYear()" (ngModelChange)="timeAnbYear.set(+$event)" />
-        </label>
-      </div>
-      <div class="cal-time-admin__actions">
-        <button type="button" [disabled]="timeBusy()" (click)="advanceStoryTime(-1)">−1 day</button>
-        <button type="button" [disabled]="timeBusy()" (click)="advanceStoryTime(1)">+1 day</button>
-        <button type="button" [disabled]="timeBusy()" (click)="advanceStoryTime(7)">+1 week</button>
-        <button type="button" class="primary" [disabled]="timeBusy()" (click)="submitStoryTime()">
-          {{ timeBusy() ? 'Saving…' : 'Apply date' }}
-        </button>
-      </div>
-      @if (timeError(); as te) {
-        <p class="cal-error cal-time-admin__err">{{ te }}</p>
-      }
-    </section>
-  }
-
-  <div class="cal-body">
+  <div class="cal-layout">
     <aside class="cal-sidebar" aria-label="Upcoming important dates">
       <h2 class="cal-sidebar__title">Upcoming important dates</h2>
       <p class="cal-sidebar__lead">
@@ -92,7 +28,71 @@
       }
     </aside>
 
-    <div class="cal-main">
+    <div class="cal-content">
+      <header class="cal-page__head">
+        <h1>World calendar · {{ displayAnbYear() }} ANB</h1>
+        <p class="muted">After Naruto’s Birth · January–December</p>
+        <div class="cal-page__actions">
+          @if (admin.isAdmin()) {
+            <button type="button" class="primary" (click)="openAddForm()">Add event</button>
+          }
+          <button type="button" [disabled]="loading()" (click)="reload()">
+            {{ loading() ? 'Loading…' : 'Refresh' }}
+          </button>
+          <a routerLink="/home" class="cal-page__back">← Home</a>
+        </div>
+      </header>
+
+      @if (error(); as err) {
+        <p class="cal-error">{{ err }}</p>
+      }
+
+      @if (activeState(); as st) {
+        <p class="cal-active-banner">
+          Current story date:
+          <strong>{{ monthNames[st.month - 1] }} {{ st.day }}, {{ st.anb_year }} ANB</strong>
+          <span class="cal-active-banner__tag" aria-hidden="true">highlighted in green</span>
+        </p>
+      }
+
+      @if (admin.isAdmin()) {
+        <section class="cal-time-admin" aria-label="Set campaign active day">
+          <h2 class="cal-time-admin__title">Pass time (admin)</h2>
+          <p class="muted cal-time-admin__lead">
+            The green cell is the active in-world day. Use the buttons to advance, or set the date and ANB year manually.
+          </p>
+          <div class="cal-time-admin__row">
+            <label class="cal-time-admin__field">
+              Month
+              <select [ngModel]="timeMonth()" (ngModelChange)="timeMonth.set($event)">
+                @for (m of monthNames; track m; let i = $index) {
+                  <option [ngValue]="i + 1">{{ m }}</option>
+                }
+              </select>
+            </label>
+            <label class="cal-time-admin__field">
+              Day
+              <input type="number" min="1" max="31" [ngModel]="timeDay()" (ngModelChange)="timeDay.set(+$event)" />
+            </label>
+            <label class="cal-time-admin__field">
+              ANB year
+              <input type="number" min="1" max="9999" [ngModel]="timeAnbYear()" (ngModelChange)="timeAnbYear.set(+$event)" />
+            </label>
+          </div>
+          <div class="cal-time-admin__actions">
+            <button type="button" [disabled]="timeBusy()" (click)="advanceStoryTime(-1)">−1 day</button>
+            <button type="button" [disabled]="timeBusy()" (click)="advanceStoryTime(1)">+1 day</button>
+            <button type="button" [disabled]="timeBusy()" (click)="advanceStoryTime(7)">+1 week</button>
+            <button type="button" class="primary" [disabled]="timeBusy()" (click)="submitStoryTime()">
+              {{ timeBusy() ? 'Saving…' : 'Apply date' }}
+            </button>
+          </div>
+          @if (timeError(); as te) {
+            <p class="cal-error cal-time-admin__err">{{ te }}</p>
+          }
+        </section>
+      }
+
       <p class="cal-hint">
         @if (admin.isAdmin()) {
           Click a day with events to read details, or an empty day to add one. The green day is “today” in the story.
