@@ -6,7 +6,6 @@ import { AdminService } from '../../core/services/admin.service';
 import { CalendarEventsService, CALENDAR_ANCHOR_YEAR } from '../../core/services/calendar-events.service';
 import type { CalendarEventRow, CampaignCalendarState } from '../../core/models/calendar-event.model';
 
-const UPCOMING_MAX_EVENTS = 3;
 /** Inclusive day offset from the active story date (0 = today in-world). */
 const UPCOMING_LAST_DAY_OFFSET = 30;
 
@@ -99,7 +98,7 @@ export class CalendarComponent {
     return map;
   });
 
-  /** Next few events whose next occurrence falls within 30 days of the active story date. */
+  /** All events whose next occurrence falls within 30 days of the active story date. */
   readonly upcomingImportantDates = computed((): UpcomingCalendarItem[] => {
     const state = this.activeState();
     const all = this.events();
@@ -124,7 +123,7 @@ export class CalendarComponent {
       }
       return a.event.title.localeCompare(b.event.title);
     });
-    return rows.slice(0, UPCOMING_MAX_EVENTS);
+    return rows;
   });
 
   constructor() {
