@@ -1,0 +1,137 @@
+<div class="mb-page">
+  <header class="mb-page__head">
+    <h1>Mission board</h1>
+    <p class="muted">Open missions posted for the village. Ranks are tied to scroll colors.</p>
+    <div class="mb-page__actions">
+      @if (admin.isAdmin()) {
+        <button type="button" class="primary" (click)="openAdd()">Add mission</button>
+      }
+      <button type="button" [disabled]="loading()" (click)="reload()">
+        {{ loading() ? 'Loading…' : 'Refresh' }}
+      </button>
+      <a routerLink="/home" class="mb-page__back">← Home</a>
+    </div>
+  </header>
+
+  @if (error(); as err) {
+    <p class="mb-error">{{ err }}</p>
+  }
+
+  @if (loading() && sortedMissions().length === 0) {
+    <p class="muted">Loading missions…</p>
+  }
+
+  <div class="mb-pinboard" aria-label="Mission scrolls">
+    @for (m of sortedMissions(); track m.id) {
+      <article [class]="'mb-scroll ' + scrollClass(m.rank)">
+        <div class="mb-scroll__top-roll" aria-hidden="true"></div>
+        <div class="mb-scroll__paper">
+          <div class="mb-scroll__rank-badge">
+            <span class="mb-scroll__rank-label">Rank</span>
+            <span class="mb-scroll__rank-value">{{ m.rank }}</span>
+          </div>
+          @if (admin.isAdmin()) {
+            <button
+              type="button"
+              class="mb-scroll__remove"
+              [disabled]="deleteBusyId() === m.id"
+              (click)="removeMission(m.id)"
+            >
+              {{ deleteBusyId() === m.id ? 'Removing…' : 'Remove' }}
+            </button>
+          }
+          <h2 class="mb-scroll__title">{{ m.name }}</h2>
+          @if (m.description.trim()) {
+            <section class="mb-scroll__block">
+              <h3 class="mb-scroll__subhead">Description</h3>
+              <p class="mb-scroll__text">{{ m.description }}</p>
+            </section>
+          }
+          @if (m.notes.trim()) {
+            <section class="mb-scroll__block">
+              <h3 class="mb-scroll__subhead">Notes</h3>
+              <p class="mb-scroll__text">{{ m.notes }}</p>
+            </section>
+          }
+          <section class="mb-scroll__block mb-scroll__block--reward">
+            <h3 class="mb-scroll__subhead">Reward</h3>
+            <dl class="mb-scroll__rewards">
+              <div class="mb-scroll__reward-row">
+                <dt>Experience</dt>
+                <dd>{{ m.reward_experience.trim() || '—' }}</dd>
+              </div>
+              <div class="mb-scroll__reward-row">
+                <dt>Ryo</dt>
+                <dd>{{ m.reward_ryo.trim() || '—' }}</dd>
+              </div>
+              <div class="mb-scroll__reward-row">
+                <dt>Downtime</dt>
+                <dd>{{ m.reward_downtime.trim() || '—' }}</dd>
+              </div>
+            </dl>
+          </section>
+        </div>
+        <div class="mb-scroll__bottom-roll" aria-hidden="true"></div>
+      </article>
+    } @empty {
+      @if (!loading()) {
+        <p class="mb-empty">No missions on the board yet.</p>
+      }
+    }
+  </div>
+</div>
+
+<dialog #addDialog class="mb-modal" (cancel)="$event.preventDefault(); closeAdd()">
+  <div class="mb-modal__body">
+    <header class="mb-modal__head">
+      <h2>Add mission</h2>
+      <button type="button" class="mb-modal__x" (click)="closeAdd()" aria-label="Close">×</button>
+    </header>
+    <div class="mb-form">
+      <label>
+        Rank
+        <select [ngModel]="addRank()" (ngModelChange)="addRank.set($event)">
+          @for (r of rankOptions; track r) {
+            <option [ngValue]="r">{{ r }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Name
+        <input type="text" [ngModel]="addName()" (ngModelChange)="addName.set($event)" maxlength="200" />
+      </label>
+      <label>
+        Description
+        <textarea rows="4" [ngModel]="addDescription()" (ngModelChange)="addDescription.set($event)"></textarea>
+      </label>
+      <label>
+        Notes
+        <textarea rows="3" [ngModel]="addNotes()" (ngModelChange)="addNotes.set($event)"></textarea>
+      </label>
+      <fieldset class="mb-form__rewards">
+        <legend>Reward</legend>
+        <label>
+          Experience
+          <input type="text" [ngModel]="addRewardXp()" (ngModelChange)="addRewardXp.set($event)" />
+        </label>
+        <label>
+          Ryo
+          <input type="text" [ngModel]="addRewardRyo()" (ngModelChange)="addRewardRyo.set($event)" />
+        </label>
+        <label>
+          Downtime
+          <input type="text" [ngModel]="addRewardDowntime()" (ngModelChange)="addRewardDowntime.set($event)" />
+        </label>
+      </fieldset>
+      @if (formError(); as fe) {
+        <p class="mb-error mb-form__err">{{ fe }}</p>
+      }
+      <div class="mb-form__btns">
+        <button type="button" (click)="closeAdd()">Cancel</button>
+        <button type="button" class="primary" [disabled]="saveBusy()" (click)="submitAdd()">
+          {{ saveBusy() ? 'Saving…' : 'Post mission' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</dialog>
