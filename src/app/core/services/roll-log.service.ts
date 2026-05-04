@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { NewChatMessageEvent, NewRollEvent, RollEvent } from '../models/roll-event.model';
@@ -21,12 +22,14 @@ type RollEventRow = {
 
 const ROLLER_NAME_FALLBACK_PREFIX = '__roller_name__:';
 
-const REALTIME_RETRY_MS = 1500;
-const REALTIME_MAX_SUBSCRIBE_ATTEMPTS = 2;
+/** Exponential backoff when Realtime drops (idle tabs, NAT timeouts, token rotation). */
+const REALTIME_MIN_RETRY_MS = 750;
+const REALTIME_MAX_RETRY_MS = 60000;
 
 @Injectable({ providedIn: 'root' })
 export class RollLogService {
   private readonly auth = inject(SupabaseAuthService);
+  private readonly doc = inject(DOCUMENT);
 
   async loadRecentGlobal(limit = 100): Promise<RollEvent[]> {
     const { data, error } = await this.auth.client
@@ -163,14 +166,15 @@ export class RollLogService {
   }
 
   /**
-   * Subscribes to postgres_changes with a short automatic retry if the channel errors or times out
-   * (common when JWT/session was not ready on first attempt).
+   * Subscribes to postgres_changes with automatic reconnection:
+   * long-lived tabs often lose the Realtime WebSocket after idle; channels must be re-subscribed.
    */
   private subscribeWithRetry(buildChannel: (channelName: string) => RealtimeChannel): () => void {
     let disposed = false;
     let activeChannel: RealtimeChannel | null = null;
-    let attempt = 0;
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    /** Consecutive failures since last successful SUBSCRIBED (drives backoff). */
+    let failureStreak = 0;
 
     const cleanupChannel = (): void => {
       if (activeChannel) {
@@ -179,36 +183,80 @@ export class RollLogService {
       }
     };
 
-    const scheduleRetry = (): void => {
-      if (disposed || attempt >= REALTIME_MAX_SUBSCRIBE_ATTEMPTS) {
+    const backoffMs = (): number => {
+      const capped = Math.min(failureStreak, 14);
+      const ms = REALTIME_MIN_RETRY_MS * Math.pow(1.55, capped);
+      return Math.min(ms, REALTIME_MAX_RETRY_MS);
+    };
+
+    const scheduleReconnect = (immediate: boolean): void => {
+      if (disposed) {
         return;
       }
       if (retryTimer) {
-        return;
+        clearTimeout(retryTimer);
+        retryTimer = null;
       }
+      const delay = immediate ? 0 : backoffMs();
       retryTimer = setTimeout(() => {
         retryTimer = null;
         connect();
-      }, REALTIME_RETRY_MS);
+      }, delay);
     };
 
     const connect = (): void => {
-      if (disposed || attempt >= REALTIME_MAX_SUBSCRIBE_ATTEMPTS) {
+      if (disposed) {
         return;
       }
-      attempt += 1;
       cleanupChannel();
       const channelName = `roll-events:${crypto.randomUUID()}`;
-      activeChannel = buildChannel(channelName).subscribe((status) => {
+      activeChannel = buildChannel(channelName);
+      activeChannel.subscribe((status) => {
         if (disposed) {
           return;
         }
-        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          cleanupChannel();
-          scheduleRetry();
+        if (status === 'SUBSCRIBED') {
+          failureStreak = 0;
+          return;
         }
+        failureStreak += 1;
+        cleanupChannel();
+        scheduleReconnect(false);
       });
     };
+
+    const reconnectNow = (): void => {
+      if (disposed) {
+        return;
+      }
+      failureStreak = 0;
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+      cleanupChannel();
+      connect();
+    };
+
+    const onVisibility = (): void => {
+      if (disposed || this.doc.visibilityState !== 'visible') {
+        return;
+      }
+      reconnectNow();
+    };
+
+    this.doc.addEventListener('visibilitychange', onVisibility);
+
+    const {
+      data: { subscription: authSubscription }
+    } = this.auth.client.auth.onAuthStateChange((event) => {
+      if (disposed) {
+        return;
+      }
+      if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+        reconnectNow();
+      }
+    });
 
     connect();
 
@@ -218,6 +266,8 @@ export class RollLogService {
         clearTimeout(retryTimer);
         retryTimer = null;
       }
+      this.doc.removeEventListener('visibilitychange', onVisibility);
+      authSubscription.unsubscribe();
       cleanupChannel();
     };
   }

@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe, DOCUMENT, NgClass } from '@angular/common';
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -26,6 +26,7 @@ export class RollLogComponent {
   private readonly auth = inject(SupabaseAuthService);
   private readonly rollLogService = inject(RollLogService);
   readonly admin = inject(AdminService);
+  private readonly doc = inject(DOCUMENT);
 
   readonly events = signal<RollEvent[]>([]);
   readonly status = signal<'connecting' | 'ready' | 'error'>('connecting');
@@ -77,6 +78,28 @@ export class RollLogComponent {
         }
       });
     });
+
+    /** After idle, Realtime may miss INSERTs; refetch when the tab wakes so the list matches the server. */
+    effect((onCleanup) => {
+      const onVis = (): void => {
+        if (this.doc.visibilityState !== 'visible') {
+          return;
+        }
+        void this.resyncFromServer();
+      };
+      this.doc.addEventListener('visibilitychange', onVis);
+      onCleanup(() => this.doc.removeEventListener('visibilitychange', onVis));
+    });
+  }
+
+  private async resyncFromServer(): Promise<void> {
+    try {
+      const recent = await this.rollLogService.loadRecentGlobal(150);
+      this.events.set(recent);
+      this.status.set('ready');
+    } catch {
+      /* leave events as-is; user can refresh */
+    }
   }
 
   async clearEntireLog(): Promise<void> {
