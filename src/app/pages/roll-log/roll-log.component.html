@@ -29,6 +29,19 @@
       <p class="rl-state rl-state--error">Shared feed unavailable right now.</p>
     }
 
+    <div class="rl-quick-roll" role="group" aria-label="Quick dice (rolls 1 die and posts to the log)">
+      @for (d of quickDice; track d) {
+        <button
+          type="button"
+          class="rl-quick-roll__btn"
+          [disabled]="chatSending()"
+          [attr.aria-label]="'Roll d' + d"
+          (click)="quickRoll(d)"
+        >
+          d{{ d }}
+        </button>
+      }
+    </div>
     <div class="rl-compose">
       <input
         class="rl-compose__input"

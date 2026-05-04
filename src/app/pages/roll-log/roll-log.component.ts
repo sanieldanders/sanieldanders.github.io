@@ -35,6 +35,9 @@ export class RollLogComponent {
   readonly clearBusy = signal(false);
   readonly sidebarMode = input(false);
 
+  /** Quick-roll toolbar: single die of each supported size. */
+  readonly quickDice = [4, 6, 8, 10, 12, 20, 100] as const;
+
   private readonly allowedDice = new Set([4, 6, 8, 10, 12, 20, 100]);
 
   constructor() {
@@ -100,6 +103,21 @@ export class RollLogComponent {
     if (!message) {
       return;
     }
+    await this.postToLog(message, { clearDraftOnSuccess: true });
+  }
+
+  /** Roll one die of the given size and post it to the shared log (same format as `/roll 1dN`). */
+  async quickRoll(sides: number): Promise<void> {
+    if (!this.allowedDice.has(sides)) {
+      return;
+    }
+    await this.postToLog(`/roll 1d${sides}`, { clearDraftOnSuccess: false });
+  }
+
+  private async postToLog(
+    rawInput: string,
+    opts: { clearDraftOnSuccess: boolean }
+  ): Promise<void> {
     const user = this.auth.user();
     if (!user) {
       return;
@@ -107,15 +125,25 @@ export class RollLogComponent {
     this.chatSending.set(true);
     this.commandError.set(null);
     try {
-      const rollText = this.tryBuildRollMessage(message);
-      const payloadMessage = rollText ?? message;
+      let payloadMessage: string;
+      if (rawInput.toLowerCase().startsWith('/roll ')) {
+        const rollText = this.tryBuildRollMessage(rawInput);
+        if (rollText === null) {
+          return;
+        }
+        payloadMessage = rollText;
+      } else {
+        payloadMessage = rawInput.trim();
+      }
       const created = await this.rollLogService.createMessage({
         characterId: 'global',
         userId: user.id,
         userEmail: user.email ?? 'unknown@user',
         message: payloadMessage
       });
-      this.chatDraft.set('');
+      if (opts.clearDraftOnSuccess) {
+        this.chatDraft.set('');
+      }
       this.events.update((prev) => {
         if (prev.some((e) => e.id === created.id)) {
           return prev;
