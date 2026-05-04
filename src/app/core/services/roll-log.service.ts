@@ -21,6 +21,9 @@ type RollEventRow = {
 
 const ROLLER_NAME_FALLBACK_PREFIX = '__roller_name__:';
 
+const REALTIME_RETRY_MS = 1500;
+const REALTIME_MAX_SUBSCRIBE_ATTEMPTS = 2;
+
 @Injectable({ providedIn: 'root' })
 export class RollLogService {
   private readonly auth = inject(SupabaseAuthService);
@@ -119,51 +122,103 @@ export class RollLogService {
   }
 
   subscribeToCharacter(characterId: string, onInsert: (event: RollEvent) => void): () => void {
-    const channelName = `roll-events:${characterId}:${crypto.randomUUID()}`;
-    const channel: RealtimeChannel = this.auth.client
-      .channel(channelName)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'roll_events',
-          filter: `character_id=eq.${characterId}`
-        },
-        (payload) => {
-          if (payload.new) {
-            onInsert(this.fromRow(payload.new as RollEventRow));
+    return this.subscribeWithRetry((channelName) =>
+      this.auth.client
+        .channel(channelName)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'roll_events',
+            filter: `character_id=eq.${characterId}`
+          },
+          (payload) => {
+            if (payload.new) {
+              onInsert(this.fromRow(payload.new as RollEventRow));
+            }
           }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      void this.auth.client.removeChannel(channel);
-    };
+        )
+    );
   }
 
   subscribeToAll(onInsert: (event: RollEvent) => void): () => void {
-    const channelName = `roll-events:all:${crypto.randomUUID()}`;
-    const channel: RealtimeChannel = this.auth.client
-      .channel(channelName)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'roll_events'
-        },
-        (payload) => {
-          if (payload.new) {
-            onInsert(this.fromRow(payload.new as RollEventRow));
+    return this.subscribeWithRetry((channelName) =>
+      this.auth.client
+        .channel(channelName)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'roll_events'
+          },
+          (payload) => {
+            if (payload.new) {
+              onInsert(this.fromRow(payload.new as RollEventRow));
+            }
           }
+        )
+    );
+  }
+
+  /**
+   * Subscribes to postgres_changes with a short automatic retry if the channel errors or times out
+   * (common when JWT/session was not ready on first attempt).
+   */
+  private subscribeWithRetry(buildChannel: (channelName: string) => RealtimeChannel): () => void {
+    let disposed = false;
+    let activeChannel: RealtimeChannel | null = null;
+    let attempt = 0;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const cleanupChannel = (): void => {
+      if (activeChannel) {
+        void this.auth.client.removeChannel(activeChannel);
+        activeChannel = null;
+      }
+    };
+
+    const scheduleRetry = (): void => {
+      if (disposed || attempt >= REALTIME_MAX_SUBSCRIBE_ATTEMPTS) {
+        return;
+      }
+      if (retryTimer) {
+        return;
+      }
+      retryTimer = setTimeout(() => {
+        retryTimer = null;
+        connect();
+      }, REALTIME_RETRY_MS);
+    };
+
+    const connect = (): void => {
+      if (disposed || attempt >= REALTIME_MAX_SUBSCRIBE_ATTEMPTS) {
+        return;
+      }
+      attempt += 1;
+      cleanupChannel();
+      const channelName = `roll-events:${crypto.randomUUID()}`;
+      activeChannel = buildChannel(channelName).subscribe((status) => {
+        if (disposed) {
+          return;
         }
-      )
-      .subscribe();
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          cleanupChannel();
+          scheduleRetry();
+        }
+      });
+    };
+
+    connect();
 
     return () => {
-      void this.auth.client.removeChannel(channel);
+      disposed = true;
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+      cleanupChannel();
     };
   }
 

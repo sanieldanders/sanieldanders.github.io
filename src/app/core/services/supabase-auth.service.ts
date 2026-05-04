@@ -9,22 +9,27 @@ export class SupabaseAuthService {
     environment.supabaseAnonKey
   );
   private readonly sessionState = signal<Session | null>(null);
-  private initialized = false;
+  /** Single flight: every caller awaits the same session bootstrap (avoids RLS/realtime races). */
+  private initPromise: Promise<void> | null = null;
 
   readonly session = computed(() => this.sessionState());
   readonly user = computed<User | null>(() => this.sessionState()?.user ?? null);
   readonly isSignedIn = computed(() => Boolean(this.user()));
 
   async init(): Promise<void> {
-    if (this.initialized) {
-      return;
+    if (!this.initPromise) {
+      this.initPromise = (async () => {
+        const { data } = await this.clientInstance.auth.getSession();
+        this.sessionState.set(data.session ?? null);
+        this.clientInstance.auth.onAuthStateChange((_event, session) => {
+          this.sessionState.set(session);
+        });
+      })().catch((err) => {
+        this.initPromise = null;
+        throw err;
+      });
     }
-    this.initialized = true;
-    const { data } = await this.clientInstance.auth.getSession();
-    this.sessionState.set(data.session ?? null);
-    this.clientInstance.auth.onAuthStateChange((_event, session) => {
-      this.sessionState.set(session);
-    });
+    await this.initPromise;
   }
 
   get client(): SupabaseClient {

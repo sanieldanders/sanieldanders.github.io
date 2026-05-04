@@ -172,8 +172,12 @@ export class CalendarEventsService {
   }
 
   parseMonthDay(eventOn: string): { month: number; day: number } {
-    const [, mm, dd] = eventOn.split('-');
-    return { month: Number(mm), day: Number(dd) };
+    const datePart = eventOn.trim().slice(0, 10);
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(datePart);
+    if (!m) {
+      throw new Error(`Invalid calendar date from server: ${eventOn}`);
+    }
+    return { month: parseInt(m[2], 10), day: parseInt(m[3], 10) };
   }
 
   isValidCalendarDay(month: number, day: number): boolean {
