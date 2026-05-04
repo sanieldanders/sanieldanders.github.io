@@ -1,17 +1,17 @@
-/* ND&D sheet — parchment, unified inputs, cycling skill dots */
+/* ND&D sheet — neutral light surface (stronger contrast than tan parchment) */
 
-$ink: #12100e;
-$muted-ink: #4a433a;
-$line: #2c2620;
-$paper: #f0e9dc;
-$paper-deep: #e4dccf;
+$ink: #0f1419;
+$muted-ink: #3a4354;
+$line: #2a3342;
+$paper: #eef1f6;
+$paper-deep: #e2e7ef;
 
 @mixin field-base {
   width: 100%;
   margin: 0;
-  border: 1px solid rgba($ink, 0.28);
+  border: 1px solid rgba($ink, 0.32);
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.55);
+  background: #ffffff;
   color: $ink;
   font: inherit;
   transition:
@@ -22,12 +22,12 @@ $paper-deep: #e4dccf;
   &:focus {
     outline: none;
     border-color: rgba($ink, 0.55);
-    box-shadow: 0 0 0 2px rgba($ink, 0.12);
-    background: #fffef9;
+    box-shadow: 0 0 0 2px rgba(59, 91, 140, 0.22);
+    background: #ffffff;
   }
 
   &::placeholder {
-    color: rgba($ink, 0.35);
+    color: rgba($ink, 0.42);
   }
 }
 
@@ -178,7 +178,7 @@ $paper-deep: #e4dccf;
   position: relative;
   max-width: 1100px;
   margin: 0 auto;
-  background: linear-gradient(168deg, #f7f2ea 0%, $paper 38%, $paper-deep 100%);
+  background: linear-gradient(168deg, #fafbfd 0%, $paper 38%, $paper-deep 100%);
   color: $ink;
   border: 3px double $line;
   border-radius: 2px;
@@ -361,7 +361,7 @@ $paper-deep: #e4dccf;
   border: 1px solid rgba($line, 0.65);
   border-radius: 8px;
   padding: 8px;
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.72);
 
   &--large {
     flex: 1;
@@ -392,7 +392,7 @@ $paper-deep: #e4dccf;
   border: 1px solid rgba($line, 0.5);
   border-radius: 8px;
   padding: 6px;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.65);
 }
 
 .cs-passive__label {
@@ -456,7 +456,7 @@ $paper-deep: #e4dccf;
   gap: 8px;
   border: 1px solid rgba($line, 0.55);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.62);
   padding: 6px 8px;
 }
 
@@ -556,7 +556,7 @@ $paper-deep: #e4dccf;
   appearance: none;
   border: 1px solid rgba($ink, 0.45);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.85);
   color: $ink;
   font-size: 0.62rem;
   font-weight: 700;
@@ -567,7 +567,7 @@ $paper-deep: #e4dccf;
   flex-shrink: 0;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.72);
+    background: #ffffff;
   }
 }
 
@@ -593,7 +593,7 @@ $paper-deep: #e4dccf;
   border: 1px solid rgba($line, 0.65);
   border-radius: 10px;
   padding: 6px 6px 8px;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.68);
 }
 
 .cs-ac__lbl {
@@ -612,7 +612,7 @@ $paper-deep: #e4dccf;
   padding: 6px;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.62);
 }
 
 .cs-statbox__lbl {
@@ -634,7 +634,7 @@ $paper-deep: #e4dccf;
   border: 1px solid rgba($line, 0.5);
   border-radius: 8px;
   padding: 6px;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.58);
 }
 
 .cs-split__lbl {
@@ -651,7 +651,7 @@ $paper-deep: #e4dccf;
   border: 1px solid rgba($line, 0.65);
   border-radius: 10px;
   padding: 6px 8px 8px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.62);
 }
 
 .cs-bigbox__lbl {
@@ -674,7 +674,7 @@ $paper-deep: #e4dccf;
   border: 1px solid rgba($line, 0.5);
   border-radius: 8px;
   padding: 6px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.58);
 }
 
 .cs-dice__lbl {
@@ -707,7 +707,7 @@ $paper-deep: #e4dccf;
   border-radius: 10px;
   padding: 8px;
   min-height: 0;
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(255, 255, 255, 0.45);
 }
 
 .cs-attacks__title {
@@ -742,7 +742,7 @@ $paper-deep: #e4dccf;
   }
 
   tbody tr:nth-child(odd) {
-    background: rgba(0, 0, 0, 0.035);
+    background: rgba(42, 51, 66, 0.06);
   }
 }
 
@@ -759,7 +759,7 @@ $paper-deep: #e4dccf;
   border: 1px solid rgba($line, 0.55);
   border-radius: 8px;
   padding: 6px 8px;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.58);
 }
 
 .cs-trait__lbl {
@@ -780,7 +780,7 @@ $paper-deep: #e4dccf;
   border-radius: 10px;
   padding: 8px;
   min-height: 160px;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .cs-features__lbl {
@@ -801,7 +801,7 @@ $paper-deep: #e4dccf;
   border: 1px solid rgba($line, 0.65);
   border-radius: 10px;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .cs-equip__title {
@@ -857,7 +857,7 @@ $paper-deep: #e4dccf;
   max-width: 1100px;
   margin: 0 auto;
   padding: 1rem 1.1rem 1.25rem;
-  background: linear-gradient(168deg, #f4f0e8 0%, #ebe4d6 42%, #dfd6c6 100%);
+  background: linear-gradient(168deg, #f8fafc 0%, #eef2f7 42%, #e4eaf2 100%);
   color: $ink;
   border: 3px double $line;
   border-radius: 3px;
@@ -940,7 +940,7 @@ $paper-deep: #e4dccf;
   height: 44px;
   border: 2px solid $line;
   border-radius: 4px;
-  background: linear-gradient(145deg, #fffef8, #e8e2d8);
+  background: linear-gradient(145deg, #ffffff, #e8ecf2);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
   position: relative;
 
@@ -1012,7 +1012,7 @@ $paper-deep: #e4dccf;
     &:focus {
       box-shadow: none;
       border-bottom-color: rgba($ink, 0.75);
-      background: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.95);
     }
   }
 
@@ -1025,7 +1025,7 @@ $paper-deep: #e4dccf;
   border: 2px solid rgba($line, 0.55);
   border-radius: 6px;
   padding: 0.45rem 0.5rem 0.35rem;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.62);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
@@ -1074,7 +1074,7 @@ $paper-deep: #e4dccf;
   border: 2px solid rgba($line, 0.55);
   border-radius: 8px;
   padding: 0.45rem 0.5rem 1.4rem;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.58);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.2),
     0 1px 0 rgba($line, 0.08);
@@ -1123,9 +1123,9 @@ $paper-deep: #e4dccf;
   margin: 0;
   resize: vertical;
   min-height: 4rem;
-  border: 1px solid rgba($ink, 0.22);
+  border: 1px solid rgba($ink, 0.28);
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.5);
+  background: #ffffff;
   color: $ink;
   font: inherit;
   line-height: 1.45;
@@ -1134,8 +1134,8 @@ $paper-deep: #e4dccf;
   &:focus {
     outline: none;
     border-color: rgba($ink, 0.45);
-    background: #fffef9;
-    box-shadow: 0 0 0 2px rgba($ink, 0.08);
+    background: #ffffff;
+    box-shadow: 0 0 0 2px rgba(59, 91, 140, 0.18);
   }
 
   &--tight {
@@ -1187,7 +1187,7 @@ $paper-deep: #e4dccf;
   padding: 0;
   border: 2px solid rgba($ink, 0.35);
   border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 22%, #fffef9);
+  background: color-mix(in srgb, var(--accent) 22%, #ffffff);
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -1283,7 +1283,7 @@ $paper-deep: #e4dccf;
     border-radius: 0;
     border: none;
     min-height: 100%;
-    background: rgba(255, 255, 255, 0.55);
+    background: #ffffff;
   }
 }
 
@@ -1293,7 +1293,7 @@ $paper-deep: #e4dccf;
   max-width: 1100px;
   margin: 0 auto;
   padding: 0.85rem 1rem 1.1rem;
-  background: linear-gradient(175deg, #ece8e2 0%, #e2dcd4 45%, #d4cec5 100%);
+  background: linear-gradient(175deg, #f3f5f9 0%, #e9edf4 45%, #dde3ee 100%);
   color: $ink;
   border: 2px solid rgba($line, 0.5);
   border-radius: 4px;
@@ -1311,10 +1311,10 @@ $paper-deep: #e4dccf;
   height: 118px;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 90% 70% at 8% 35%, rgba(255, 255, 255, 0.5), transparent 58%),
-    radial-gradient(ellipse 70% 55% at 48% 20%, rgba(255, 255, 255, 0.35), transparent 55%),
-    radial-gradient(ellipse 65% 50% at 92% 40%, rgba(255, 255, 255, 0.32), transparent 52%),
-    linear-gradient(180deg, rgba(180, 176, 168, 0.35), transparent);
+    radial-gradient(ellipse 90% 70% at 8% 35%, rgba(255, 255, 255, 0.55), transparent 58%),
+    radial-gradient(ellipse 70% 55% at 48% 20%, rgba(255, 255, 255, 0.4), transparent 55%),
+    radial-gradient(ellipse 65% 50% at 92% 40%, rgba(255, 255, 255, 0.35), transparent 52%),
+    linear-gradient(180deg, rgba(200, 210, 225, 0.28), transparent);
   opacity: 0.95;
 }
 
@@ -1376,7 +1376,7 @@ $paper-deep: #e4dccf;
   width: 100%;
   max-width: 200px;
   padding: 0.42rem 1.35rem;
-  background: linear-gradient(180deg, #c9c2b8 0%, #a8a095 48%, #8f887e 100%);
+  background: linear-gradient(180deg, #dce3ef 0%, #b8c4d8 48%, #95a5bd 100%);
   border: 2px solid rgba($line, 0.55);
   border-radius: 3px;
   box-shadow:
@@ -1391,8 +1391,8 @@ $paper-deep: #e4dccf;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #1a1814;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  color: #0f1419;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .jl-stats-frame {
@@ -1402,7 +1402,7 @@ $paper-deep: #e4dccf;
   padding: 0.5rem 0.55rem 0.45rem;
   border: 3px double rgba($line, 0.55);
   border-radius: 6px;
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.35), rgba(230, 226, 218, 0.55));
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.92), rgba(232, 237, 245, 0.95));
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.4),
     0 2px 6px rgba(0, 0, 0, 0.08);
@@ -1416,7 +1416,7 @@ $paper-deep: #e4dccf;
   padding: 0.15rem;
   border-radius: 4px;
   border: 1px solid rgba($line, 0.2);
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .jl-stat-col__heading {
@@ -1453,7 +1453,7 @@ $paper-deep: #e4dccf;
   font-weight: 600;
   text-align: center;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.72);
+  background: #ffffff;
 }
 
 .jl-body {
@@ -1484,7 +1484,7 @@ $paper-deep: #e4dccf;
   align-items: center;
   gap: 0.3rem;
   padding: 0.28rem 0.4rem;
-  background: linear-gradient(180deg, #d8d2c8 0%, #bcb6ab 45%, #a39e93 100%);
+  background: linear-gradient(180deg, #e8ecf4 0%, #d5dce8 45%, #c5cedd 100%);
   border: 2px solid rgba($line, 0.45);
   border-radius: 4px;
   box-shadow:
@@ -1514,7 +1514,7 @@ $paper-deep: #e4dccf;
   height: 14px;
   border-radius: 50%;
   border: 2px solid rgba($line, 0.5);
-  background: radial-gradient(circle at 35% 30%, #fffef8, #c5c0b6);
+  background: radial-gradient(circle at 35% 30%, #ffffff, #c8d0de);
   box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.15);
 }
 
@@ -1538,7 +1538,7 @@ $paper-deep: #e4dccf;
   padding: 0.15rem 0.2rem 0.25rem;
   border: 2px solid rgba($line, 0.38);
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.72);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
@@ -1594,7 +1594,7 @@ $paper-deep: #e4dccf;
 
   &:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.92);
     border-bottom-color: rgba($ink, 0.45);
   }
 
@@ -1634,7 +1634,7 @@ $paper-deep: #e4dccf;
   line-height: 1;
   border-radius: 50%;
   border: 1px solid rgba(74, 58, 42, 0.35);
-  background: #fffef8;
+  background: #ffffff;
   color: rgba($ink, 0.85);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   cursor: help;
@@ -1657,15 +1657,15 @@ $paper-deep: #e4dccf;
   margin-right: auto;
   border-radius: 10px;
   border: 1px solid rgba($line, 0.5);
-  background: #fffef9;
-  box-shadow: 0 8px 24px rgba(20, 17, 14, 0.14);
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 20, 25, 0.12);
   overflow: hidden;
   text-align: left;
 }
 
 .jl-line-tip__chrome {
   height: 3px;
-  background: #8b5a2b;
+  background: #3b5b8c;
 }
 
 .jl-line-tip__inner {
