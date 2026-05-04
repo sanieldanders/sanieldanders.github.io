@@ -1,5 +1,5 @@
 .cal-page {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem 1.25rem 3rem;
 }
@@ -127,6 +127,104 @@
   color: var(--muted);
   font-size: 0.88rem;
   margin: 0 0 1.25rem;
+}
+
+.cal-body {
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+  gap: 1.5rem 1.75rem;
+  align-items: start;
+}
+
+.cal-sidebar {
+  position: sticky;
+  top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 1rem 1rem 1.1rem;
+}
+
+.cal-sidebar__title {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.cal-sidebar__lead {
+  margin: 0 0 0.85rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.cal-sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cal-sidebar__item {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(47, 107, 130, 0.45);
+  background: rgba(0, 0, 0, 0.12);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
+
+  &:hover {
+    background: rgba(91, 192, 222, 0.1);
+    border-color: rgba(47, 107, 130, 0.75);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.cal-sidebar__item-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.cal-sidebar__item-date {
+  font-size: 0.8rem;
+  color: var(--accent-2);
+}
+
+.cal-sidebar__item-when {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.cal-sidebar__empty {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+  line-height: 1.45;
+  padding: 0.35rem 0;
+}
+
+.cal-main {
+  min-width: 0;
 }
 
 .cal-year {
@@ -363,4 +461,14 @@
   gap: 0.5rem;
   justify-content: flex-end;
   margin-top: 0.25rem;
+}
+
+@media (max-width: 900px) {
+  .cal-body {
+    grid-template-columns: 1fr;
+  }
+
+  .cal-sidebar {
+    position: static;
+  }
 }

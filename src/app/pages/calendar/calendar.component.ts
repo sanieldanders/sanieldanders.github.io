@@ -6,6 +6,32 @@ import { AdminService } from '../../core/services/admin.service';
 import { CalendarEventsService, CALENDAR_ANCHOR_YEAR } from '../../core/services/calendar-events.service';
 import type { CalendarEventRow, CampaignCalendarState } from '../../core/models/calendar-event.model';
 
+const UPCOMING_MAX_EVENTS = 3;
+/** Inclusive day offset from the active story date (0 = today in-world). */
+const UPCOMING_LAST_DAY_OFFSET = 30;
+
+function diffCalendarDays(from: Date, to: Date): number {
+  const a = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate());
+  const b = Date.UTC(to.getFullYear(), to.getMonth(), to.getDate());
+  return Math.round((b - a) / 86400000);
+}
+
+/** Next calendar occurrence of month/day on or after `start` (recurring annual events). */
+function nextOccurrenceOnOrAfter(eventMonth: number, eventDay: number, start: Date): Date {
+  const y = start.getFullYear();
+  let cand = new Date(y, eventMonth - 1, eventDay);
+  if (cand < start) {
+    cand = new Date(y + 1, eventMonth - 1, eventDay);
+  }
+  return cand;
+}
+
+type UpcomingCalendarItem = {
+  event: CalendarEventRow;
+  nextDate: Date;
+  daysUntil: number;
+};
+
 @Component({
   selector: 'app-calendar',
   imports: [DatePipe, FormsModule, RouterLink],
@@ -71,6 +97,34 @@ export class CalendarComponent {
       list.sort((a, b) => a.title.localeCompare(b.title));
     }
     return map;
+  });
+
+  /** Next few events whose next occurrence falls within 30 days of the active story date. */
+  readonly upcomingImportantDates = computed((): UpcomingCalendarItem[] => {
+    const state = this.activeState();
+    const all = this.events();
+    if (!state || all.length === 0) {
+      return [];
+    }
+    const start = new Date(CALENDAR_ANCHOR_YEAR, state.month - 1, state.day);
+    const rows: UpcomingCalendarItem[] = [];
+    for (const ev of all) {
+      const { month, day } = this.calendar.parseMonthDay(ev.event_on);
+      const next = nextOccurrenceOnOrAfter(month, day, start);
+      const daysUntil = diffCalendarDays(start, next);
+      if (daysUntil < 0 || daysUntil > UPCOMING_LAST_DAY_OFFSET) {
+        continue;
+      }
+      rows.push({ event: ev, nextDate: next, daysUntil });
+    }
+    rows.sort((a, b) => {
+      const t = a.nextDate.getTime() - b.nextDate.getTime();
+      if (t !== 0) {
+        return t;
+      }
+      return a.event.title.localeCompare(b.event.title);
+    });
+    return rows.slice(0, UPCOMING_MAX_EVENTS);
   });
 
   constructor() {
@@ -265,6 +319,22 @@ export class CalendarComponent {
     } finally {
       this.deleteBusyId.set(null);
     }
+  }
+
+  upcomingRelativeLabel(daysUntil: number): string {
+    if (daysUntil <= 0) {
+      return 'Today';
+    }
+    if (daysUntil === 1) {
+      return 'Tomorrow';
+    }
+    return `In ${daysUntil} days`;
+  }
+
+  openUpcomingItem(item: UpcomingCalendarItem): void {
+    const m = item.nextDate.getMonth() + 1;
+    const d = item.nextDate.getDate();
+    this.openDayDetail(m, d);
   }
 
   onDayCellClick(month: number, day: number | null): void {

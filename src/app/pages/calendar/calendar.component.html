@@ -63,54 +63,86 @@
     </section>
   }
 
-  <p class="cal-hint">
-    @if (admin.isAdmin()) {
-      Click a day with events to read details, or an empty day to add one. The green day is “today” in the story.
-    } @else {
-      Click a day with an event to see details. The green day is “today” in the story.
-    }
-  </p>
-
-  <div class="cal-year">
-    @for (month of monthNames; track month; let mi = $index) {
-      <section class="cal-month" [attr.aria-label]="month + ' ' + displayAnbYear() + ' ANB'">
-        <h2 class="cal-month__title">{{ month }}</h2>
-        <div class="cal-month__grid" role="grid" [attr.aria-rowcount]="monthCells(mi + 1).length / 7 + 1">
-          @for (w of weekdayLabels; track w) {
-            <div class="cal-month__wd" role="columnheader">{{ w }}</div>
-          }
-          @for (cell of monthCells(mi + 1); track $index) {
-            @if (cell === null) {
-              <div class="cal-month__cell cal-month__cell--empty" aria-hidden="true"></div>
-            } @else {
-              <button
-                type="button"
-                class="cal-month__cell"
-                [attr.aria-current]="isActiveDay(mi + 1, cell) ? 'date' : null"
-                [class.cal-month__cell--active]="isActiveDay(mi + 1, cell)"
-                [class.cal-month__cell--has-events]="eventsForDay(mi + 1, cell).length > 0"
-                [class.cal-month__cell--admin-empty]="
-                  admin.isAdmin() && eventsForDay(mi + 1, cell).length === 0
-                "
-                (click)="onDayCellClick(mi + 1, cell)"
-              >
-                <span class="cal-month__num">{{ cell }}</span>
-                @if (eventsForDay(mi + 1, cell).length > 0) {
-                  <span class="cal-month__dots" aria-hidden="true">
-                    @for (e of eventsForDay(mi + 1, cell).slice(0, 3); track e.id) {
-                      <span class="cal-month__dot"></span>
-                    }
-                  </span>
-                  <span class="cal-visually-hidden">
-                    {{ eventsForDay(mi + 1, cell).length }} event(s)
-                  </span>
-                }
+  <div class="cal-body">
+    <aside class="cal-sidebar" aria-label="Upcoming important dates">
+      <h2 class="cal-sidebar__title">Upcoming important dates</h2>
+      <p class="cal-sidebar__lead">
+        The next three events in the next 30 days, from the current story date (the green “today” on the grid).
+      </p>
+      @if (loading()) {
+        <p class="cal-sidebar__empty">Loading…</p>
+      } @else if (!activeState()) {
+        <p class="cal-sidebar__empty">Set the campaign date to see what is coming up.</p>
+      } @else {
+        <ul class="cal-sidebar__list">
+          @for (item of upcomingImportantDates(); track item.event.id) {
+            <li>
+              <button type="button" class="cal-sidebar__item" (click)="openUpcomingItem(item)">
+                <span class="cal-sidebar__item-title">{{ item.event.title }}</span>
+                <span class="cal-sidebar__item-date">
+                  {{ monthNames[item.nextDate.getMonth()] }} {{ item.nextDate.getDate() }}
+                </span>
+                <span class="cal-sidebar__item-when">{{ upcomingRelativeLabel(item.daysUntil) }}</span>
               </button>
-            }
+            </li>
+          } @empty {
+            <li class="cal-sidebar__empty">No events in the next 30 days.</li>
           }
-        </div>
-      </section>
-    }
+        </ul>
+      }
+    </aside>
+
+    <div class="cal-main">
+      <p class="cal-hint">
+        @if (admin.isAdmin()) {
+          Click a day with events to read details, or an empty day to add one. The green day is “today” in the story.
+        } @else {
+          Click a day with an event to see details. The green day is “today” in the story.
+        }
+      </p>
+
+      <div class="cal-year">
+        @for (month of monthNames; track month; let mi = $index) {
+          <section class="cal-month" [attr.aria-label]="month + ' ' + displayAnbYear() + ' ANB'">
+            <h2 class="cal-month__title">{{ month }}</h2>
+            <div class="cal-month__grid" role="grid" [attr.aria-rowcount]="monthCells(mi + 1).length / 7 + 1">
+              @for (w of weekdayLabels; track w) {
+                <div class="cal-month__wd" role="columnheader">{{ w }}</div>
+              }
+              @for (cell of monthCells(mi + 1); track $index) {
+                @if (cell === null) {
+                  <div class="cal-month__cell cal-month__cell--empty" aria-hidden="true"></div>
+                } @else {
+                  <button
+                    type="button"
+                    class="cal-month__cell"
+                    [attr.aria-current]="isActiveDay(mi + 1, cell) ? 'date' : null"
+                    [class.cal-month__cell--active]="isActiveDay(mi + 1, cell)"
+                    [class.cal-month__cell--has-events]="eventsForDay(mi + 1, cell).length > 0"
+                    [class.cal-month__cell--admin-empty]="
+                      admin.isAdmin() && eventsForDay(mi + 1, cell).length === 0
+                    "
+                    (click)="onDayCellClick(mi + 1, cell)"
+                  >
+                    <span class="cal-month__num">{{ cell }}</span>
+                    @if (eventsForDay(mi + 1, cell).length > 0) {
+                      <span class="cal-month__dots" aria-hidden="true">
+                        @for (e of eventsForDay(mi + 1, cell).slice(0, 3); track e.id) {
+                          <span class="cal-month__dot"></span>
+                        }
+                      </span>
+                      <span class="cal-visually-hidden">
+                        {{ eventsForDay(mi + 1, cell).length }} event(s)
+                      </span>
+                    }
+                  </button>
+                }
+              }
+            </div>
+          </section>
+        }
+      </div>
+    </div>
   </div>
 
   <dialog #detailDialog class="cal-modal" (cancel)="$event.preventDefault(); closeDetail()">
