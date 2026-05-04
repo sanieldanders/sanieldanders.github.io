@@ -287,9 +287,19 @@ export class CalendarComponent {
     this.formError.set(null);
     this.saveBusy.set(true);
     try {
-      await this.calendar.createEvent({ month, day, title, description });
-      await this.reload();
+      const created = await this.calendar.createEvent({ month, day, title, description });
+      this.events.update((rows) => {
+        if (rows.some((r) => r.id === created.id)) {
+          return rows;
+        }
+        return [...rows, created];
+      });
       this.closeAdd();
+      try {
+        await this.reload();
+      } catch {
+        // Keep optimistic UI update if background refresh is unavailable.
+      }
     } catch (err) {
       this.formError.set((err as Error).message);
     } finally {

@@ -88,7 +88,7 @@ export class CalendarEventsService {
     return (data ?? []) as CalendarEventRow[];
   }
 
-  async createEvent(input: { month: number; day: number; title: string; description: string }): Promise<void> {
+  async createEvent(input: { month: number; day: number; title: string; description: string }): Promise<CalendarEventRow> {
     await this.auth.init();
     const eventOn = this.toIsoDate(input.month, input.day);
     const user = this.auth.user();
@@ -102,53 +102,62 @@ export class CalendarEventsService {
       created_by: user?.id ?? null
     };
 
-    const tryInsert = async (withCreatedBy: boolean): Promise<void> => {
-      const { error } = await this.withTimeout(
-        this.auth.client.from('calendar_events').insert(withCreatedBy ? fullPayload : payload),
+    const fetchSavedEvent = async (): Promise<CalendarEventRow | null> => {
+      const { data, error } = await this.withTimeout(
+        this.auth.client
+          .from('calendar_events')
+          .select('id, event_on, title, description, created_at, created_by')
+          .eq('event_on', payload.event_on)
+          .eq('title', payload.title)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle<CalendarEventRow>(),
+        'Checking saved calendar event'
+      );
+      if (error) {
+        return null;
+      }
+      return data ?? null;
+    };
+
+    const tryInsert = async (withCreatedBy: boolean): Promise<CalendarEventRow> => {
+      const { data, error } = await this.withTimeout(
+        this.auth.client
+          .from('calendar_events')
+          .insert(withCreatedBy ? fullPayload : payload)
+          .select('id, event_on, title, description, created_at, created_by')
+          .single<CalendarEventRow>(),
         'Saving calendar event'
       );
       if (error) {
         throw new Error(error.message);
       }
-    };
-
-    const wasSaved = async (): Promise<boolean> => {
-      const { data, error } = await this.withTimeout(
-        this.auth.client
-          .from('calendar_events')
-          .select('id')
-          .eq('event_on', payload.event_on)
-          .eq('title', payload.title)
-          .limit(1),
-        'Checking saved calendar event'
-      );
-      if (error) {
-        return false;
-      }
-      return Array.isArray(data) && data.length > 0;
+      return data;
     };
 
     try {
-      await tryInsert(true);
-      return;
+      return await tryInsert(true);
     } catch (firstError) {
       const message = (firstError as Error).message ?? '';
       if (!/timed out/i.test(message)) {
         throw firstError;
       }
       // If the write actually landed despite timeout, don't fail the user.
-      if (await wasSaved()) {
-        return;
+      const existing = await fetchSavedEvent();
+      if (existing) {
+        return existing;
       }
     }
 
     try {
-      await tryInsert(false);
-      return;
+      return await tryInsert(false);
     } catch (fallbackError) {
       const message = (fallbackError as Error).message ?? '';
-      if (/timed out/i.test(message) && (await wasSaved())) {
-        return;
+      if (/timed out/i.test(message)) {
+        const existing = await fetchSavedEvent();
+        if (existing) {
+          return existing;
+        }
       }
       throw fallbackError;
     }
