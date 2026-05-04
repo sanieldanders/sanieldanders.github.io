@@ -24,15 +24,12 @@
   <div class="mb-pinboard" aria-label="Mission scrolls">
     @for (m of sortedMissions(); track m.id) {
       <article [class]="'mb-scroll ' + scrollClass(m.rank)">
-        <div class="mb-scroll__roller" aria-hidden="true">
-          <span class="mb-scroll__roller-cap"></span>
-          <div class="mb-scroll__roller-face">
-            <span class="mb-scroll__roller-letter">{{ rollerLetter(m.rank) }}</span>
+        <div class="mb-scroll__top-roll" aria-hidden="true"></div>
+        <div class="mb-scroll__paper">
+          <div class="mb-scroll__rank-badge">
+            <span class="mb-scroll__rank-label">Rank</span>
+            <span class="mb-scroll__rank-value">{{ m.rank }}</span>
           </div>
-          <span class="mb-scroll__roller-cap"></span>
-        </div>
-
-        <div class="mb-scroll__sheet">
           @if (admin.isAdmin()) {
             <button
               type="button"
@@ -43,62 +40,38 @@
               {{ deleteBusyId() === m.id ? 'Removing…' : 'Remove' }}
             </button>
           }
-
-          <div class="mb-scroll__parchment">
-            <div class="mb-scroll__parchment-inner">
-              <p class="mb-scroll__rank-tag">
-                <span class="mb-scroll__rank-tag-label">Rank</span>
-                {{ m.rank }}
-              </p>
-
-              <h2 class="mb-scroll__title">{{ m.name }}</h2>
-
-              <div class="mb-scroll__grid">
-                <section class="mb-scroll__cell mb-scroll__cell--left">
-                  <h3 class="mb-scroll__subhead">Description</h3>
-                  <div class="mb-scroll__lined">
-                    @if (m.description.trim()) {
-                      <p class="mb-scroll__text">{{ m.description }}</p>
-                    } @else {
-                      <p class="mb-scroll__text mb-scroll__text--empty">—</p>
-                    }
-                  </div>
-                </section>
-                <div class="mb-scroll__grid-gutter" aria-hidden="true"></div>
-                <section class="mb-scroll__cell mb-scroll__cell--right">
-                  <h3 class="mb-scroll__subhead">Notes</h3>
-                  <div class="mb-scroll__lined">
-                    @if (m.notes.trim()) {
-                      <p class="mb-scroll__text">{{ m.notes }}</p>
-                    } @else {
-                      <p class="mb-scroll__text mb-scroll__text--empty">—</p>
-                    }
-                  </div>
-                </section>
+          <h2 class="mb-scroll__title">{{ m.name }}</h2>
+          @if (m.description.trim()) {
+            <section class="mb-scroll__block">
+              <h3 class="mb-scroll__subhead">Description</h3>
+              <p class="mb-scroll__text">{{ m.description }}</p>
+            </section>
+          }
+          @if (m.notes.trim()) {
+            <section class="mb-scroll__block">
+              <h3 class="mb-scroll__subhead">Notes</h3>
+              <p class="mb-scroll__text">{{ m.notes }}</p>
+            </section>
+          }
+          <section class="mb-scroll__block mb-scroll__block--reward">
+            <h3 class="mb-scroll__subhead">Reward</h3>
+            <dl class="mb-scroll__rewards">
+              <div class="mb-scroll__reward-row">
+                <dt>Experience</dt>
+                <dd>{{ m.reward_experience.trim() || '—' }}</dd>
               </div>
-
-              <section class="mb-scroll__reward-panel">
-                <h3 class="mb-scroll__subhead">Reward</h3>
-                <dl class="mb-scroll__rewards">
-                  <div class="mb-scroll__reward-row">
-                    <dt>Experience</dt>
-                    <dd>{{ m.reward_experience.trim() || '—' }}</dd>
-                  </div>
-                  <div class="mb-scroll__reward-row">
-                    <dt>Ryo</dt>
-                    <dd>{{ m.reward_ryo.trim() || '—' }}</dd>
-                  </div>
-                  <div class="mb-scroll__reward-row">
-                    <dt>Downtime</dt>
-                    <dd>{{ m.reward_downtime.trim() || '—' }}</dd>
-                  </div>
-                </dl>
-              </section>
-            </div>
-          </div>
+              <div class="mb-scroll__reward-row">
+                <dt>Ryo</dt>
+                <dd>{{ m.reward_ryo.trim() || '—' }}</dd>
+              </div>
+              <div class="mb-scroll__reward-row">
+                <dt>Downtime</dt>
+                <dd>{{ m.reward_downtime.trim() || '—' }}</dd>
+              </div>
+            </dl>
+          </section>
         </div>
-
-        <div class="mb-scroll__bottom-nub" aria-hidden="true"></div>
+        <div class="mb-scroll__bottom-roll" aria-hidden="true"></div>
       </article>
     } @empty {
       @if (!loading()) {

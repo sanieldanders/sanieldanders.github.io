@@ -90,11 +90,6 @@ export class MissionBoardComponent {
     this.addDialog()?.nativeElement.close();
   }
 
-  /** Single letter / symbol on the roller (matches reference art style). */
-  rollerLetter(rank: MissionBoardRank): string {
-    return rank === 'Special' ? '★' : rank;
-  }
-
   scrollClass(rank: MissionBoardRank): string {
     switch (rank) {
       case 'D':
