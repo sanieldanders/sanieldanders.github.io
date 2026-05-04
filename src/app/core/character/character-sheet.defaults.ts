@@ -90,7 +90,7 @@ export function createDefaultCharacterSheet(): CharacterSheetState {
       proficiencyBonus: '',
       passivePerception: '',
       passiveInsight: '',
-      willOfFire: ''
+      willOfFire: false
     },
     identity: {
       clan: '',
@@ -248,7 +248,15 @@ export function mergeCharacterSheet(saved: Character['sheet'] | undefined): Char
     return base;
   }
   return {
-    rail: { ...base.rail, ...saved.rail },
+    rail: {
+      proficiencyBonus:
+        typeof saved.rail?.proficiencyBonus === 'string' ? saved.rail.proficiencyBonus : base.rail.proficiencyBonus,
+      passivePerception:
+        typeof saved.rail?.passivePerception === 'string' ? saved.rail.passivePerception : base.rail.passivePerception,
+      passiveInsight:
+        typeof saved.rail?.passiveInsight === 'string' ? saved.rail.passiveInsight : base.rail.passiveInsight,
+      willOfFire: typeof saved.rail?.willOfFire === 'boolean' ? saved.rail.willOfFire : base.rail.willOfFire
+    },
     identity: { ...base.identity, ...saved.identity },
     abilities: mergeAbilities(base.abilities, saved.abilities),
     combat: { ...base.combat, ...saved.combat },

@@ -464,7 +464,7 @@ $paper-deep: #e2e7ef;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 54px;
+  width: 62px;
   flex-shrink: 0;
   border-right: 1px solid rgba($line, 0.35);
   padding-right: 8px;
@@ -477,14 +477,39 @@ $paper-deep: #e2e7ef;
 }
 
 .cs-ability__name {
-  font-size: 0.5rem;
+  font-size: 0.52rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   color: $muted-ink;
   text-align: center;
-  line-height: 1.1;
-  max-width: 52px;
+  line-height: 1.05;
+  max-width: 60px;
   margin: 2px 0 4px;
+}
+
+.cs-rail-checkbox {
+  flex: 1;
+  min-height: 5.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.cs-rail-checkbox__input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  accent-color: #3b5b8c;
+}
+
+.cs-rail-checkbox__label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $muted-ink;
+  font-weight: 700;
 }
 
 .cs-skill-list {

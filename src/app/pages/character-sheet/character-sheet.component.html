@@ -101,12 +101,15 @@
           </div>
           <div class="cs-banner cs-banner--large">
             <span class="cs-banner__label">Will of Fire</span>
-            <textarea
-              class="cs-textarea cs-textarea--rail"
-              rows="5"
-              [ngModel]="ch.sheet.rail.willOfFire"
-              (ngModelChange)="onRailField('willOfFire', $event)"
-            ></textarea>
+            <label class="cs-rail-checkbox">
+              <input
+                class="cs-rail-checkbox__input"
+                type="checkbox"
+                [ngModel]="ch.sheet.rail.willOfFire"
+                (ngModelChange)="onWillOfFireChange($event)"
+              />
+              <span class="cs-rail-checkbox__label">Checked</span>
+            </label>
           </div>
         </aside>
 

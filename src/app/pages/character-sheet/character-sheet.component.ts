@@ -136,7 +136,16 @@ export class CharacterSheetComponent {
 
   onRailField<K extends keyof CharacterSheetState['rail']>(key: K, value: string): void {
     this.patch((ch) => {
-      ch.sheet.rail[key] = value;
+      if (key === 'willOfFire') {
+        return;
+      }
+      ch.sheet.rail[key] = value as CharacterSheetState['rail'][K];
+    });
+  }
+
+  onWillOfFireChange(checked: boolean): void {
+    this.patch((ch) => {
+      ch.sheet.rail.willOfFire = checked;
     });
   }
 

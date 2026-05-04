@@ -65,7 +65,7 @@ export interface CharacterSheetState {
     proficiencyBonus: string;
     passivePerception: string;
     passiveInsight: string;
-    willOfFire: string;
+    willOfFire: boolean;
   };
   identity: {
     clan: string;
