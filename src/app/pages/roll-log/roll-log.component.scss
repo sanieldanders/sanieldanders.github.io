@@ -198,19 +198,47 @@
   color: #b7c5df;
 }
 
-.rl-item__body--roll,
-.rl-item__body--roll-msg {
+.rl-item__body--roll {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.rl-item__body--chat-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.rl-item__user {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #9ec8ff;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.rl-item__content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.2rem;
   min-width: 0;
+  width: 100%;
 }
 
-.rl-item__who {
-  font-size: 0.7rem;
-  color: #9eb6d8;
-  font-weight: 600;
+.rl-item__chat-msg {
+  display: block;
+  font-size: 0.76rem;
+  color: #c5d3ea;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .rl-item__check {
