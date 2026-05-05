@@ -61,16 +61,41 @@ export class MissionBoardComponent {
     void this.reload();
   }
 
-  async reload(): Promise<void> {
-    this.loading.set(true);
-    this.error.set(null);
+  async reload(options?: { quiet?: boolean }): Promise<void> {
+    const quiet = options?.quiet ?? false;
+    if (!quiet) {
+      this.loading.set(true);
+      this.error.set(null);
+    }
     try {
       const rows = await this.missionsApi.listMissions();
       this.missions.set(rows);
+      this.error.set(null);
     } catch (err) {
+      if (quiet) {
+        throw err;
+      }
       this.error.set((err as Error).message);
     } finally {
-      this.loading.set(false);
+      if (!quiet) {
+        this.loading.set(false);
+      }
+    }
+  }
+
+  /** Reconcile with server after a successful mutation; failures do not undo the mutation. */
+  private async refreshListAfterMutation(): Promise<void> {
+    try {
+      await this.reload({ quiet: true });
+    } catch {
+      await new Promise((r) => setTimeout(r, 700));
+      try {
+        await this.reload({ quiet: true });
+      } catch {
+        this.error.set(
+          'The board could not be refreshed. Your change may still be saved — use Refresh to reload.'
+        );
+      }
     }
   }
 
@@ -118,7 +143,7 @@ export class MissionBoardComponent {
     this.formError.set(null);
     this.saveBusy.set(true);
     try {
-      await this.missionsApi.createMission({
+      const row = await this.missionsApi.createMission({
         rank: this.addRank(),
         name,
         description: this.addDescription(),
@@ -127,8 +152,12 @@ export class MissionBoardComponent {
         reward_ryo: this.addRewardRyo(),
         reward_downtime: this.addRewardDowntime()
       });
+      this.missions.update((rows) => {
+        const rest = rows.filter((r) => r.id !== row.id);
+        return [row, ...rest];
+      });
       this.closeAdd();
-      await this.reload();
+      await this.refreshListAfterMutation();
     } catch (err) {
       this.formError.set((err as Error).message);
     } finally {
@@ -144,11 +173,7 @@ export class MissionBoardComponent {
     try {
       await this.missionsApi.deleteMission(id);
       this.missions.update((rows) => rows.filter((r) => r.id !== id));
-      try {
-        await this.reload();
-      } catch {
-        /* local list already updated */
-      }
+      await this.refreshListAfterMutation();
     } catch (err) {
       this.error.set((err as Error).message);
     } finally {
