@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { SupabaseAuthService } from './supabase-auth.service';
 import type { CalendarEventRow, CampaignCalendarState } from '../models/calendar-event.model';
 
@@ -171,6 +172,36 @@ export class CalendarEventsService {
     );
     if (error) {
       throw new Error(error.message);
+    }
+  }
+
+  async subscribeToChanges(onChange: () => void): Promise<() => void> {
+    await this.auth.init();
+    const channelName = `calendar-live-${crypto.randomUUID()}`;
+    const channel = this.auth.client
+      .channel(channelName)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'calendar_events' },
+        () => onChange()
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'campaign_calendar_state' },
+        () => onChange()
+      );
+
+    channel.subscribe();
+    return () => {
+      void this.removeChannel(channel);
+    };
+  }
+
+  private async removeChannel(channel: RealtimeChannel): Promise<void> {
+    try {
+      await this.auth.client.removeChannel(channel);
+    } catch {
+      // Ignore teardown failures to avoid breaking view cleanup.
     }
   }
 

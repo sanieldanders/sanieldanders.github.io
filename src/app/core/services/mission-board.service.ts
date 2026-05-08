@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { User } from '@supabase/supabase-js';
 import { SupabaseAuthService } from './supabase-auth.service';
 import type { MissionBoardEntryRow, MissionBoardRank } from '../models/mission-board.model';
@@ -118,6 +119,31 @@ export class MissionBoardService {
     );
     if (error) {
       throw new Error(this.mapMutationError(error.message));
+    }
+  }
+
+  async subscribeToChanges(onChange: () => void): Promise<() => void> {
+    await this.auth.init();
+    const channelName = `missions-live-${crypto.randomUUID()}`;
+    const channel = this.auth.client
+      .channel(channelName)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'mission_board_entries' },
+        () => onChange()
+      );
+
+    channel.subscribe();
+    return () => {
+      void this.removeChannel(channel);
+    };
+  }
+
+  private async removeChannel(channel: RealtimeChannel): Promise<void> {
+    try {
+      await this.auth.client.removeChannel(channel);
+    } catch {
+      // Ignore teardown failures to avoid breaking view cleanup.
     }
   }
 }

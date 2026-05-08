@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, signal, viewChild, ElementRef } from '@angular/core';
+import { Component, computed, inject, signal, viewChild, ElementRef, DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../../core/services/admin.service';
@@ -39,7 +39,10 @@ type UpcomingCalendarItem = {
 })
 export class CalendarComponent {
   private readonly calendar = inject(CalendarEventsService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly admin = inject(AdminService);
+  private realtimeUnsubscribe: (() => void) | null = null;
+  private realtimeRefreshTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly monthNames = [
     'January',
@@ -128,6 +131,33 @@ export class CalendarComponent {
 
   constructor() {
     void this.reload();
+    void this.initRealtimeSync();
+    this.destroyRef.onDestroy(() => {
+      this.realtimeUnsubscribe?.();
+      this.realtimeUnsubscribe = null;
+      if (this.realtimeRefreshTimer !== null) {
+        clearTimeout(this.realtimeRefreshTimer);
+        this.realtimeRefreshTimer = null;
+      }
+    });
+  }
+
+  private async initRealtimeSync(): Promise<void> {
+    try {
+      this.realtimeUnsubscribe = await this.calendar.subscribeToChanges(() => this.scheduleRealtimeRefresh());
+    } catch {
+      // Calendar still works with manual refresh if realtime is unavailable.
+    }
+  }
+
+  private scheduleRealtimeRefresh(): void {
+    if (this.realtimeRefreshTimer !== null) {
+      clearTimeout(this.realtimeRefreshTimer);
+    }
+    this.realtimeRefreshTimer = setTimeout(() => {
+      this.realtimeRefreshTimer = null;
+      void this.reload();
+    }, 150);
   }
 
   async reload(): Promise<void> {

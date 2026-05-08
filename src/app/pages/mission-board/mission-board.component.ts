@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../../core/services/admin.service';
@@ -35,7 +35,10 @@ function sortMissions(rows: MissionBoardEntryRow[]): MissionBoardEntryRow[] {
 })
 export class MissionBoardComponent {
   private readonly missionsApi = inject(MissionBoardService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly admin = inject(AdminService);
+  private realtimeUnsubscribe: (() => void) | null = null;
+  private realtimeRefreshTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly rankOptions = RANK_OPTIONS;
 
@@ -59,6 +62,33 @@ export class MissionBoardComponent {
 
   constructor() {
     void this.reload();
+    void this.initRealtimeSync();
+    this.destroyRef.onDestroy(() => {
+      this.realtimeUnsubscribe?.();
+      this.realtimeUnsubscribe = null;
+      if (this.realtimeRefreshTimer !== null) {
+        clearTimeout(this.realtimeRefreshTimer);
+        this.realtimeRefreshTimer = null;
+      }
+    });
+  }
+
+  private async initRealtimeSync(): Promise<void> {
+    try {
+      this.realtimeUnsubscribe = await this.missionsApi.subscribeToChanges(() => this.scheduleRealtimeRefresh());
+    } catch {
+      // Mission board still works with manual refresh if realtime is unavailable.
+    }
+  }
+
+  private scheduleRealtimeRefresh(): void {
+    if (this.realtimeRefreshTimer !== null) {
+      clearTimeout(this.realtimeRefreshTimer);
+    }
+    this.realtimeRefreshTimer = setTimeout(() => {
+      this.realtimeRefreshTimer = null;
+      void this.reload({ quiet: true });
+    }, 150);
   }
 
   async reload(options?: { quiet?: boolean }): Promise<void> {
