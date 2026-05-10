@@ -137,6 +137,38 @@ const CATEGORIES: readonly DowntimeCategory[] = [
             ]
           }
         ]
+      },
+      {
+        id: 'jobs-forensics-kit',
+        tileLabel: 'Forensics Kit',
+        modalTitle: 'Forensics kit',
+        blocks: [
+          { type: 'heading', text: 'Consumable compounds' },
+          {
+            type: 'paragraph',
+            text:
+              'These compounds can be used to gain temporary bonuses on missions in the form of a volatile consumable substance. A consumable compound can be consumed as a bonus action as if it were a drink; once consumed, the vial is empty and cannot be drunk from a second time. In order to create multiple of the same compound you must spend additional downtime—one for each additional compound. If you wish to remake a previously created compound, the DC is reduced by 2.'
+          },
+          { type: 'heading', text: 'Private Investigator' },
+          {
+            type: 'paragraph',
+            text:
+              'By spending a number of weeks helping the military police you are able to make a profit catching criminals within the village or neighboring towns with your detective and investigative work. Spend at least 1 week of downtime. When you do, you are able to find a police investigation in need of assistance.\n\nMake an Intelligence (Forensics Kit) check vs the Investigation DC set by the rank of the crime you are tackling. On a success you help find the perpetrator and help capture them, gaining the payout. Starting out, you do not have the Rep (Reputation) to take on any job. So instead, you must garner a reputation by completing lower ranked investigations. Some investigations require more time to complete based on the rank. On each successful check, you can choose to spend additional downtime up to your remaining amount prior to the result of the check being calculated. For every additional downtime spent, gain a +2 bonus to the final result.\n\nDMs are encouraged to potentially turn these private investigations into side missions for players to actively participate in.'
+          },
+          {
+            type: 'table',
+            caption: 'Private investigation',
+            headers: ['Rank', 'Min. Rep', 'DT Cost', 'Investigation DC', 'Rep gained', 'Payout'],
+            rows: [
+              ['D-Rank', '0', '3 DT', '14', '+1d4', '300 Ryo'],
+              ['C-Rank', '10', '5 DT', '18', '+1d6', '750 Ryo'],
+              ['B-Rank', '15', '8 DT', '22', '+2d4', '1200 Ryo'],
+              ['A-Rank', '25', '12 DT', '26', '+2d6', '2000 Ryo'],
+              ['S-Rank', '40', '15 DT', '30', '+3d4', '3000 Ryo'],
+              ['S+-Rank', '75', '20 DT', '35', '-', '5000 Ryo']
+            ]
+          }
+        ]
       }
     ]
   }
