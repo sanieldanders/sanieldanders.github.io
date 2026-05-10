@@ -1,0 +1,66 @@
+<div class="dt-page">
+  <nav class="dt-nav">
+    <a routerLink="/home" class="dt-nav__link">← Home</a>
+  </nav>
+
+  <header class="dt-head">
+    <h1>Downtime activities</h1>
+    <p class="muted">Choose a topic to open details in a panel.</p>
+  </header>
+
+  <ul class="dt-tiles" role="list">
+    @for (activity of activities; track activity.id) {
+      <li class="dt-tiles__cell">
+        <button type="button" class="dt-tile" (click)="openActivity(activity)">
+          <span class="dt-tile__label">{{ activity.tileLabel }}</span>
+        </button>
+      </li>
+    }
+  </ul>
+</div>
+
+@if (selectedActivity(); as act) {
+  <div class="dt-modal-backdrop" role="presentation" aria-hidden="true" (click)="closeModal()"></div>
+  <div
+    class="dt-modal"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="'dt-modal-title-' + act.id"
+  >
+    <div class="dt-modal__chrome">
+      <h2 class="dt-modal__title" [id]="'dt-modal-title-' + act.id">{{ act.modalTitle }}</h2>
+      <button #closeBtn type="button" class="dt-modal__close" (click)="closeModal()">Close</button>
+    </div>
+    <div class="dt-modal__scroll">
+      <article class="dt-detail">
+        <p class="dt-detail__intro">{{ act.intro }}</p>
+
+        <div class="dt-table-wrap">
+          <table class="dt-table">
+            <caption class="dt-table__caption">
+              {{ act.tableCaption }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Rank</th>
+                <th scope="col">Writ DC</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Payout</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of act.writRows; track row.rank) {
+                <tr>
+                  <td>{{ row.rank }}</td>
+                  <td>{{ row.writDc }}</td>
+                  <td>{{ row.duration }}</td>
+                  <td>{{ row.payout }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+  </div>
+}

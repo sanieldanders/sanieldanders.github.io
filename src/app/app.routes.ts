@@ -67,6 +67,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/mission-board/mission-board.component').then((m) => m.MissionBoardComponent)
       },
       {
+        path: 'downtime-activities',
+        loadComponent: () =>
+          import('./pages/downtime-activities/downtime-activities.component').then((m) => m.DowntimeActivitiesComponent)
+      },
+      {
         path: 'clans',
         loadComponent: () => import('./pages/clans/clans.component').then((m) => m.ClansComponent)
       },
