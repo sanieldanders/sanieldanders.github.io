@@ -5,30 +5,34 @@
 
   <header class="dt-head">
     <h1>Downtime activities</h1>
-    <p class="muted">Choose a topic to open details in a panel.</p>
+    <p class="muted">Open a category, then choose a topic for details.</p>
   </header>
 
-  <ul class="dt-tiles" role="list">
-    @for (activity of activities; track activity.id) {
-      <li class="dt-tiles__cell">
-        <button
-          type="button"
-          class="dt-tile"
-          (click)="openActivity(activity)"
-          [attr.aria-label]="
-            activity.tileSubtitle ? activity.tileLabel + ', ' + activity.tileSubtitle : activity.tileLabel
-          "
-        >
-          <span class="dt-tile__stack">
-            <span class="dt-tile__label">{{ activity.tileLabel }}</span>
-            @if (activity.tileSubtitle) {
-              <span class="dt-tile__subtitle">{{ activity.tileSubtitle }}</span>
+  <div class="dt-categories">
+    @for (cat of categories; track cat.id) {
+      <details class="dt-category" open>
+        <summary class="dt-category__summary">
+          <span class="dt-category__title">{{ cat.label }}</span>
+        </summary>
+        <div class="dt-category__body">
+          <ul class="dt-tiles" role="list">
+            @for (activity of cat.activities; track activity.id) {
+              <li class="dt-tiles__cell">
+                <button
+                  type="button"
+                  class="dt-tile"
+                  (click)="openActivity(activity)"
+                  [attr.aria-label]="activity.tileLabel"
+                >
+                  <span class="dt-tile__label">{{ activity.tileLabel }}</span>
+                </button>
+              </li>
             }
-          </span>
-        </button>
-      </li>
+          </ul>
+        </div>
+      </details>
     }
-  </ul>
+  </div>
 </div>
 
 @if (selectedActivity(); as act) {
