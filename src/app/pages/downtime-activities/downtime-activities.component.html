@@ -49,33 +49,39 @@
     </div>
     <div class="dt-modal__scroll">
       <article class="dt-detail">
-        <p class="dt-detail__intro">{{ act.intro }}</p>
-
-        <div class="dt-table-wrap">
-          <table class="dt-table">
-            <caption class="dt-table__caption">
-              {{ act.tableCaption }}
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Rank</th>
-                <th scope="col">Writ DC</th>
-                <th scope="col">Duration</th>
-                <th scope="col">Payout</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of act.writRows; track row.rank) {
-                <tr>
-                  <td>{{ row.rank }}</td>
-                  <td>{{ row.writDc }}</td>
-                  <td>{{ row.duration }}</td>
-                  <td>{{ row.payout }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+        @for (block of act.blocks; track $index) {
+          @switch (block.type) {
+            @case ('heading') {
+              <h3 class="dt-detail__section-title">{{ block.text }}</h3>
+            }
+            @case ('paragraph') {
+              <p class="dt-detail__p">{{ block.text }}</p>
+            }
+            @case ('table') {
+              <div class="dt-table-wrap">
+                <table class="dt-table">
+                  <caption class="dt-table__caption">{{ block.caption }}</caption>
+                  <thead>
+                    <tr>
+                      @for (h of block.headers; track $index) {
+                        <th scope="col">{{ h }}</th>
+                      }
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of block.rows; track $index) {
+                      <tr>
+                        @for (cell of row; track $index) {
+                          <td>{{ cell }}</td>
+                        }
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+        }
       </article>
     </div>
   </div>

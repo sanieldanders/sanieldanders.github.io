@@ -242,14 +242,37 @@
   background: var(--panel);
 }
 
-.dt-detail__intro {
-  margin: 0 0 1.25rem;
+.dt-detail__section-title {
+  margin: 1.35rem 0 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.dt-detail__p {
+  margin: 0 0 1rem;
   font-size: 0.95rem;
   line-height: 1.55;
   color: var(--text);
+  white-space: pre-line;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .dt-table-wrap {
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
   overflow-x: auto;
   border-radius: 10px;
   border: 1px solid var(--border);
