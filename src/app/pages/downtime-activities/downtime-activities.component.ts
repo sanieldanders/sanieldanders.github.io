@@ -169,6 +169,31 @@ const CATEGORIES: readonly DowntimeCategory[] = [
             ]
           }
         ]
+      },
+      {
+        id: 'jobs-medicine-kit',
+        tileLabel: 'Medicine Kit',
+        modalTitle: 'Medicine kit',
+        blocks: [
+          { type: 'heading', text: 'Research medicine' },
+          {
+            type: 'paragraph',
+            text:
+              'When you research a new medical technique, you are able to create a new medical technique. This technique could be a helpful technique or a hostile technique used by Hunter-nin or Anbu Black Ops. Make a Strength, Dexterity or Intelligence (Medicine Kit) check vs the Medicine DC based on the Medicine Research chart below. You create this new technique and pass it on to the medical community (or Anbu/Hunter-nin community), which they use extensively. They will then pay you for these techniques based on rank.'
+          },
+          {
+            type: 'table',
+            caption: 'Research medicine',
+            headers: ['Rank', 'DT Cost', 'Medicine DC', 'Payout'],
+            rows: [
+              ['D-Rank', '3 DT', '14', '300 Ryo'],
+              ['C-Rank', '5 DT', '18', '750 Ryo'],
+              ['B-Rank', '8 DT', '22', '1200 Ryo'],
+              ['A-Rank', '12 DT', '26', '2000 Ryo'],
+              ['S-Rank', '15 DT', '30', '3000 Ryo']
+            ]
+          }
+        ]
       }
     ]
   }
