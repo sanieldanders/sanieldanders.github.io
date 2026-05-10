@@ -113,6 +113,30 @@ const CATEGORIES: readonly DowntimeCategory[] = [
             ]
           }
         ]
+      },
+      {
+        id: 'jobs-demolition-kit',
+        tileLabel: 'Demolition Kit',
+        modalTitle: 'Demolition kit',
+        blocks: [
+          {
+            type: 'paragraph',
+            text:
+              'Contract Demolition. By spending a number of weeks helping construction companies, builders and other groups remove obstructions you are able to make a profit. Spend the listed downtime. When you do, you are able to find a demolition project of a Rank equal to your Level or lower. Make an Intelligence (Demolition Kit) check vs the Demolition DC set by the Rank of the job you accept. On a success you gain the listed payout. You can choose to spend additional downtime up to your remaining amount prior to the result of the check being calculated. For every additional Downtime spent, gain a +2 bonus to the final result. For every +3 you get above the Demolition DC, you gain a bonus 200 Ryo payout.'
+          },
+          {
+            type: 'table',
+            caption: 'Contract demolition',
+            headers: ['Character Level', 'Rank', 'DT Cost', 'Demolition DC', 'Payout'],
+            rows: [
+              ['1+', 'D-Rank', '3 DT', '14', '300 Ryo'],
+              ['5+', 'C-Rank', '5 DT', '18', '750 Ryo'],
+              ['9+', 'B-Rank', '8 DT', '22', '1200 Ryo'],
+              ['13+', 'A-Rank', '12 DT', '26', '2000 Ryo'],
+              ['17+', 'S-Rank', '15 DT', '30', '3000 Ryo']
+            ]
+          }
+        ]
       }
     ]
   }
