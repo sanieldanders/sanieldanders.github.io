@@ -21,7 +21,10 @@ export interface DowntimeWritRow {
 
 export interface DowntimeActivity {
   id: string;
+  /** Primary tile title (e.g. kit or activity name). */
   tileLabel: string;
+  /** Optional smaller line under the title (e.g. category). */
+  tileSubtitle?: string;
   modalTitle: string;
   intro: string;
   tableCaption: string;
@@ -31,7 +34,8 @@ export interface DowntimeActivity {
 const ACTIVITIES: readonly DowntimeActivity[] = [
   {
     id: 'jobs-armor-crafter',
-    tileLabel: 'Jobs',
+    tileLabel: 'Armorsmith Kit',
+    tileSubtitle: 'Jobs',
     modalTitle: 'Work as an armor crafter',
     intro:
       'You can spend downtime working as a metalworker and armorsmith for another person. When you do, you have an opportunity to make Ryo on the side.',

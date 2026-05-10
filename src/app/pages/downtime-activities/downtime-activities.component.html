@@ -11,8 +11,20 @@
   <ul class="dt-tiles" role="list">
     @for (activity of activities; track activity.id) {
       <li class="dt-tiles__cell">
-        <button type="button" class="dt-tile" (click)="openActivity(activity)">
-          <span class="dt-tile__label">{{ activity.tileLabel }}</span>
+        <button
+          type="button"
+          class="dt-tile"
+          (click)="openActivity(activity)"
+          [attr.aria-label]="
+            activity.tileSubtitle ? activity.tileLabel + ', ' + activity.tileSubtitle : activity.tileLabel
+          "
+        >
+          <span class="dt-tile__stack">
+            <span class="dt-tile__label">{{ activity.tileLabel }}</span>
+            @if (activity.tileSubtitle) {
+              <span class="dt-tile__subtitle">{{ activity.tileSubtitle }}</span>
+            }
+          </span>
         </button>
       </li>
     }
