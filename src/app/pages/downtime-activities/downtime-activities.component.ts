@@ -194,6 +194,36 @@ const CATEGORIES: readonly DowntimeCategory[] = [
             ]
           }
         ]
+      },
+      {
+        id: 'jobs-weaponsmith-kit',
+        tileLabel: 'Weaponsmith Kit',
+        modalTitle: 'Work as a weapon crafter',
+        blocks: [
+          { type: 'heading', text: 'Work as a weapon crafter' },
+          {
+            type: 'paragraph',
+            text:
+              'You can spend downtime working as a metalworker and weaponsmith for another person. When you do, you have an opportunity to make Ryo on the side.'
+          },
+          {
+            type: 'paragraph',
+            text:
+              'First you take on a writ. A writ is a formal request for a specific item or item(s). Writs function as narrative tools for you and the DM to work out, as the type of equipment piece itself does not matter as much as the rank of the writ does. All writs are broken up into different ranks similar to missions, ranging from D-Rank up to S-Rank.\n\nThe following is the difficulty class of all writs.'
+          },
+          {
+            type: 'table',
+            caption: 'Writ rank and payout',
+            headers: ['Rank', 'Writ DC', 'Duration', 'Payout'],
+            rows: [
+              ['D-Rank', '14', '3 DT', '300 Ryo'],
+              ['C-Rank', '18', '6 DT', '750 Ryo'],
+              ['B-Rank', '22', '9 DT', '1200 Ryo'],
+              ['A-Rank', '26', '12 DT', '2000 Ryo'],
+              ['S-Rank', '30', '15 DT', '3000 Ryo']
+            ]
+          }
+        ]
       }
     ]
   }
