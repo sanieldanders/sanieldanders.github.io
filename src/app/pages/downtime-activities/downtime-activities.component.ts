@@ -32,15 +32,15 @@ export interface DowntimeActivity {
 
 export interface DowntimeCategory {
   id: string;
-  /** Collapsible section label (e.g. Jobs). */
+  /** Collapsible section label (e.g. Working With Toolkits). */
   label: string;
   activities: readonly DowntimeActivity[];
 }
 
 const CATEGORIES: readonly DowntimeCategory[] = [
   {
-    id: 'jobs',
-    label: 'Jobs',
+    id: 'working-with-toolkits',
+    label: 'Working With Toolkits',
     activities: [
       {
         id: 'jobs-armor-crafter',
