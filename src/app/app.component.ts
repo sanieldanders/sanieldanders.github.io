@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, HostListener, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { map, startWith } from 'rxjs/operators';
@@ -30,6 +30,7 @@ export class AppComponent {
   readonly syncMessage = computed(() => this.store.syncMessage());
   readonly showAdmin = computed(() => this.admin.isAdmin());
   readonly rollSidebarOpen = signal(true);
+  readonly settingsOpen = signal(false);
   private readonly currentUrl = toSignal(
     this.router.events.pipe(
       startWith(null),
@@ -55,6 +56,25 @@ export class AppComponent {
 
   toggleRollSidebar(): void {
     this.rollSidebarOpen.update((v) => !v);
+  }
+
+  toggleSettings(event: MouseEvent): void {
+    event.stopPropagation();
+    this.settingsOpen.update((open) => !open);
+  }
+
+  closeSettings(): void {
+    this.settingsOpen.set(false);
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.settingsOpen.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    this.settingsOpen.set(false);
   }
 
   setTheme(theme: AppTheme): void {

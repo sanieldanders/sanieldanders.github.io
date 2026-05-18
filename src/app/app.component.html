@@ -19,32 +19,76 @@
         <span class="pill">Browser preview · use Electron for file save</span>
       }
       <div class="auth">
-        <button
-          type="button"
-          class="auth__btn auth__btn--theme"
-          (click)="setDesign(design() === 'refined' ? 'legacy' : 'refined')"
-          [attr.aria-label]="design() === 'refined' ? 'Switch to classic design' : 'Switch to refined design'"
-        >
-          {{ design() === 'refined' ? 'Classic design' : 'Refined design' }}
-        </button>
-        <button
-          type="button"
-          class="auth__btn auth__btn--theme"
-          (click)="setTheme(theme() === 'light' ? 'dark' : 'light')"
-          [attr.aria-label]="theme() === 'light' ? 'Switch to dark theme' : 'Switch to light theme'"
-        >
-          {{ theme() === 'light' ? 'Dark theme' : 'Light theme' }}
-        </button>
-        <span class="pill" [class.pill--warn]="syncStatus() === 'error'">
-          {{ syncMessage() }}
-        </span>
-        @if (userEmail(); as email) {
-          <span class="pill">Signed in: {{ email }}</span>
-          <button type="button" class="auth__btn" (click)="signOut()">Sign out</button>
-        } @else {
-          <a routerLink="/login" class="auth__btn">Sign in</a>
-          <a routerLink="/login" class="auth__btn auth__btn--alt">Create account</a>
-        }
+        <div class="auth-menu" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            class="auth-menu__trigger"
+            (click)="toggleSettings($event)"
+            [attr.aria-expanded]="settingsOpen()"
+            aria-haspopup="menu"
+            aria-label="Settings and account"
+          >
+            <svg
+              class="auth-menu__icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"
+              />
+            </svg>
+          </button>
+          @if (settingsOpen()) {
+            <div class="auth-menu__panel" role="menu">
+              <p class="auth-menu__label" role="presentation">Cloud sync</p>
+              <p
+                class="auth-menu__status"
+                [class.auth-menu__status--warn]="syncStatus() === 'error'"
+                role="presentation"
+              >
+                {{ syncMessage() }}
+              </p>
+              @if (userEmail(); as email) {
+                <div class="auth-menu__divider" role="separator"></div>
+                <p class="auth-menu__label" role="presentation">Signed in as</p>
+                <p class="auth-menu__email">{{ email }}</p>
+                <button type="button" class="auth-menu__item" role="menuitem" (click)="signOut(); closeSettings()">
+                  Sign out
+                </button>
+              } @else {
+                <div class="auth-menu__divider" role="separator"></div>
+                <a routerLink="/login" class="auth-menu__item" role="menuitem" (click)="closeSettings()">Sign in</a>
+                <a routerLink="/login" class="auth-menu__item" role="menuitem" (click)="closeSettings()">
+                  Create account
+                </a>
+              }
+              <div class="auth-menu__divider" role="separator"></div>
+              <p class="auth-menu__label" role="presentation">Appearance</p>
+              <button
+                type="button"
+                class="auth-menu__item"
+                role="menuitem"
+                (click)="setDesign(design() === 'refined' ? 'legacy' : 'refined'); closeSettings()"
+              >
+                {{ design() === 'refined' ? 'Use classic design' : 'Use refined design' }}
+              </button>
+              <button
+                type="button"
+                class="auth-menu__item"
+                role="menuitem"
+                (click)="setTheme(theme() === 'light' ? 'dark' : 'light'); closeSettings()"
+              >
+                {{ theme() === 'light' ? 'Use dark theme' : 'Use light theme' }}
+              </button>
+            </div>
+          }
+        </div>
       </div>
     </header>
   }
