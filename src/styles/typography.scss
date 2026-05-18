@@ -1,0 +1,41 @@
+body {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-sans);
+  letter-spacing: var(--heading-tracking);
+  color: var(--text);
+}
+
+button {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+button.primary,
+button.secondary {
+  font-weight: 600;
+}
+
+html[data-design='refined'] button {
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 2px var(--shadow-color);
+}
+
+html[data-design='refined'] button.ghost {
+  box-shadow: none;
+}
+
+html[data-design='refined'] input,
+html[data-design='refined'] select,
+html[data-design='refined'] textarea {
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}

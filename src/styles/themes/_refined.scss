@@ -1,0 +1,130 @@
+// Refined palette — higher contrast type, clearer tables, teal + maroon actions.
+html[data-theme='dark'][data-design='refined'] {
+  --bg: #111318;
+  --panel: #1a1e28;
+  --panel-2: #222836;
+  --border: #3d4556;
+  --text: #f1f3f8;
+  --muted: #a8b0c0;
+  --accent: #2dd4bf;
+  --accent-2: #f0ab9a;
+  --danger: #f87171;
+
+  --surface-tint: rgba(255, 255, 255, 0.04);
+  --surface-tint-strong: rgba(255, 255, 255, 0.07);
+  --surface-tint-heavy: rgba(255, 255, 255, 0.1);
+  --backdrop: rgba(8, 10, 14, 0.72);
+  --shadow-color: rgba(0, 0, 0, 0.35);
+
+  --warn-text: #fca5a5;
+  --warn-border: #b91c1c;
+
+  --shell-bar-bg: #1a1e28;
+  --shell-sidebar-bg: #161a22;
+  --shell-floating-bg: #1e2430;
+
+  --btn-primary-border: #0f766e;
+  --btn-primary-bg: linear-gradient(180deg, #14b8a6, #0d9488);
+  --btn-primary-text: #042f2e;
+
+  --btn-secondary-border: #9f1239;
+  --btn-secondary-bg: linear-gradient(180deg, #be123c, #881337);
+  --btn-secondary-text: #fff1f2;
+
+  --btn-danger-border: #b91c1c;
+  --btn-danger-text: #fecaca;
+
+  --table-head-bg: #115e59;
+  --table-head-color: #ecfdf5;
+  --table-caption-color: #99f6e4;
+}
+
+html[data-theme='light'][data-design='refined'] {
+  --bg: #f8f7f4;
+  --panel: #ffffff;
+  --panel-2: #f0eeea;
+  --border: #c9c4bc;
+  --text: #1a1814;
+  --muted: #5c564e;
+  --accent: #0f766e;
+  --accent-2: #9f1239;
+  --danger: #b91c1c;
+
+  --surface-tint: rgba(26, 24, 20, 0.04);
+  --surface-tint-strong: rgba(26, 24, 20, 0.06);
+  --surface-tint-heavy: rgba(26, 24, 20, 0.09);
+  --backdrop: rgba(26, 24, 20, 0.45);
+  --shadow-color: rgba(26, 24, 20, 0.08);
+
+  --warn-text: #991b1b;
+  --warn-border: #dc2626;
+
+  --shell-bar-bg: #ffffff;
+  --shell-sidebar-bg: #f3f1ec;
+  --shell-floating-bg: #ffffff;
+
+  --btn-primary-border: #0d5c54;
+  --btn-primary-bg: linear-gradient(180deg, #14b8a6, #0f766e);
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-border: #881337;
+  --btn-secondary-bg: linear-gradient(180deg, #be123c, #9f1239);
+  --btn-secondary-text: #ffffff;
+
+  --btn-danger-border: #991b1b;
+  --btn-danger-text: #7f1d1d;
+
+  --table-head-bg: #0f766e;
+  --table-head-color: #ffffff;
+  --table-caption-color: #0f766e;
+}
+
+html[data-design='refined'] {
+  --font-sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-size-base: 1rem;
+  --line-height-base: 1.65;
+  --heading-tracking: -0.025em;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --shadow-elevated: 0 1px 2px var(--shadow-color), 0 8px 24px var(--shadow-color);
+
+  --page-title-size: 1.75rem;
+  --page-title-weight: 700;
+
+  --section-title-size: 1.125rem;
+  --section-title-weight: 600;
+  --section-title-tracking: -0.02em;
+  --section-title-transform: none;
+  --section-title-color: var(--text);
+  --section-title-padding: 0 0 0.5rem;
+  --section-title-margin-top: 1.75rem;
+  --section-title-bg: transparent;
+  --section-title-border-left: none;
+  --section-title-border-bottom: 2px solid var(--accent);
+  --section-title-radius: 0;
+  --section-title-shadow: none;
+
+  --table-font-size: 0.9375rem;
+  --table-wrap-radius: var(--radius-md);
+  --table-caption-size: 0.9375rem;
+  --table-caption-weight: 600;
+  --table-caption-transform: none;
+  --table-caption-tracking: normal;
+  --table-caption-color: var(--accent);
+  --table-caption-bg: var(--panel-2);
+  --table-head-size: 0.8125rem;
+  --table-head-weight: 600;
+  --table-head-transform: none;
+  --table-head-tracking: 0.02em;
+  --table-head-color: var(--table-head-color, #ffffff);
+  --table-head-bg: var(--table-head-bg, var(--accent));
+  --table-cell-padding: 0.7rem 1rem;
+  --table-row-stripe: color-mix(in srgb, var(--panel-2) 55%, var(--panel));
+  --table-row-hover: color-mix(in srgb, var(--accent) 8%, var(--panel));
+  --table-cell-border: color-mix(in srgb, var(--border) 50%, transparent);
+
+  --tile-label-color: var(--text);
+  --tile-label-weight: 600;
+  --nav-active-style: pill;
+}

@@ -7,6 +7,7 @@ import { DataStoreService } from './core/services/data-store.service';
 import { AdminService } from './core/services/admin.service';
 import { RollLogComponent } from './pages/roll-log/roll-log.component';
 import { ThemeService, type AppTheme } from './core/services/theme.service';
+import { DesignService, type AppDesign } from './core/services/design.service';
 
 @Component({
   selector: 'app-root',
@@ -20,8 +21,10 @@ export class AppComponent {
   private readonly store = inject(DataStoreService);
   private readonly admin = inject(AdminService);
   private readonly themeService = inject(ThemeService);
+  private readonly designService = inject(DesignService);
   readonly window = window;
   readonly theme = this.themeService.theme;
+  readonly design = this.designService.design;
   readonly userEmail = computed(() => this.auth.user()?.email ?? null);
   readonly syncStatus = computed(() => this.store.syncStatus());
   readonly syncMessage = computed(() => this.store.syncMessage());
@@ -56,5 +59,9 @@ export class AppComponent {
 
   setTheme(theme: AppTheme): void {
     this.themeService.setTheme(theme);
+  }
+
+  setDesign(design: AppDesign): void {
+    this.designService.setDesign(design);
   }
 }

@@ -1,0 +1,125 @@
+// Preserved palette + typography from the pre-refined UI (switch back via Classic design).
+html[data-theme='dark'][data-design='legacy'] {
+  --bg: #0c1017;
+  --panel: #121826;
+  --panel-2: #0f1520;
+  --border: #243047;
+  --text: #e8edf7;
+  --muted: #9aa6bf;
+  --accent: #5bc0de;
+  --accent-2: #7aa8ff;
+  --danger: #e57373;
+
+  --surface-tint: rgba(0, 0, 0, 0.2);
+  --surface-tint-strong: rgba(0, 0, 0, 0.28);
+  --surface-tint-heavy: rgba(0, 0, 0, 0.35);
+  --backdrop: rgba(0, 0, 0, 0.62);
+  --shadow-color: rgba(0, 0, 0, 0.22);
+
+  --warn-text: #f2a9a9;
+  --warn-border: #9c3f3f;
+
+  --shell-bar-bg: rgba(0, 0, 0, 0.2);
+  --shell-sidebar-bg: rgba(0, 0, 0, 0.22);
+  --shell-floating-bg: rgba(20, 26, 38, 0.92);
+
+  --btn-primary-border: #2f6b82;
+  --btn-primary-bg: linear-gradient(180deg, #1f5368, #17394a);
+  --btn-primary-text: #e9f7ff;
+
+  --btn-secondary-border: #35456a;
+  --btn-secondary-bg: #1a2234;
+  --btn-secondary-text: #e8edf7;
+
+  --btn-danger-border: #6b2f2f;
+  --btn-danger-text: #ffc9c9;
+}
+
+html[data-theme='light'][data-design='legacy'] {
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --panel-2: #eceef2;
+  --border: #b8bec8;
+  --text: #0f1419;
+  --muted: #4b5563;
+  --accent: #0d6e64;
+  --accent-2: #7b2d3e;
+  --danger: #9b1c31;
+
+  --surface-tint: rgba(15, 20, 25, 0.04);
+  --surface-tint-strong: rgba(15, 20, 25, 0.07);
+  --surface-tint-heavy: rgba(15, 20, 25, 0.1);
+  --backdrop: rgba(15, 20, 25, 0.42);
+  --shadow-color: rgba(15, 20, 25, 0.1);
+
+  --warn-text: #7f1d1d;
+  --warn-border: #b45309;
+
+  --shell-bar-bg: rgba(255, 255, 255, 0.92);
+  --shell-sidebar-bg: rgba(236, 238, 242, 0.96);
+  --shell-floating-bg: rgba(255, 255, 255, 0.96);
+
+  --btn-primary-border: #0a5c54;
+  --btn-primary-bg: linear-gradient(180deg, #1a9b8e, #0d6e64);
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-border: #5c1a2a;
+  --btn-secondary-bg: linear-gradient(180deg, #a63d52, #7b2d3e);
+  --btn-secondary-text: #ffffff;
+
+  --btn-danger-border: #7f1d1d;
+  --btn-danger-text: #5c1515;
+}
+
+html[data-design='legacy'] {
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif;
+  --font-size-base: 0.95rem;
+  --line-height-base: 1.55;
+  --heading-tracking: -0.02em;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 12px;
+  --shadow-elevated: 0 6px 22px var(--shadow-color);
+
+  --page-title-size: 1.55rem;
+  --page-title-weight: 700;
+
+  --section-title-size: 1.05rem;
+  --section-title-weight: 800;
+  --section-title-tracking: 0.07em;
+  --section-title-transform: uppercase;
+  --section-title-color: var(--accent);
+  --section-title-padding: 0.6rem 0.85rem;
+  --section-title-margin-top: 2rem;
+  --section-title-bg: color-mix(in srgb, var(--accent) 10%, var(--panel));
+  --section-title-border-left: 4px solid var(--accent);
+  --section-title-border-bottom: none;
+  --section-title-radius: 0 8px 8px 0;
+  --section-title-shadow: inset 0 -1px 0 color-mix(in srgb, var(--accent) 22%, var(--border));
+
+  --table-font-size: 0.88rem;
+  --table-wrap-radius: 10px;
+  --table-caption-size: 0.72rem;
+  --table-caption-weight: 700;
+  --table-caption-transform: uppercase;
+  --table-caption-tracking: 0.06em;
+  --table-caption-color: var(--muted);
+  --table-head-color: var(--muted);
+  --table-head-bg: var(--surface-tint-heavy);
+  --table-caption-bg: var(--surface-tint);
+  --table-head-size: 0.68rem;
+  --table-head-weight: 700;
+  --table-head-transform: uppercase;
+  --table-head-tracking: 0.05em;
+  --table-head-color: var(--muted);
+  --table-head-bg: var(--surface-tint-heavy);
+  --table-cell-padding: 0.55rem 0.75rem;
+  --table-row-stripe: transparent;
+  --table-row-hover: transparent;
+  --table-cell-border: color-mix(in srgb, var(--border) 65%, transparent);
+
+  --tile-label-color: var(--accent);
+  --tile-label-weight: 700;
+  --nav-active-style: underline;
+}

@@ -1,0 +1,72 @@
+// Shared data tables (downtime modals and any page using .dt-table).
+.dt-table-wrap {
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  border-radius: var(--table-wrap-radius);
+  border: 1px solid var(--border);
+  background: var(--panel);
+  box-shadow: var(--shadow-elevated);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.dt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--table-font-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.dt-table__caption {
+  caption-side: top;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: var(--table-caption-weight);
+  font-size: var(--table-caption-size);
+  text-transform: var(--table-caption-transform);
+  letter-spacing: var(--table-caption-tracking);
+  color: var(--table-caption-color);
+  border-bottom: 1px solid var(--border);
+  background: var(--table-caption-bg);
+}
+
+.dt-table thead th {
+  padding: var(--table-cell-padding);
+  text-align: left;
+  font-size: var(--table-head-size);
+  font-weight: var(--table-head-weight);
+  text-transform: var(--table-head-transform);
+  letter-spacing: var(--table-head-tracking);
+  color: var(--table-head-color);
+  background: var(--table-head-bg);
+  border-bottom: 2px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+  white-space: nowrap;
+}
+
+.dt-table tbody td {
+  padding: var(--table-cell-padding);
+  border-bottom: 1px solid var(--table-cell-border);
+  color: var(--text);
+  vertical-align: top;
+}
+
+.dt-table tbody tr:nth-child(even) {
+  background: var(--table-row-stripe);
+}
+
+html[data-design='refined'] .dt-table tbody tr:hover {
+  background: var(--table-row-hover);
+}
+
+.dt-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+@media (max-width: 520px) {
+  .dt-table thead th:nth-child(3),
+  .dt-table tbody td:nth-child(3) {
+    white-space: nowrap;
+  }
+}

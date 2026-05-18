@@ -22,6 +22,14 @@
         <button
           type="button"
           class="auth__btn auth__btn--theme"
+          (click)="setDesign(design() === 'refined' ? 'legacy' : 'refined')"
+          [attr.aria-label]="design() === 'refined' ? 'Switch to classic design' : 'Switch to refined design'"
+        >
+          {{ design() === 'refined' ? 'Classic design' : 'Refined design' }}
+        </button>
+        <button
+          type="button"
+          class="auth__btn auth__btn--theme"
           (click)="setTheme(theme() === 'light' ? 'dark' : 'light')"
           [attr.aria-label]="theme() === 'light' ? 'Switch to dark theme' : 'Switch to light theme'"
         >

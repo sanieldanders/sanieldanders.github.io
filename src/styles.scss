@@ -1,4 +1,7 @@
 @use './styles/themes';
+@use './styles/typography';
+@use './styles/tables';
+@use './styles/design-refined';
 
 *,
 *::before,
@@ -8,15 +11,6 @@
 
 body {
   margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    Ubuntu,
-    Cantarell,
-    'Noto Sans',
-    sans-serif;
   background: var(--bg);
   color: var(--text);
 }
@@ -32,7 +26,7 @@ input,
 select,
 textarea {
   width: 100%;
-  border-radius: 10px;
+  border-radius: var(--radius-md, 10px);
   border: 1px solid var(--border);
   background: var(--panel-2);
   color: var(--text);
@@ -44,7 +38,7 @@ textarea {
 }
 
 button {
-  border-radius: 10px;
+  border-radius: var(--radius-md, 10px);
   border: 1px solid var(--border);
   background: var(--panel-2);
   color: var(--text);
