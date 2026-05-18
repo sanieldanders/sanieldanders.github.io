@@ -208,6 +208,12 @@
   line-height: 1.25;
   font-family: Georgia, 'Times New Roman', serif;
   padding-right: 4rem;
+  /* Global heading color (--text) must not override rank scroll colors. */
+  color: var(--mb-scroll-text);
+}
+
+.mb-scroll__rank-value {
+  color: var(--mb-scroll-text);
 }
 
 .mb-scroll__block {
