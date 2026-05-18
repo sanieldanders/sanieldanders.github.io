@@ -1,8 +1,9 @@
 .rl-page {
   padding: 1rem 0.75rem 2rem;
   min-height: 100%;
-  background: radial-gradient(ellipse 120% 80% at 50% 0%, #1e2433 0%, #0c1017 52%);
-  font-family: system-ui, sans-serif;
+  background: var(--rl-page-gradient, var(--bg));
+  color: var(--text);
+  font-family: var(--font-sans, system-ui, sans-serif);
 }
 
 .rl-page--sidebar {
@@ -17,18 +18,23 @@
 }
 
 .rl-nav__link {
-  color: #a8c4ff;
+  color: var(--accent);
   text-decoration: none;
   font-size: 0.9rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .rl-panel {
   max-width: 1100px;
   margin: 0 auto;
   padding: 0.75rem;
-  border-radius: 10px;
-  border: 1px solid rgba(168, 196, 255, 0.22);
-  background: rgba(20, 26, 38, 0.55);
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--border);
+  background: var(--panel);
+  box-shadow: var(--shadow-elevated, none);
 }
 
 .rl-panel--sidebar {
@@ -36,10 +42,10 @@
   margin: 0;
   min-height: 100%;
   border-radius: 0;
-  border-left: 1px solid rgba(168, 196, 255, 0.22);
-  border-top: none;
-  border-right: none;
-  border-bottom: none;
+  border: none;
+  border-left: 1px solid var(--border);
+  background: var(--shell-sidebar-bg);
+  box-shadow: none;
 }
 
 .rl-panel__head-row {
@@ -53,44 +59,47 @@
 .rl-panel__head h1 {
   margin: 0;
   font-size: 1rem;
-  color: #d4e2ff;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .rl-panel__clear {
   flex-shrink: 0;
-  border: 1px solid rgba(255, 140, 120, 0.5);
-  border-radius: 8px;
-  background: rgba(48, 28, 28, 0.65);
-  color: #ffb8b0;
+  border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--border));
+  border-radius: var(--radius-sm, 8px);
+  background: color-mix(in srgb, var(--danger) 12%, var(--panel-2));
+  color: var(--btn-danger-text, var(--danger));
   font-size: 0.72rem;
   font-weight: 600;
   padding: 0.28rem 0.55rem;
   cursor: pointer;
-}
+  box-shadow: none;
 
-.rl-panel__clear:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
-.rl-panel__clear:not(:disabled):hover {
-  background: rgba(64, 36, 36, 0.85);
+  &:not(:disabled):hover {
+    background: color-mix(in srgb, var(--danger) 22%, var(--panel-2));
+    border-color: color-mix(in srgb, var(--danger) 60%, var(--border));
+  }
 }
 
 .rl-panel__head p {
   margin: 0.2rem 0 0.6rem;
   font-size: 0.8rem;
-  color: #8a93a8;
+  color: var(--muted);
 }
 
 .rl-state {
   margin: 0 0 0.45rem;
-  color: #8a93a8;
+  color: var(--muted);
   font-size: 0.74rem;
 }
 
 .rl-state--error {
-  color: #e2a7a7;
+  color: var(--warn-text, var(--danger));
 }
 
 .rl-quick-roll {
@@ -103,21 +112,22 @@
 .rl-quick-roll__btn {
   flex: 0 0 auto;
   min-width: 2.35rem;
-  border: 1px solid rgba(168, 196, 255, 0.38);
-  border-radius: 7px;
-  background: rgba(28, 36, 50, 0.92);
-  color: #c8dafb;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 7px);
+  background: var(--panel-2);
+  color: var(--accent);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   padding: 0.32rem 0.45rem;
   cursor: pointer;
   font-family: inherit;
+  box-shadow: none;
 
   &:hover:not(:disabled) {
-    border-color: rgba(168, 196, 255, 0.55);
-    color: #e8f0ff;
-    background: rgba(38, 48, 66, 0.95);
+    border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+    color: var(--text);
+    background: color-mix(in srgb, var(--accent) 10%, var(--panel-2));
   }
 
   &:disabled {
@@ -134,27 +144,43 @@
 }
 
 .rl-compose__input {
-  border: 1px solid rgba(168, 196, 255, 0.35);
-  border-radius: 8px;
-  background: rgba(16, 22, 32, 0.8);
-  color: #d4e2ff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--panel);
+  color: var(--text);
   padding: 0.4rem 0.5rem;
   font-size: 0.76rem;
+
+  &::placeholder {
+    color: var(--muted);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
 }
 
 .rl-compose__btn {
-  border: 1px solid rgba(168, 196, 255, 0.45);
-  border-radius: 8px;
-  background: rgba(30, 38, 52, 0.9);
-  color: #d4e2ff;
+  border: 1px solid var(--btn-primary-border);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   font-size: 0.74rem;
   font-weight: 700;
   padding: 0.36rem 0.65rem;
+  box-shadow: none;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
 }
 
 .rl-empty {
   margin: 0;
-  color: #8a93a8;
+  color: var(--muted);
   font-size: 0.78rem;
 }
 
@@ -172,16 +198,16 @@
   grid-template-columns: auto 1fr auto;
   gap: 0.55rem;
   align-items: start;
-  border: 1px solid rgba(168, 196, 255, 0.2);
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 8px);
   padding: 0.32rem 0.45rem;
-  background: rgba(16, 22, 32, 0.65);
+  background: var(--panel-2);
 }
 
 .rl-item__tag {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #d4e2ff;
+  color: var(--text);
   min-width: 2.2rem;
   padding-top: 0.12rem;
 }
@@ -190,12 +216,12 @@
   font-size: 0.66rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #9fc3ff;
+  color: var(--accent);
 }
 
 .rl-item__body {
   font-size: 0.76rem;
-  color: #b7c5df;
+  color: var(--muted);
 }
 
 .rl-item__body--roll {
@@ -218,7 +244,7 @@
   display: block;
   font-size: 0.74rem;
   font-weight: 700;
-  color: #9ec8ff;
+  color: var(--accent);
   line-height: 1.25;
   word-break: break-word;
 }
@@ -235,7 +261,7 @@
 .rl-item__chat-msg {
   display: block;
   font-size: 0.76rem;
-  color: #c5d3ea;
+  color: var(--text);
   line-height: 1.4;
   white-space: pre-wrap;
   word-break: break-word;
@@ -243,32 +269,32 @@
 
 .rl-item__check {
   font-size: 0.72rem;
-  color: #c8d6f0;
+  color: var(--muted);
 }
 
 .rl-item__formula {
   font-size: 0.84rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: #e8f0ff;
+  color: var(--text);
   letter-spacing: 0.02em;
 }
 
 .rl-item__detail {
   font-size: 0.68rem;
-  color: #8a9bb8;
+  color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
 .rl-item__time {
   font-size: 0.7rem;
-  color: #8a93a8;
+  color: var(--muted);
 }
 
 .rl-nat20 {
-  color: #5ee87a !important;
+  color: var(--rl-nat20) !important;
 }
 
 .rl-nat1 {
-  color: #ff6b6b !important;
+  color: var(--rl-nat1) !important;
 }

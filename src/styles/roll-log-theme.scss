@@ -1,0 +1,11 @@
+html[data-theme='dark'] {
+  --rl-nat20: #5ee87a;
+  --rl-nat1: #ff6b6b;
+  --rl-page-gradient: radial-gradient(ellipse 120% 80% at 50% 0%, #1e2433 0%, var(--bg) 52%);
+}
+
+html[data-theme='light'] {
+  --rl-nat20: #15803d;
+  --rl-nat1: #dc2626;
+  --rl-page-gradient: var(--bg);
+}
