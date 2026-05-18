@@ -19,6 +19,14 @@
         <span class="pill">Browser preview · use Electron for file save</span>
       }
       <div class="auth">
+        <button
+          type="button"
+          class="auth__btn auth__btn--theme"
+          (click)="setTheme(theme() === 'light' ? 'dark' : 'light')"
+          [attr.aria-label]="theme() === 'light' ? 'Switch to dark theme' : 'Switch to light theme'"
+        >
+          {{ theme() === 'light' ? 'Dark theme' : 'Light theme' }}
+        </button>
         <span class="pill" [class.pill--warn]="syncStatus() === 'error'">
           {{ syncMessage() }}
         </span>

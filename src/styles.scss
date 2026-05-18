@@ -1,14 +1,4 @@
-:root {
-  --bg: #0c1017;
-  --panel: #121826;
-  --panel-2: #0f1520;
-  --border: #243047;
-  --text: #e8edf7;
-  --muted: #9aa6bf;
-  --accent: #5bc0de;
-  --accent-2: #7aa8ff;
-  --danger: #e57373;
-}
+@use './styles/themes';
 
 *,
 *::before,
@@ -68,14 +58,15 @@ button:disabled {
 }
 
 button.primary {
-  border-color: #2f6b82;
-  background: linear-gradient(180deg, #1f5368, #17394a);
-  color: #e9f7ff;
+  border-color: var(--btn-primary-border);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
 }
 
 button.secondary {
-  border-color: #35456a;
-  background: #1a2234;
+  border-color: var(--btn-secondary-border);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
 }
 
 button.ghost {
@@ -83,8 +74,8 @@ button.ghost {
 }
 
 button.danger {
-  border-color: #6b2f2f;
-  color: #ffc9c9;
+  border-color: var(--btn-danger-border);
+  color: var(--btn-danger-text);
 }
 
 .muted {

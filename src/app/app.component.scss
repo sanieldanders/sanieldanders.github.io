@@ -14,7 +14,7 @@
   gap: 0.65rem 1rem;
   padding: 0.85rem 1.25rem;
   border-bottom: 1px solid var(--border);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--shell-bar-bg);
 }
 
 .shell__nav {
@@ -58,8 +58,8 @@
 }
 
 .pill--warn {
-  border-color: #9c3f3f;
-  color: #f2a9a9;
+  border-color: var(--warn-border);
+  color: var(--warn-text);
 }
 
 .shell__main {
@@ -88,6 +88,11 @@
   color: var(--accent);
 }
 
+.auth__btn--theme {
+  color: var(--accent-2);
+  border-color: color-mix(in srgb, var(--accent-2) 45%, var(--border));
+}
+
 .shell__content {
   display: flex;
   flex: 1;
@@ -103,7 +108,7 @@
   min-width: 340px;
   max-width: 340px;
   border-left: 1px solid var(--border);
-  background: rgba(0, 0, 0, 0.22);
+  background: var(--shell-sidebar-bg);
   overflow: auto;
 }
 
@@ -113,7 +118,7 @@
   bottom: 0.75rem;
   z-index: 50;
   border: 1px solid var(--border);
-  background: rgba(20, 26, 38, 0.92);
+  background: var(--shell-floating-bg);
   color: var(--text);
   border-radius: 999px;
   padding: 0.4rem 0.7rem;

@@ -6,6 +6,7 @@ import { SupabaseAuthService } from './core/services/supabase-auth.service';
 import { DataStoreService } from './core/services/data-store.service';
 import { AdminService } from './core/services/admin.service';
 import { RollLogComponent } from './pages/roll-log/roll-log.component';
+import { ThemeService, type AppTheme } from './core/services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,9 @@ export class AppComponent {
   private readonly router = inject(Router);
   private readonly store = inject(DataStoreService);
   private readonly admin = inject(AdminService);
+  private readonly themeService = inject(ThemeService);
   readonly window = window;
+  readonly theme = this.themeService.theme;
   readonly userEmail = computed(() => this.auth.user()?.email ?? null);
   readonly syncStatus = computed(() => this.store.syncStatus());
   readonly syncMessage = computed(() => this.store.syncMessage());
@@ -49,5 +52,9 @@ export class AppComponent {
 
   toggleRollSidebar(): void {
     this.rollSidebarOpen.update((v) => !v);
+  }
+
+  setTheme(theme: AppTheme): void {
+    this.themeService.setTheme(theme);
   }
 }

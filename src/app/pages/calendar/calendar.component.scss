@@ -441,8 +441,8 @@
 
 .cal-modal__danger {
   font-size: 0.85rem;
-  border-color: #7a3a3a;
-  color: #f0b4b4;
+  border-color: var(--btn-danger-border);
+  color: var(--btn-danger-text);
 }
 
 .cal-form {
