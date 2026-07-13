@@ -1,5 +1,13 @@
 export type MissionBoardRank = 'D' | 'C' | 'B' | 'A' | 'S' | 'Special';
 
+/** Client-side limits — large payloads slow Supabase round-trips and can appear to hang. */
+export const MISSION_BOARD_FIELD_LIMITS = {
+  name: 200,
+  description: 12_000,
+  notes: 12_000,
+  reward: 500
+} as const;
+
 export interface MissionBoardEntryRow {
   id: string;
   rank: MissionBoardRank;

@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../../core/services/admin.service';
 import { MissionBoardService } from '../../core/services/mission-board.service';
-import type { MissionBoardEntryRow, MissionBoardRank } from '../../core/models/mission-board.model';
+import { MISSION_BOARD_FIELD_LIMITS, type MissionBoardEntryRow, type MissionBoardRank } from '../../core/models/mission-board.model';
 
 const RANK_OPTIONS: readonly MissionBoardRank[] = ['D', 'C', 'B', 'A', 'S', 'Special'];
 
@@ -41,6 +41,7 @@ export class MissionBoardComponent {
   private realtimeRefreshTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly rankOptions = RANK_OPTIONS;
+  readonly fieldLimits = MISSION_BOARD_FIELD_LIMITS;
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -170,6 +171,11 @@ export class MissionBoardComponent {
       this.formError.set('Name is required.');
       return;
     }
+    const lengthError = this.validateFieldLengths();
+    if (lengthError) {
+      this.formError.set(lengthError);
+      return;
+    }
     this.formError.set(null);
     this.saveBusy.set(true);
     try {
@@ -187,12 +193,30 @@ export class MissionBoardComponent {
         return [row, ...rest];
       });
       this.closeAdd();
-      await this.refreshListAfterMutation();
+      this.saveBusy.set(false);
+      void this.refreshListAfterMutation();
     } catch (err) {
       this.formError.set((err as Error).message);
     } finally {
       this.saveBusy.set(false);
     }
+  }
+
+  private validateFieldLengths(): string | null {
+    const checks: { label: string; value: string; max: number }[] = [
+      { label: 'Name', value: this.addName().trim(), max: MISSION_BOARD_FIELD_LIMITS.name },
+      { label: 'Description', value: this.addDescription().trim(), max: MISSION_BOARD_FIELD_LIMITS.description },
+      { label: 'Notes', value: this.addNotes().trim(), max: MISSION_BOARD_FIELD_LIMITS.notes },
+      { label: 'Experience reward', value: this.addRewardXp().trim(), max: MISSION_BOARD_FIELD_LIMITS.reward },
+      { label: 'Ryo reward', value: this.addRewardRyo().trim(), max: MISSION_BOARD_FIELD_LIMITS.reward },
+      { label: 'Downtime reward', value: this.addRewardDowntime().trim(), max: MISSION_BOARD_FIELD_LIMITS.reward }
+    ];
+    for (const { label, value, max } of checks) {
+      if (value.length > max) {
+        return `${label} must be ${max.toLocaleString()} characters or fewer (currently ${value.length.toLocaleString()}).`;
+      }
+    }
+    return null;
   }
 
   async removeMission(id: string): Promise<void> {

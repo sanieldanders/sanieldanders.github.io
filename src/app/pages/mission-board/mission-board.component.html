@@ -98,29 +98,62 @@
       </label>
       <label>
         Name
-        <input type="text" [ngModel]="addName()" (ngModelChange)="addName.set($event)" maxlength="200" />
+        <input
+          type="text"
+          [ngModel]="addName()"
+          (ngModelChange)="addName.set($event)"
+          [maxlength]="fieldLimits.name"
+        />
+        <span class="muted mb-form__hint">{{ addName().length }} / {{ fieldLimits.name }}</span>
       </label>
       <label>
         Description
-        <textarea rows="4" [ngModel]="addDescription()" (ngModelChange)="addDescription.set($event)"></textarea>
+        <textarea
+          rows="4"
+          [ngModel]="addDescription()"
+          (ngModelChange)="addDescription.set($event)"
+          [maxlength]="fieldLimits.description"
+        ></textarea>
+        <span class="muted mb-form__hint">{{ addDescription().length.toLocaleString() }} / {{ fieldLimits.description.toLocaleString() }}</span>
       </label>
       <label>
         Notes
-        <textarea rows="3" [ngModel]="addNotes()" (ngModelChange)="addNotes.set($event)"></textarea>
+        <textarea
+          rows="3"
+          [ngModel]="addNotes()"
+          (ngModelChange)="addNotes.set($event)"
+          [maxlength]="fieldLimits.notes"
+        ></textarea>
+        <span class="muted mb-form__hint">{{ addNotes().length.toLocaleString() }} / {{ fieldLimits.notes.toLocaleString() }}</span>
       </label>
       <fieldset class="mb-form__rewards">
         <legend>Reward</legend>
         <label>
           Experience
-          <input type="text" [ngModel]="addRewardXp()" (ngModelChange)="addRewardXp.set($event)" />
+          <input
+            type="text"
+            [ngModel]="addRewardXp()"
+            (ngModelChange)="addRewardXp.set($event)"
+            [maxlength]="fieldLimits.reward"
+          />
         </label>
         <label>
           Ryo
-          <input type="text" [ngModel]="addRewardRyo()" (ngModelChange)="addRewardRyo.set($event)" />
+          <input
+            type="text"
+            [ngModel]="addRewardRyo()"
+            (ngModelChange)="addRewardRyo.set($event)"
+            [maxlength]="fieldLimits.reward"
+          />
         </label>
         <label>
           Downtime
-          <input type="text" [ngModel]="addRewardDowntime()" (ngModelChange)="addRewardDowntime.set($event)" />
+          <input
+            type="text"
+            [ngModel]="addRewardDowntime()"
+            (ngModelChange)="addRewardDowntime.set($event)"
+            [maxlength]="fieldLimits.reward"
+          />
         </label>
       </fieldset>
       @if (formError(); as fe) {

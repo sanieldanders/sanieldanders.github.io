@@ -2,7 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { User } from '@supabase/supabase-js';
 import { SupabaseAuthService } from './supabase-auth.service';
-import type { MissionBoardEntryRow, MissionBoardRank } from '../models/mission-board.model';
+import {
+  MISSION_BOARD_FIELD_LIMITS,
+  type MissionBoardEntryRow,
+  type MissionBoardRank
+} from '../models/mission-board.model';
 
 @Injectable({ providedIn: 'root' })
 export class MissionBoardService {
@@ -73,6 +77,12 @@ export class MissionBoardService {
     return (data ?? []) as MissionBoardEntryRow[];
   }
 
+  private assertFieldLength(label: string, value: string, max: number): void {
+    if (value.length > max) {
+      throw new Error(`${label} must be ${max.toLocaleString()} characters or fewer (currently ${value.length.toLocaleString()}).`);
+    }
+  }
+
   async createMission(input: {
     rank: MissionBoardRank;
     name: string;
@@ -82,26 +92,49 @@ export class MissionBoardService {
     reward_ryo: string;
     reward_downtime: string;
   }): Promise<MissionBoardEntryRow> {
+    const name = input.name.trim();
+    const description = input.description.trim();
+    const notes = input.notes.trim();
+    const rewardExperience = input.reward_experience.trim();
+    const rewardRyo = input.reward_ryo.trim();
+    const rewardDowntime = input.reward_downtime.trim();
+
+    this.assertFieldLength('Name', name, MISSION_BOARD_FIELD_LIMITS.name);
+    this.assertFieldLength('Description', description, MISSION_BOARD_FIELD_LIMITS.description);
+    this.assertFieldLength('Notes', notes, MISSION_BOARD_FIELD_LIMITS.notes);
+    this.assertFieldLength('Experience reward', rewardExperience, MISSION_BOARD_FIELD_LIMITS.reward);
+    this.assertFieldLength('Ryo reward', rewardRyo, MISSION_BOARD_FIELD_LIMITS.reward);
+    this.assertFieldLength('Downtime reward', rewardDowntime, MISSION_BOARD_FIELD_LIMITS.reward);
+
+    return this.withTimeout(this.insertMission(input.rank, name, description, notes, rewardExperience, rewardRyo, rewardDowntime), 'Saving mission');
+  }
+
+  private async insertMission(
+    rank: MissionBoardRank,
+    name: string,
+    description: string,
+    notes: string,
+    rewardExperience: string,
+    rewardRyo: string,
+    rewardDowntime: string
+  ): Promise<MissionBoardEntryRow> {
     const user = await this.requireUserForMutation();
-    const { data, error } = await this.withTimeout(
-      this.auth.client
-        .from('mission_board_entries')
-        .insert({
-          rank: input.rank,
-          name: input.name.trim(),
-          description: input.description.trim(),
-          notes: input.notes.trim(),
-          reward_experience: input.reward_experience.trim(),
-          reward_ryo: input.reward_ryo.trim(),
-          reward_downtime: input.reward_downtime.trim(),
-          created_by: user.id
-        })
-        .select(
-          'id, rank, name, description, notes, reward_experience, reward_ryo, reward_downtime, created_at, created_by'
-        )
-        .single<MissionBoardEntryRow>(),
-      'Saving mission'
-    );
+    const { data, error } = await this.auth.client
+      .from('mission_board_entries')
+      .insert({
+        rank,
+        name,
+        description,
+        notes,
+        reward_experience: rewardExperience,
+        reward_ryo: rewardRyo,
+        reward_downtime: rewardDowntime,
+        created_by: user.id
+      })
+      .select(
+        'id, rank, name, description, notes, reward_experience, reward_ryo, reward_downtime, created_at, created_by'
+      )
+      .single<MissionBoardEntryRow>();
     if (error) {
       throw new Error(this.mapMutationError(error.message));
     }
