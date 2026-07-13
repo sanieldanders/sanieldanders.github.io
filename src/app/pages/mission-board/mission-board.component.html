@@ -41,17 +41,28 @@
             </button>
           }
           <h2 class="mb-scroll__title">{{ m.name }}</h2>
-          @if (m.description.trim()) {
-            <section class="mb-scroll__block">
-              <h3 class="mb-scroll__subhead">Description</h3>
-              <p class="mb-scroll__text">{{ m.description }}</p>
-            </section>
-          }
-          @if (m.notes.trim()) {
-            <section class="mb-scroll__block">
-              <h3 class="mb-scroll__subhead">Notes</h3>
-              <p class="mb-scroll__text">{{ m.notes }}</p>
-            </section>
+          @if (m.details_loaded) {
+            @if (m.description.trim()) {
+              <section class="mb-scroll__block">
+                <h3 class="mb-scroll__subhead">Description</h3>
+                <p class="mb-scroll__text">{{ m.description }}</p>
+              </section>
+            }
+            @if (m.notes.trim()) {
+              <section class="mb-scroll__block">
+                <h3 class="mb-scroll__subhead">Notes</h3>
+                <p class="mb-scroll__text">{{ m.notes }}</p>
+              </section>
+            }
+          } @else {
+            <button
+              type="button"
+              class="mb-scroll__details"
+              [disabled]="detailsBusyId() === m.id"
+              (click)="loadMissionDetails(m.id)"
+            >
+              {{ detailsBusyId() === m.id ? 'Loading details…' : 'View mission details' }}
+            </button>
           }
           <section class="mb-scroll__block mb-scroll__block--reward">
             <h3 class="mb-scroll__subhead">Reward</h3>

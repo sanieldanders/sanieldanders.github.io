@@ -14,6 +14,8 @@ export interface MissionBoardEntryRow {
   name: string;
   description: string;
   notes: string;
+  /** Client-only flag; list requests omit large detail fields for fast board loading. */
+  details_loaded?: boolean;
   reward_experience: string;
   reward_ryo: string;
   reward_downtime: string;

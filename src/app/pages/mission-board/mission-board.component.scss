@@ -239,6 +239,14 @@
   white-space: pre-wrap;
 }
 
+.mb-scroll__details {
+  width: 100%;
+  margin-bottom: 0.75rem;
+  border-color: color-mix(in srgb, var(--mb-scroll-text) 35%, transparent);
+  color: var(--mb-scroll-text);
+  background: color-mix(in srgb, var(--mb-scroll-text) 8%, transparent);
+}
+
 .mb-scroll__rewards {
   margin: 0;
   display: grid;

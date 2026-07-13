@@ -58,6 +58,7 @@ export class MissionBoardComponent {
   readonly addRewardDowntime = signal('');
   readonly formError = signal<string | null>(null);
   readonly saveBusy = signal(false);
+  readonly detailsBusyId = signal<string | null>(null);
   readonly deleteBusyId = signal<string | null>(null);
   readonly addDialog = viewChild<ElementRef<HTMLDialogElement>>('addDialog');
 
@@ -100,7 +101,19 @@ export class MissionBoardComponent {
     }
     try {
       const rows = await this.missionsApi.listMissions();
-      this.missions.set(rows);
+      const loadedDetails = new Map(
+        this.missions()
+          .filter((mission) => mission.details_loaded)
+          .map((mission) => [mission.id, mission] as const)
+      );
+      this.missions.set(
+        rows.map((row) => {
+          const loaded = loadedDetails.get(row.id);
+          return loaded
+            ? { ...row, description: loaded.description, notes: loaded.notes, details_loaded: true }
+            : row;
+        })
+      );
       this.error.set(null);
     } catch (err) {
       if (quiet) {
@@ -144,6 +157,26 @@ export class MissionBoardComponent {
 
   closeAdd(): void {
     this.addDialog()?.nativeElement.close();
+  }
+
+  async loadMissionDetails(id: string): Promise<void> {
+    if (this.detailsBusyId() === id) {
+      return;
+    }
+    this.detailsBusyId.set(id);
+    this.error.set(null);
+    try {
+      const details = await this.missionsApi.getMissionDetails(id);
+      this.missions.update((rows) =>
+        rows.map((row) =>
+          row.id === id ? { ...row, ...details, details_loaded: true } : row
+        )
+      );
+    } catch (err) {
+      this.error.set((err as Error).message);
+    } finally {
+      this.detailsBusyId.set(null);
+    }
   }
 
   scrollClass(rank: MissionBoardRank): string {

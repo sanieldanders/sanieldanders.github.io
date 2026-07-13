@@ -66,7 +66,7 @@ export class MissionBoardService {
       this.auth.client
         .from('mission_board_entries')
         .select(
-          'id, rank, name, description, notes, reward_experience, reward_ryo, reward_downtime, created_at, created_by'
+          'id, rank, name, reward_experience, reward_ryo, reward_downtime, created_at, created_by'
         )
         .order('created_at', { ascending: false }),
       'Loading missions'
@@ -74,7 +74,31 @@ export class MissionBoardService {
     if (error) {
       throw new Error(error.message);
     }
-    return (data ?? []) as MissionBoardEntryRow[];
+    return (data ?? []).map((row) => ({
+      ...row,
+      description: '',
+      notes: '',
+      details_loaded: false
+    })) as MissionBoardEntryRow[];
+  }
+
+  async getMissionDetails(id: string): Promise<{ description: string; notes: string }> {
+    await this.auth.init();
+    const { data, error } = await this.withTimeout(
+      this.auth.client
+        .from('mission_board_entries')
+        .select('description, notes')
+        .eq('id', id)
+        .single<{ description: string; notes: string }>(),
+      'Loading mission details'
+    );
+    if (error) {
+      throw new Error(error.message);
+    }
+    if (!data) {
+      throw new Error('Mission details were not returned.');
+    }
+    return data;
   }
 
   private assertFieldLength(label: string, value: string, max: number): void {
@@ -132,16 +156,21 @@ export class MissionBoardService {
         created_by: user.id
       })
       .select(
-        'id, rank, name, description, notes, reward_experience, reward_ryo, reward_downtime, created_at, created_by'
+        'id, rank, name, reward_experience, reward_ryo, reward_downtime, created_at, created_by'
       )
-      .single<MissionBoardEntryRow>();
+      .single<Omit<MissionBoardEntryRow, 'description' | 'notes'>>();
     if (error) {
       throw new Error(this.mapMutationError(error.message));
     }
     if (!data) {
       throw new Error('Mission was not returned after save. Try refreshing the list.');
     }
-    return data;
+    return {
+      ...data,
+      description,
+      notes,
+      details_loaded: true
+    };
   }
 
   async deleteMission(id: string): Promise<void> {
