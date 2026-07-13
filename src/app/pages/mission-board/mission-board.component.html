@@ -23,7 +23,10 @@
 
   <div class="mb-pinboard" aria-label="Mission scrolls">
     @for (m of sortedMissions(); track m.id) {
-      <article [class]="'mb-scroll ' + scrollClass(m.rank)">
+      <article
+        [class]="'mb-scroll ' + scrollClass(m.rank)"
+        [class.mb-scroll--expanded]="isLongMission(m)"
+      >
         <div class="mb-scroll__top-roll" aria-hidden="true"></div>
         <div class="mb-scroll__paper">
           <div class="mb-scroll__rank-badge">

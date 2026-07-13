@@ -131,6 +131,12 @@
   }
 }
 
+.mb-scroll--expanded {
+  grid-column: 1 / -1;
+  width: min(100%, 820px);
+  justify-self: start;
+}
+
 .mb-scroll__top-roll,
 .mb-scroll__bottom-roll {
   height: 14px;

@@ -159,6 +159,13 @@ export class MissionBoardComponent {
     this.addDialog()?.nativeElement.close();
   }
 
+  isLongMission(mission: MissionBoardEntryRow): boolean {
+    return Boolean(
+      mission.details_loaded &&
+      mission.description.length + mission.notes.length >= 1_000
+    );
+  }
+
   async loadMissionDetails(id: string): Promise<void> {
     if (this.detailsBusyId() === id) {
       return;
