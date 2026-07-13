@@ -226,8 +226,7 @@ export class MissionBoardComponent {
         return [row, ...rest];
       });
       this.closeAdd();
-      this.saveBusy.set(false);
-      void this.refreshListAfterMutation();
+      await this.refreshListAfterMutation();
     } catch (err) {
       this.formError.set((err as Error).message);
     } finally {
