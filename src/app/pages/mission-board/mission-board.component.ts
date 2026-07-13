@@ -226,12 +226,13 @@ export class MissionBoardComponent {
         return [row, ...rest];
       });
       this.closeAdd();
-      await this.refreshListAfterMutation();
     } catch (err) {
       this.formError.set((err as Error).message);
+      return;
     } finally {
       this.saveBusy.set(false);
     }
+    void this.refreshListAfterMutation();
   }
 
   private validateFieldLengths(): string | null {
